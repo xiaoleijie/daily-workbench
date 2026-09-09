@@ -863,6 +863,7 @@
       <div class="spacer" data-page-node-id="jA8KlMHh3kKlH7QKyJFUht"></div>
       <button class="btn" id="refreshAll" data-page-node-id="Ev8BveRp9IDbv2DIdf7pD3">↻ 刷新全部</button>
       <button class="btn" id="backupBtn" onclick="toggleBackupMenu()" type="button" style="margin-left:8px" data-page-node-id="0pIl8jcDFcCKtTOchbkqh6">💾 数据备份</button>
+      <button class="btn" id="aboutBtn" onclick="toggleAboutMenu()" type="button" style="margin-left:8px">ℹ️ 关于</button>
     </div>
     <div id="idCard" style="display:none;position:fixed;width:330px;max-width:92vw;background:#fff;border:1px solid #e7e1d6;border-radius:14px;box-shadow:0 14px 44px rgba(60,50,40,.18);padding:16px;z-index:60;font-size:13px;color:#4a423a;line-height:1.7" data-page-node-id="Tm2KPPYNvn9cCBB9IZ2QRx">
       <div style="margin-bottom:10px" data-page-node-id="y4j9ARgCm8j4T9ocdIhAFQ">同一链接谁打开都能用，但每个人的内容会自动分开保存、互不干扰。请先选一下你的身份：</div>
@@ -1243,7 +1244,7 @@ function toggleThemeMenu(){ openPanelNear('themeBtn','themeCard'); }
 function initTheme(){ var k='red'; try{ k=localStorage.getItem('lw_theme')||'red'; }catch(e){} applyTheme(k); }
 document.addEventListener('click', function(e){
   var t=e.target;
-  [['themeCard','themeBtn'],['idCard','idChip'],['backupCard','backupBtn']].forEach(function(p){
+  [['themeCard','themeBtn'],['idCard','idChip'],['backupCard','backupBtn'],['aboutCard','aboutBtn']].forEach(function(p){
     var c=document.getElementById(p[0]);
     if(c && c.style.display!=='none' && t && t.id!==p[1] && !c.contains(t)) c.style.display='none';
   });

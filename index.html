@@ -885,6 +885,16 @@
       <button class="btn" style="width:100%" onclick="document.getElementById('backupFile').click()" data-page-node-id="5gVRTves3SSIyaUTXiRxyt">⬆️ 从备份文件恢复</button>
       <input id="backupFile" type="file" accept="application/json,.json" style="display:none" onchange="restoreAllDataFromFile(this)" data-page-node-id="1URjfeY4z9FzNevAu3oiSr">
     </div>
+    <div id="aboutCard" style="display:none;position:fixed;width:340px;max-width:92vw;background:#fff;border:1px solid #e7e1d6;border-radius:14px;box-shadow:0 14px 44px rgba(60,50,40,.18);padding:18px;z-index:60;font-size:13px;color:#4a423a;line-height:1.7">
+      <div style="font-size:15px;font-weight:700;margin-bottom:2px">日常集 · 生活工作台</div>
+      <div style="color:#9a8f80;font-size:12px;margin-bottom:12px">你的永久链接（GitHub Pages，永不被回收）</div>
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px">
+        <input id="aboutUrl" readonly value="https://xiaoleijie.github.io/daily-workbench/" style="flex:1;min-width:0;padding:8px 10px;border:1px solid #e7e1d6;border-radius:9px;font-size:12px;color:#6b5f50;background:#faf7f1">
+        <button class="btn sm primary" onclick="copyAboutUrl()">复制</button>
+      </div>
+      <div style="display:flex;justify-content:center;margin-bottom:6px"><img src="qr.png" alt="二维码" style="width:160px;height:160px;border:1px solid #eee;border-radius:10px"></div>
+      <div style="text-align:center;color:#9a8f80;font-size:11px">手机扫码直接打开</div>
+    </div>
     <div class="content" id="content" data-page-node-id="M12jGOZO35So5tN2AzujHk">
       <section class="module" id="mod-tasks" data-sp-bindable="database" data-sp-database-id="Erv9LK43hpsktGQ3Q4nTKf" data-page-node-id="ae0aU2vhUtUQ2IkU7VEzjd">
         <div class="mod-head" data-page-node-id="znrEZNEq80Z4sMKIpY9WXt"><h2 data-page-node-id="GlAgF4X2bwHn4tqi4aScSS">今日工作</h2><span class="desc" data-page-node-id="I8qtzimZEtjf4pHr3PPxkJ">把今天要紧的事排好，做完一件勾一件</span></div>
@@ -922,21 +932,12 @@
       <section class="module" id="mod-pomodoro" data-page-node-id="uCGV4QiJrnYuCPZ4dtDf8p">
         <div class="mod-head" data-page-node-id="2oAS5rIDY8OLSJNFFbVbfG"><h2 data-page-node-id="CWgmB6XcgATfcWHxXyOBwl">番茄钟</h2><span class="desc" data-page-node-id="7P37AyxGnIDKwuv8FzsZWw">极简专注 · 专注完成给自己来点儿奖励吧</span><span class="spacer" data-page-node-id="8HC7KLIDwE84hJNh3T7fbO"></span></div>
         <div class="pomo-wrap" data-page-node-id="GUmgSQtQ4u3tbpSO70SZkU">
-          <div class="pomo-actions" data-page-node-id="3hHDnpgHbinIyoge3B8zxy">
-            <button class="btn primary" id="pomoToggle" onclick="togglePomodoro()" data-page-node-id="QN8ETqjXf7zCW0ejufplk2">开始</button>
-            <button class="btn" id="pomoResetBtn" onclick="resetPomodoro()" data-page-node-id="FIUBnlibDyCDWFNY5NZ5Ah">重置</button>
-            <button class="btn ghost" onclick="giveUpPomodoro()" data-page-node-id="KwiEdlwWPirgpxElzBGSEZ">放弃</button>
-            <button class="btn ghost" id="pomoSfxBtn" onclick="openPomoSfxPicker()" title="选择番茄钟音效（音量随上方音量按钮调节）" data-page-node-id="QP0UEM4y9mLtI0IBovxtbP">🔇 音效</button>
-            <button class="btn ghost pomo-vol" id="pomoVolBtn" onclick="openPomoSfxPicker()" title="音量调节（点 − / + 直接调，或点此处打开面板）" data-page-node-id="8DpC9GERfNC4t6CYY6lp8C">
-              <span class="vol-ic" data-page-node-id="vItC6WU1wGdxWF79uNDai4">🔈</span><span class="vol-dec" onclick="event.stopPropagation();adjPomoVol(-20)" data-page-node-id="nG3fb42l4pjzkIlUR5oFKK">−</span><span class="vol-val" id="pomoVolVal" data-page-node-id="BaIdP6S0keZD1ksvpNxkuf">60%</span><span class="vol-inc" onclick="event.stopPropagation();adjPomoVol(20)" data-page-node-id="fntEqjRWlUN5wDGJoIaqmR">+</span>
-            </button>
-          </div>
+          <div class="pomo-tip">完成就有小饼干奖励给小猫哦</div>
           <div class="pomo-main" data-page-node-id="6uXCIU41wWiqXC7LRd7xBj">
             <div class="pomo-side" data-page-node-id="mWFd2Q8R5pLO3hNC98fFpj">
-              <button class="pomo-mode-btn" id="pomoFocusBtn" onclick="pomoClick('focus')" data-page-node-id="gCDuclwFxIyHn6qzuu0wUj">专注</button>
+              <button class="pomo-mode-btn" id="pomoFocusBtn" onclick="pomoClick('focus')" data-page-node-id="gCDuclwFxIyHn6qzuu0wUj">开始专注</button>
               <div class="pomo-wheel" id="focusWheel" tabindex="0" title="滚动调整专注时长（每格 1 分钟）" data-page-node-id="BvN47EFuFyQaCeo8Hz4AJH"></div>
               <div class="pomo-set-unit" data-page-node-id="3yWC4cZmd4XfRm3ORMzlLH">分钟</div>
-              <button class="pomo-reset" onclick="resetFocus()" data-page-node-id="NBiGkmSlcFzJAtRUz2fViu">重置专注</button>
             </div>
             <div class="pomo-ring" data-page-node-id="y7DRCfxq2cKh0bOGeGjomY">
               <svg viewBox="0 0 220 220" data-page-node-id="jST56ij50hZkZ0YkCfCDbT"><circle class="pomo-bg" cx="110" cy="110" r="100" data-page-node-id="HApylKlL2HlPpu6mdpDxY9"/><circle class="pomo-fg" id="pomoArc" cx="110" cy="110" r="100" data-page-node-id="JJnGEhSLiUXNQRdFKEY9Mr"/></svg>
@@ -947,11 +948,15 @@
               </div>
             </div>
             <div class="pomo-side" data-page-node-id="QBOn5azNO2owsEwPBddQd6">
-              <button class="pomo-mode-btn" id="pomoBreakBtn" onclick="pomoClick('break')" data-page-node-id="igrAnGE3gVAMCULUQF2Fkj">休息</button>
+              <button class="pomo-mode-btn" id="pomoBreakBtn" onclick="pomoClick('break')" data-page-node-id="igrAnGE3gVAMCULUQF2Fkj">开始休息</button>
               <div class="pomo-wheel" id="breakWheel" tabindex="0" title="滚动调整休息时长（每格 1 分钟）" data-page-node-id="xF4CavzsDV4mrrzeXgLHA6"></div>
               <div class="pomo-set-unit" data-page-node-id="JuInFXASiXcjnXjh2HOwez">分钟</div>
-              <button class="pomo-reset" onclick="resetBreak()" data-page-node-id="JWm8dP3IIGDcrW8Usn6XRV">重置休息</button>
             </div>
+          </div>
+          <div class="pomo-bottom" data-page-node-id="pomoBottom">
+            <button class="btn ghost" id="pomoSfxBtn" onclick="openPomoSfxPicker()" title="选择番茄钟音效与音量" data-page-node-id="QP0UEM4y9mLtI0IBovxtbP">🔊 音效音量</button>
+            <button class="btn" id="pomoResetBtn" onclick="resetPomodoro()" data-page-node-id="FIUBnlibDyCDWFNY5NZ5Ah">重置</button>
+            <button class="btn ghost" onclick="giveUpPomodoro()" data-page-node-id="KwiEdlwWPirgpxElzBGSEZ">放弃</button>
           </div>
         </div>
       </section>
@@ -1160,6 +1165,8 @@ function reloadAll(){ loadSettings().then(function(){ Object.keys(LOADERS).forEa
 
 /* ============ 数据备份 / 恢复（跨链接、跨设备搬运） ============ */
 function toggleBackupMenu(){ openPanelNear('backupBtn','backupCard'); }
+function toggleAboutMenu(){ openPanelNear('aboutBtn','aboutCard'); }
+function copyAboutUrl(){ copyText('https://xiaoleijie.github.io/daily-workbench/', function(){ toast('链接已复制，可粘贴到浏览器或发给朋友'); }); }
 function backupAllData(){
   var data={}, keys=[];
   for(var i=0;i<localStorage.length;i++){ var k=localStorage.key(i); if(k && (k.indexOf('lw_')===0 || k.indexOf('draft_')===0)){ try{ data[k]=localStorage.getItem(k); keys.push(k); }catch(e){} } }
@@ -3379,7 +3386,7 @@ function playPomoTick(){
 function renderPomoSfxBtn(){
   var b=document.getElementById('pomoSfxBtn'); if(!b) return;
   var k=POMO_SFX.key;
-  b.textContent = (POMO_VOL===0?'🔇':'🔊')+' 音效';
+  b.textContent = (POMO_VOL===0?'🔇':'🔊')+' 音效音量';
   b.title = POMO_VOL===0 ? '番茄钟音效已静音（音量 0），点击打开面板调大' : '当前音效：'+POMO_SFX_LABEL[k]+' · 音量 '+POMO_VOL+'%（点击可更换或调节）';
 }
 function openPomoSfxPicker(){

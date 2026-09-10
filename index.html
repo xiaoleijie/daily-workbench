@@ -1,12 +1,10 @@
 <!DOCTYPE html>
 <html lang="zh-CN" data-page-node-id="CcRSlGZ6xmMy1DEQ901RpY">
 <head data-page-node-id="Gwm7KvEONnFuIih5gNGoi1">
-  <link rel="preconnect" href="https://fonts.googleapis.com" data-page-node-id="dPJNteK9AOsIiqErYWSeAG">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin data-page-node-id="eQPfL5HPtO4gOjFrMBXUQE">
-  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&display=swap" rel="stylesheet" data-page-node-id="6UViAT6jMTAXxPpUkoi6fO">
 <meta charset="UTF-8" data-page-node-id="vbxNcTk8EJMEttwLPzzwbg" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" data-page-node-id="DI5q4TyNWImOwMwhHyCRVZ" />
 <title>日常集 · 生活工作台</title>
+  <link rel="manifest" href="./manifest.webmanifest">
 <style>
   :root{
     --paper:#F7F4EF; --surface:#FFFFFF; --ink:#2A2724; --muted:#8A8276;
@@ -730,6 +728,8 @@
   .nav-sfx{font-size:10px;color:var(--muted);font-weight:400;margin-left:3px;vertical-align:1px}
   .mod-tip{font-size:13px;color:var(--muted);text-align:center;margin-top:10px;line-height:1.6}
   .mod-tip b{color:var(--accent-deep,#c98a3e)}
+  .pomo-tip{font-size:13px;color:var(--muted);text-align:center;margin-top:10px;line-height:1.6}
+  .pomo-tip b{color:var(--accent-deep);font-weight:700}
   .pet-plate{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);width:80px;height:33px;pointer-events:none;z-index:3;display:none}
   .pet-trash{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);width:82px;height:56px;pointer-events:none;z-index:3;display:none}
   @keyframes breathe{0%,100%{transform:scale(1) translateY(0)}50%{transform:scale(1.035) translateY(-1.5px)}}
@@ -932,7 +932,7 @@
       <section class="module" id="mod-pomodoro" data-page-node-id="uCGV4QiJrnYuCPZ4dtDf8p">
         <div class="mod-head" data-page-node-id="2oAS5rIDY8OLSJNFFbVbfG"><h2 data-page-node-id="CWgmB6XcgATfcWHxXyOBwl">番茄钟</h2><span class="desc" data-page-node-id="7P37AyxGnIDKwuv8FzsZWw">极简专注 · 专注完成给自己来点儿奖励吧</span><span class="spacer" data-page-node-id="8HC7KLIDwE84hJNh3T7fbO"></span></div>
         <div class="pomo-wrap" data-page-node-id="GUmgSQtQ4u3tbpSO70SZkU">
-          <div class="pomo-tip">完成就有小饼干奖励给小猫哦</div>
+          <div class="pomo-tip">完成就有 <b>小饼干奖励</b> 给小猫哦</div>
           <div class="pomo-main" data-page-node-id="6uXCIU41wWiqXC7LRd7xBj">
             <div class="pomo-side" data-page-node-id="mWFd2Q8R5pLO3hNC98fFpj">
               <button class="pomo-mode-btn" id="pomoFocusBtn" onclick="pomoClick('focus')" data-page-node-id="gCDuclwFxIyHn6qzuu0wUj">开始专注</button>
@@ -3093,7 +3093,7 @@ function closeDlFloat(){ var e=document.getElementById('dlFloat'); if(e&&e.paren
 
 /* ============ 番茄钟 ============ */
 var POMO={mode:'focus',running:false,timer:null,focusMin:25,breakMin:5,total:25*60,left:25*60};
-function loadPomoCfg(){ try{ var f=Number(localStorage.getItem('lw_pomo_focus')); var b=Number(localStorage.getItem('lw_pomo_break')); if(f>=1&&f<=180) POMO.focusMin=f; if(b>=1&&b<=60) POMO.breakMin=b; }catch(e){} POMO.total=(POMO.mode==='focus'?POMO.focusMin:POMO.breakMin)*60; POMO.left=POMO.total; }
+function loadPomoCfg(){ try{ var f=Number(localStorage.getItem('lw_pomo_focus')); var b=Number(localStorage.getItem('lw_pomo_break')); if(f>=1&&f<=180&&b>=1&&b<=60){ if(f===1&&b===1){ /* 滚轮被误拖到最小(1+1)时，回归标准 25+5 */ try{ localStorage.removeItem('lw_pomo_focus'); localStorage.removeItem('lw_pomo_break'); }catch(e){} } else { POMO.focusMin=f; POMO.breakMin=b; } } }catch(e){} POMO.total=(POMO.mode==='focus'?POMO.focusMin:POMO.breakMin)*60; POMO.left=POMO.total; }
 function savePomoCfg(){ try{ localStorage.setItem('lw_pomo_focus',String(POMO.focusMin)); localStorage.setItem('lw_pomo_break',String(POMO.breakMin)); }catch(e){} }
 function todayKey(){ var d=new Date(); return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2); }
 function renderPomodoro(){
@@ -3319,7 +3319,29 @@ function psfxAudio(){
   }catch(e){}
   return PSFX_AC;
 }
+var SFX_TICK=0;
+var SFX_AUDITION_TIMER=null;
+var SFX_AUDITION_KEY=null;
+/* 悬停音效行 / 音量栏时，持续循环试听该音效；离开即停 */
+function startSfxAudition(k){
+  stopSfxAudition();
+  SFX_AUDITION_KEY=k;
+  var fn=function(){
+    if(!SFX_AUDITION_KEY) return;
+    var saved=POMO_SFX.key;
+    POMO_SFX.key=SFX_AUDITION_KEY;
+    playPomoTick();
+    POMO_SFX.key=saved;
+  };
+  fn();
+  SFX_AUDITION_TIMER=setInterval(fn,750);
+}
+function stopSfxAudition(){
+  if(SFX_AUDITION_TIMER){ clearInterval(SFX_AUDITION_TIMER); SFX_AUDITION_TIMER=null; }
+  SFX_AUDITION_KEY=null;
+}
 function playPomoTick(){
+  SFX_TICK++;
   var k=POMO_SFX.key;
   var ac=psfxAudio(); if(!ac) return;
   var v=volScale(); if(v<=0) return;
@@ -3362,7 +3384,7 @@ function playPomoTick(){
       [0,0.11].forEach(function(off){ var ob=ac.createOscillator(), og=ac.createOscillator(), gg=ac.createGain(); ob.type='sine'; ob.frequency.setValueAtTime(1040,t+off); og.type='sine'; og.frequency.setValueAtTime(1560,t+off); gg.gain.setValueAtTime(0.0001,t+off); gg.gain.exponentialRampToValueAtTime(sfxGain(0.22),t+off+0.01); gg.gain.exponentialRampToValueAtTime(0.0001,t+off+0.12); ob.connect(gg); og.connect(gg); gg.connect(ac.destination); ob.start(t+off); og.start(t+off); ob.stop(t+off+0.14); og.stop(t+off+0.14); });
     }else if(k==='bowl'){
       // 钵音：每 4 秒才敲一下（留出悠长余韵，不再“咚咚咚咚”）；基频+泛音，长衰减约 3.5 秒
-      if(POMO.left % 4 !== 0) return;
+      if(SFX_TICK % 4 !== 0) return;
       [[220,0.30],[330,0.18],[660,0.10]].forEach(function(p){
         var pb=ac.createOscillator(), pg=ac.createGain();
         pb.type='sine'; pb.frequency.setValueAtTime(p[0],t);
@@ -3394,7 +3416,7 @@ function openPomoSfxPicker(){
   if(!m){ m=document.createElement('div'); m.id='pomosfx-modal'; m.className='imp-modal-mask'; document.body.appendChild(m); }
   var cur=POMO_SFX.key;
   var opt=function(k,icon,desc){
-    return '<button class="btn sfx-opt'+(cur===k?' on':'')+'" onclick="setPomoSfx(\''+k+'\')">'+
+    return '<button class="btn sfx-opt'+(cur===k?' on':'')+'" onclick="setPomoSfx(\''+k+'\')" onmouseenter="startSfxAudition(\''+k+'\')" onmouseleave="stopSfxAudition()">'+
       '<span class="sfx-ic">'+icon+'</span><span class="sfx-tx"><b>'+POMO_SFX_LABEL[k]+'</b><i>'+desc+'</i></span>'+
       (cur===k?'<span class="sfx-cur">当前</span>':'')+'</button>';
   };
@@ -3411,8 +3433,8 @@ function openPomoSfxPicker(){
         opt('bowl','🥣','悠长的钵音')+
         opt('muyu','🪵','清脆的木鱼声')+
       '</div>'+
-      '<div class="sfx-vol">'+
-        '<div class="sfx-vol-cap">音量</div>'+
+      '<div class="sfx-vol" onmouseenter="startSfxAudition(POMO_SFX.key)" onmouseleave="stopSfxAudition()">'+
+          '<div class="sfx-vol-cap">音量</div>'+
         '<div class="sfx-vol-track" id="pomoVolTrack">'+
           '<div class="sfx-vol-fill" id="pomoVolFill"></div>'+
           '<div class="sfx-vol-handle" id="pomoVolHandle"></div>'+
@@ -3426,7 +3448,7 @@ function openPomoSfxPicker(){
   m.style.display='flex';
   renderPomoVolSlider(); bindPomoVolSlider();
 }
-function closePomoSfxModal(){ var m=document.getElementById('pomosfx-modal'); if(m) m.style.display='none'; }
+function closePomoSfxModal(){ stopSfxAudition(); var m=document.getElementById('pomosfx-modal'); if(m) m.style.display='none'; }
 function setPomoSfx(k){
   POMO_SFX.key=k; savePomoSfx(); renderPomoSfxBtn(); closePomoSfxModal();
   if(POMO_VOL>0) playPomoTick();   // 试听一声
@@ -3444,12 +3466,13 @@ function bindPomoVolSlider(){
     var r=track.getBoundingClientRect();
     var pct=Math.max(0,Math.min(100, Math.round((1-(clientY-r.top)/r.height)*100)));
     POMO_VOL=pct; savePomoVol(); renderPomoVol();
+    if(POMO_VOL>0 && !SFX_AUDITION_TIMER) playPomoTick();
   }
   var dragging=false;
-  track.addEventListener('pointerdown', function(e){ dragging=true; try{ track.setPointerCapture(e.pointerId); }catch(_){} setFromY(e.clientY); e.preventDefault(); });
+  track.addEventListener('pointerdown', function(e){ dragging=true; try{ track.setPointerCapture(e.pointerId); }catch(_){} setFromY(e.clientY); startSfxAudition(POMO_SFX.key); e.preventDefault(); });
   track.addEventListener('pointermove', function(e){ if(dragging) setFromY(e.clientY); });
-  track.addEventListener('pointerup', function(){ dragging=false; });
-  track.addEventListener('pointercancel', function(){ dragging=false; });
+  track.addEventListener('pointerup', function(){ dragging=false; if(!track.matches(':hover')) stopSfxAudition(); });
+  track.addEventListener('pointercancel', function(){ dragging=false; stopSfxAudition(); });
 }
 function incPomo(){ var k='lw_pomo_'+todayKey(); try{ localStorage.setItem(k, String(Number(localStorage.getItem(k)||'0')+1)); }catch(e){} }
 function incCheckin(){ var k='lw_checkin_'+todayKey(); try{ localStorage.setItem(k, String(Number(localStorage.getItem(k)||'0')+1)); }catch(e){} }
@@ -4458,5 +4481,13 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   </div>
   <div class="pet-name" data-page-node-id="WgivXNCkHwREB5mvQJ2JXa">二木管家的小猫</div>
 </div>
+<script>
+/* PWA：注册 Service Worker，使手机可“添加到主屏幕”并支持离线打开 */
+if('serviceWorker' in navigator){
+  window.addEventListener('load',function(){
+    navigator.serviceWorker.register('./sw.js').catch(function(){});
+  });
+}
+</script>
 </body>
 </html>

@@ -688,6 +688,11 @@
   .pomo-wheel-item{height:36px;scroll-snap-align:center;display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--muted);font-variant-numeric:tabular-nums;font-family:inherit}
   .pomo-wheel-item.sel{color:var(--ink);font-weight:800;font-size:24px}
   .pomo-set-unit{color:var(--muted);font-size:14px}
+  .pomo-step{display:flex;gap:8px;margin-top:6px}
+  .pomo-step-btn{width:36px;height:34px;border-radius:10px;border:1px solid var(--line2);background:var(--surface);color:var(--ink);font-size:20px;font-weight:800;line-height:1;cursor:pointer;transition:transform .08s,background .15s}
+  .pomo-step-btn:hover{background:var(--surface-2)}
+  .pomo-step-btn:active{transform:scale(.92)}
+  #pomoMuteBtn.on{color:var(--accent-deep,#c98a3e);border-color:var(--accent-deep,#c98a3e)}
   .pomo-reset{margin-top:2px;padding:5px 14px;border:1px solid var(--accent);background:var(--surface);color:var(--accent-deep);font-size:12px;border-radius:999px;cursor:pointer;font-family:inherit;transition:background .12s,color .12s,transform .12s,border-color .12s}
   .pomo-reset:hover{background:var(--accent-soft)}
   .pomo-reset:active{transform:scale(.95)}
@@ -958,6 +963,10 @@
               <button class="pomo-mode-btn" id="pomoFocusBtn" onclick="pomoClick('focus')" data-page-node-id="gCDuclwFxIyHn6qzuu0wUj">开始专注</button>
               <div class="pomo-wheel" id="focusWheel" tabindex="0" title="滚动调整专注时长（每格 1 分钟）" data-page-node-id="BvN47EFuFyQaCeo8Hz4AJH"></div>
               <div class="pomo-set-unit" data-page-node-id="3yWC4cZmd4XfRm3ORMzlLH">分钟</div>
+              <div class="pomo-step" data-page-node-id="pomoFocusStep">
+                <button class="pomo-step-btn" onclick="pomoStep('focus',-1)" title="专注时长 −1 分钟">−</button>
+                <button class="pomo-step-btn" onclick="pomoStep('focus',1)" title="专注时长 +1 分钟">+</button>
+              </div>
             </div>
             <div class="pomo-ring" data-page-node-id="y7DRCfxq2cKh0bOGeGjomY">
               <svg viewBox="0 0 220 220" data-page-node-id="jST56ij50hZkZ0YkCfCDbT"><circle class="pomo-bg" cx="110" cy="110" r="100" data-page-node-id="HApylKlL2HlPpu6mdpDxY9"/><circle class="pomo-fg" id="pomoArc" cx="110" cy="110" r="100" data-page-node-id="JJnGEhSLiUXNQRdFKEY9Mr"/></svg>
@@ -971,9 +980,14 @@
               <button class="pomo-mode-btn" id="pomoBreakBtn" onclick="pomoClick('break')" data-page-node-id="igrAnGE3gVAMCULUQF2Fkj">开始休息</button>
               <div class="pomo-wheel" id="breakWheel" tabindex="0" title="滚动调整休息时长（每格 1 分钟）" data-page-node-id="xF4CavzsDV4mrrzeXgLHA6"></div>
               <div class="pomo-set-unit" data-page-node-id="JuInFXASiXcjnXjh2HOwez">分钟</div>
+              <div class="pomo-step" data-page-node-id="pomoBreakStep">
+                <button class="pomo-step-btn" onclick="pomoStep('break',-1)" title="休息时长 −1 分钟">−</button>
+                <button class="pomo-step-btn" onclick="pomoStep('break',1)" title="休息时长 +1 分钟">+</button>
+              </div>
             </div>
           </div>
           <div class="pomo-bottom" data-page-node-id="pomoBottom">
+            <button class="btn ghost" id="pomoMuteBtn" onclick="togglePomoMute()" title="点击一键静音番茄钟声音" data-page-node-id="pomoMuteBtn">🔕</button>
             <button class="btn ghost" id="pomoSfxBtn" onclick="openPomoSfxPicker()" title="选择番茄钟音效与音量" data-page-node-id="QP0UEM4y9mLtI0IBovxtbP">🔊 音效音量</button>
             <button class="btn" id="pomoResetBtn" onclick="resetPomodoro()" data-page-node-id="FIUBnlibDyCDWFNY5NZ5Ah">重置</button>
             <button class="btn ghost" onclick="giveUpPomodoro()" data-page-node-id="KwiEdlwWPirgpxElzBGSEZ">放弃</button>
@@ -3163,7 +3177,8 @@ function closeDlFloat(){ var e=document.getElementById('dlFloat'); if(e&&e.paren
 
 /* ============ 番茄钟 ============ */
 var POMO={mode:'focus',running:false,timer:null,focusMin:25,breakMin:5,total:25*60,left:25*60};
-function loadPomoCfg(){ try{ var f=Number(localStorage.getItem('lw_pomo_focus')); var b=Number(localStorage.getItem('lw_pomo_break')); if(f>=1&&f<=180&&b>=1&&b<=60){ if(f===1&&b===1){ /* 滚轮被误拖到最小(1+1)时，回归标准 25+5 */ try{ localStorage.removeItem('lw_pomo_focus'); localStorage.removeItem('lw_pomo_break'); }catch(e){} } else { POMO.focusMin=f; POMO.breakMin=b; } } }catch(e){} POMO.total=(POMO.mode==='focus'?POMO.focusMin:POMO.breakMin)*60; POMO.left=POMO.total; }
+var _pomoCfgLoaded=false;
+function loadPomoCfg(){ if(!_pomoCfgLoaded){ _pomoCfgLoaded=true; /* 每次打开网页都回归标准 25+5（不记忆上次调整） */ POMO.focusMin=25; POMO.breakMin=5; try{ localStorage.removeItem('lw_pomo_focus'); localStorage.removeItem('lw_pomo_break'); }catch(e){} } POMO.total=(POMO.mode==='focus'?POMO.focusMin:POMO.breakMin)*60; POMO.left=POMO.total; }
 function savePomoCfg(){ try{ localStorage.setItem('lw_pomo_focus',String(POMO.focusMin)); localStorage.setItem('lw_pomo_break',String(POMO.breakMin)); }catch(e){} }
 function todayKey(){ var d=new Date(); return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2); }
 function renderPomodoro(){
@@ -3329,6 +3344,16 @@ function setWheelValue(kind,v){
     POMO.left=POMO.total;
   }
 }
+function pomoStep(kind,delta){
+  if(kind==='focus'){ POMO.focusMin=Math.max(1,Math.min(180,POMO.focusMin+delta)); }
+  else { POMO.breakMin=Math.max(1,Math.min(60,POMO.breakMin+delta)); }
+  savePomoCfg(); syncPomoWheels();
+  if((kind==='focus'?POMO.mode==='focus':POMO.mode==='break') && !POMO.running){
+    POMO.total=(POMO.mode==='focus'?POMO.focusMin:POMO.breakMin)*60;
+    POMO.left=POMO.total;
+  }
+  renderPomodoro();
+}
 function syncPomoWheels(){
   var fw=document.getElementById('focusWheel'), bw=document.getElementById('breakWheel');
   if(fw){ fw.scrollTop=(POMO.focusMin-1)*36; updateSel(fw,POMO.focusMin); }
@@ -3353,7 +3378,7 @@ function buildPomoWheels(){
   }
   bind(fw,'focus',1,180); bind(bw,'break',1,60);
 }
-function playWheelTick(){ // 滚轮调时专属的轻微“哒”声，跟随全局音量
+function playWheelTick(){ if(POMO_MUTED) return; // 滚轮调时专属的轻微“哒”声，跟随全局音量
   var ac=psfxAudio(); if(!ac) return;
   var v=volScale(); if(v<=0) return;
   var t=ac.currentTime;
@@ -3375,6 +3400,7 @@ function loadPomoSfx(){ try{ var k=localStorage.getItem('lw_pomo_sfx'); if(k&&PO
 function savePomoSfx(){ try{ localStorage.setItem('lw_pomo_sfx', POMO_SFX.key); }catch(e){} }
 /* ===== 全局音量（0~100），同时作用于小猫吃饼干 / 丢垃圾音效 ===== */
 var POMO_VOL=60;
+  var POMO_MUTED=false;
 function loadPomoVol(){ try{ var raw=localStorage.getItem('lw_pomo_vol'); if(raw!==null){ var v=Number(raw); if(v>=0&&v<=100) POMO_VOL=v; } }catch(e){} }
 function savePomoVol(){ try{ localStorage.setItem('lw_pomo_vol',String(POMO_VOL)); }catch(e){} }
 function adjPomoVol(d){ POMO_VOL=Math.max(0,Math.min(100,POMO_VOL+d)); savePomoVol(); renderPomoVol(); if(POMO_VOL>0) playPomoTick(); }
@@ -3394,6 +3420,7 @@ var SFX_AUDITION_TIMER=null;
 var SFX_AUDITION_KEY=null;
 /* 悬停音效行 / 音量栏时，持续循环试听该音效；离开即停 */
 function startSfxAudition(k){
+  if(POMO_MUTED) return;
   stopSfxAudition();
   SFX_AUDITION_KEY=k;
   var fn=function(){
@@ -3411,6 +3438,7 @@ function stopSfxAudition(){
   SFX_AUDITION_KEY=null;
 }
 function playPomoTick(){
+  if(POMO_MUTED) return;
   SFX_TICK++;
   var k=POMO_SFX.key;
   var ac=psfxAudio(); if(!ac) return;
@@ -3481,6 +3509,16 @@ function renderPomoSfxBtn(){
   b.textContent = (POMO_VOL===0?'🔇':'🔊')+' 音效音量';
   b.title = POMO_VOL===0 ? '番茄钟音效已静音（音量 0），点击打开面板调大' : '当前音效：'+POMO_SFX_LABEL[k]+' · 音量 '+POMO_VOL+'%（点击可更换或调节）';
 }
+function togglePomoMute(){
+  POMO_MUTED=!POMO_MUTED; renderPomoMuteBtn();
+  if(!POMO_MUTED && POMO_VOL>0) playPomoTick();
+}
+function renderPomoMuteBtn(){
+  var b=document.getElementById('pomoMuteBtn'); if(!b) return;
+  b.textContent = '🔕';
+  b.classList.toggle('on', POMO_MUTED);
+  b.title = POMO_MUTED ? '已静音（点击恢复番茄钟声音）' : '点击一键静音番茄钟声音';
+}
 function openPomoSfxPicker(){
   var m=document.getElementById('pomosfx-modal');
   if(!m){ m=document.createElement('div'); m.id='pomosfx-modal'; m.className='imp-modal-mask'; document.body.appendChild(m); }
@@ -3546,7 +3584,7 @@ function bindPomoVolSlider(){
 }
 function incPomo(){ var k='lw_pomo_'+todayKey(); try{ localStorage.setItem(k, String(Number(localStorage.getItem(k)||'0')+1)); }catch(e){} }
 function incCheckin(){ var k='lw_checkin_'+todayKey(); try{ localStorage.setItem(k, String(Number(localStorage.getItem(k)||'0')+1)); }catch(e){} }
-LOADERS.pomodoro=function(){ loadPomoCfg(); loadPomoSfx(); loadPomoVol(); buildPomoWheels(); syncPomoWheels(); renderPomodoro(); renderPomoSfxBtn(); renderPomoVol(); };
+LOADERS.pomodoro=function(){ loadPomoCfg(); loadPomoSfx(); loadPomoVol(); buildPomoWheels(); syncPomoWheels(); renderPomodoro(); renderPomoSfxBtn(); renderPomoMuteBtn(); renderPomoVol(); };
 
 /* ============ 先知先觉幸福行动历 ============ */
 var ACTION_MONTH_NAMES=['January','February','March','April','May','June','July','August','September','October','November','December'];

@@ -458,6 +458,33 @@
   .sched-left-col .monthcal .d .d-cnt{font-size:9px;font-weight:700;color:var(--accent);margin-top:1px;line-height:1}
   .sched-left-col .monthcal .wd{font-size:10px;padding-bottom:2px}
   @media(max-width:560px){ .cal-top{flex-direction:column} .cal-top .mini-cal-panel{max-width:100%;flex:1} }
+  /* ===== 本月事项：入口按钮 + 弹窗表单 + 多选日期 ===== */
+  .mc-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
+  .mc-head h3{margin:0;font-size:15px}
+  .sched-add-btn{white-space:nowrap;font-weight:700;padding:6px 12px}
+  .sched-add-card{width:640px;max-width:94vw;max-height:90vh;overflow:auto}
+  .sched-add-card .form{background:none;border:none;box-shadow:none;padding:0;margin:0}
+  .sched-add-card .sa-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+  .sched-add-card .sa-head h3{margin:0;font-size:17px}
+  .sched-add-card .sa-close{background:none;border:none;font-size:16px;color:var(--muted);cursor:pointer;line-height:1;padding:5px 9px;border-radius:8px}
+  .sched-add-card .sa-close:hover{background:var(--accent-soft);color:var(--accent)}
+  .sched-form-narrow .c-12{grid-column:span 12}
+  .sched-dates-fld{margin-top:4px}
+  .sched-dates-fld>label{display:block;margin-bottom:6px}
+  .smc{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--surface)}
+  .smc-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+  .smc-title{font-weight:700;font-size:13px}
+  .smc-nav{background:none;border:1px solid var(--line2);border-radius:8px;width:28px;height:28px;cursor:pointer;color:var(--ink);font-size:15px;line-height:1;padding:0}
+  .smc-nav:hover{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+  .smc-grid{max-width:100%;gap:6px}
+  .smc-grid .d{cursor:pointer;border:1px solid transparent;user-select:none;font-size:13px;color:var(--ink)}
+  .smc-grid .d:hover{background:var(--accent-soft)}
+  .smc-grid .d.pick{background:var(--accent);color:var(--on-accent);font-weight:700}
+  .smc-quick{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px}
+  .chipbtn{border:1px solid var(--line2);background:var(--surface);border-radius:999px;padding:5px 12px;font-size:12px;cursor:pointer;color:var(--ink)}
+  .chipbtn:hover{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+  .smc-cnt{margin-left:auto;font-size:12px;font-weight:700;color:var(--accent)}
+  @media(max-width:560px){ .sched-add-card{width:96vw} .smc-grid .d{font-size:12px} }
   .sticky-note{background:#FFF7C2;border:1px solid #EADF8E;box-shadow:0 8px 18px rgba(0,0,0,.12);border-radius:6px;padding:12px 14px;transform:none;margin:0;height:100%;display:flex;flex-direction:column}
   .sticky-note .sticky-title{font-weight:800;color:#7a6a2a;margin-bottom:8px;font-size:14px}
   /* 记事本横格：line-height(30px) 与横线周期(30px) 一致，文字正好落在横线上 */
@@ -471,7 +498,7 @@
     background-attachment:local;background-position:0 0}
   .filter-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
   .filt-btn{height:auto;min-height:32px;flex:1;min-width:120px;white-space:nowrap;font-size:12px;box-sizing:border-box;line-height:normal;padding:7px 10px;vertical-align:middle}
-  .cat-modal-mask{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:80;display:none;align-items:center;justify-content:center}
+  .cat-modal-mask{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:95;display:none;align-items:center;justify-content:center}
   .cat-modal-card{background:#fff;border-radius:16px;padding:20px;width:340px;max-width:90vw;box-shadow:0 20px 60px rgba(0,0,0,.25)}
   .cat-modal-card h3{margin:0 0 12px}
   .cat-row{display:flex;gap:8px;margin-bottom:8px;align-items:center}
@@ -2644,37 +2671,16 @@ function onSchedCatChange(){
 function renderSchedule(rows){
   window.__sched = rows;
   var td=today();
-  var form='<div class="form sched-form-compact sched-form-narrow">'+
-    '<div class="sched-add">'+
-      '<div class="sched-grid">'+
-        '<div class="fld c-6"><label>事项</label><input id="s-title" placeholder="要做什么？"></div>'+
-        '<div class="fld c-6"><label>日期</label><input id="s-date" type="date" value="'+td+'"></div>'+
-      '</div>'+
-      '<div class="sched-grid">'+
-        '<div class="fld cat-cell c-6"><label>分类</label>'+
-          '<div class="cat-line"><select id="s-cat" onchange="onSchedCatChange()"><option value="" selected>选择分类…</option>'+optHTML(getSchedCats(),'')+'</select><button type="button" class="btn sm" onclick="openCatEditor()" title="编辑分类">✎</button></div>'+
-          '<div class="fld" id="s-quad-wrap" style="display:none;margin-top:8px"><label>重要/紧急</label><select id="s-quad">'+quadOptions('Q1')+'</select></div>'+
-        '</div>'+
-        '<div class="fld c-3"><label>开始</label><div class="time-sel"><select id="s-st-h">'+hourOpts()+'</select><span>:</span><select id="s-st-m">'+minOpts()+'</select></div></div>'+
-        '<div class="fld c-3"><label>结束</label><div class="time-sel"><select id="s-en-h">'+hourOpts()+'</select><span>:</span><select id="s-en-m">'+minOpts()+'</select></div></div>'+
-      '</div>'+
-      '<div class="sched-grid">'+
-        '<div class="fld c-6"><label>备注</label><input id="s-note" placeholder="选填"></div>'+
-        '<div class="fld c-6"><label>地点</label><input id="s-place" placeholder="选填"></div>'+
-      '</div>'+
-      '<div class="actions sched-actions-3"><button class="btn primary sm c-8" onclick="submitSched()">添加</button>'+
-        '<button class="btn sm c-2" onclick="openPasteImport()" title="粘贴通知文本 / CSV / Excel，批量导入日程">📥 批量导入</button>'+
-        '<button class="btn sm c-2" onclick="openExportPicker()" title="导出日程（Excel / PDF / CSV）">📤 导出</button>'+
-      '</div>'+
-    '</div>'+
-  '</div>';
+  // 表单已移入弹窗（点「＋ 本月事项」打开）：见 schedFormHTML() / openSchedAddModal()
 
   // ===== 左：放大版迷你月历 + 下方填日程列表（保留原交互链路） =====
   var haveDates={}, dayCount={}; rows.forEach(function(r){ var k=dateSub(r["日期"]); if(k){ haveDates[k]=1; dayCount[k]=(dayCount[k]||0)+1; } });
   var y=Number(td.substring(0,4)), mo=Number(td.substring(5,7))-1;
   var days=new Date(y,mo+1,0).getDate();
   var first=new Date(y,mo,1); var startDay=(first.getDay()+6)%7;
-  var mini='<div class="panel mini-cal-panel" style="padding:14px"><h3 style="margin:0 0 8px;font-size:15px">'+td.substring(0,7)+' · 本月日程</h3>'+
+  var mini='<div class="panel mini-cal-panel" style="padding:14px">'+
+    '<div class="mc-head"><h3>'+td.substring(0,7)+' · 本月日程</h3>'+
+    '<button class="btn sm primary sched-add-btn" onclick="openSchedAddModal()" title="添加事项，可一次选中多个日期">＋ 本月事项</button></div>'+
     '<div class="monthcal"><div class="wd">一</div><div class="wd">二</div><div class="wd">三</div><div class="wd">四</div><div class="wd">五</div><div class="wd">六</div><div class="wd">日</div>';
   for(var i=0;i<startDay;i++) mini+='<div class="d"></div>';
   for(var d=1;d<=days;d++){ var ds=y+'-'+('0'+(mo+1)).slice(-2)+'-'+('0'+d).slice(-2); var cls='d'+(haveDates[ds]?' have':'')+(schedSelDate===ds?' sel':''); var dc=dayCount[ds]||0; mini+='<div class="'+cls+'" onclick="schedSelDate=\''+ds+'\';renderSchedule(window.__sched)">'+d+(dc?'<span class="d-cnt">'+dc+'</span>':'')+'</div>'; }
@@ -2741,23 +2747,131 @@ function renderSchedule(rows){
     '</aside></div>';
 
   // 顶部：窄表单(左) + 先知先觉幸福行动历(右，整体上移)；底部：本月日程+本月安排(整宽)
-  var leftCol='<div class="sched-left-col">'+form+
+  var leftCol='<div class="sched-left-col">'+
     '<div class="cal-top">'+mini+'<div class="sticky-wrap">'+sticky+'</div></div>'+filterBar+list+'</div>';
   var topBlock='<div class="sched-top-layout">'+leftCol+'<div class="sched-top-right">'+cal+'</div></div>';
 
   setBody('schedule', topBlock);
   try{ renderActionCal(haveDates); }catch(e){ console.error('行动历渲染失败',e); }
-  bindDraft('sched', getBody('schedule'), ['s-title','s-cat','s-quad','s-date','s-place','s-note']);
-  try{ onSchedCatChange(); }catch(e){}
+  /* 表单改为弹窗渲染：草稿绑定 / 分类联动在 openSchedAddModal() 内进行 */
 }
 function submitSched(){
-  var ti=val('s-title'); if(!ti){ toast('请填写标题',true); return; }
+  var ti=val('s-title'); if(!ti){ toast('请填写事项',true); return; }
   var quad=val('s-quad')||'Q1';
   var st=timeVal('s-st-h','s-st-m'), en=timeVal('s-en-h','s-en-m');
   if(st && en && en<=st){ toast('结束时间不能早于开始时间',true); return; }
-  var p={ "标题":{text:ti}, "分类":{select:val('s-cat')}, "日期":{date:val('s-date')}, "开始时间":{text:st}, "结束时间":{text:en}, "地点":{text:val('s-place')}, "备注":{text:val('s-note')}, "象限":{select:quad} };
-  addRec(DB.schedule, p).then(function(){ clearDraft('sched'); LOADERS.schedule(); LOADERS.tasks(); toast('已添加'); }).catch(function(e){ toast('保存失败：'+((e&&e.message)||'错误')+'，可重试',true); });
+  var dates=(schedPickDates||[]).slice().sort();
+  if(!dates.length){ toast('请至少选择一个日期',true); return; }
+  var cat=val('s-cat'), place=val('s-place'), note=val('s-note');
+  var ops=dates.map(function(ds){
+    return addRec(DB.schedule, { "标题":{text:ti}, "分类":{select:cat}, "日期":{date:ds}, "开始时间":{text:st}, "结束时间":{text:en}, "地点":{text:place}, "备注":{text:note}, "象限":{select:quad} });
+  });
+  Promise.all(ops).then(function(){
+    clearDraft('sched'); schedPickDates=[];
+    closeSchedAddModal(); LOADERS.schedule(); LOADERS.tasks();
+    toast(dates.length>1 ? ('已添加到 '+dates.length+' 个日期') : '已添加');
+  }).catch(function(e){ toast('保存失败：'+((e&&e.message)||'错误')+'，可重试',true); });
 }
+
+/* ===== 本月事项：弹窗表单 + 多日期批量添加 ===== */
+var schedPickDates=[], schedPickY=null, schedPickM=null;
+function pad2(n){ return ('0'+n).slice(-2); }
+function schedPickInnerHTML(){
+  var t=today();
+  if(schedPickY==null){ schedPickY=Number(t.substring(0,4)); schedPickM=Number(t.substring(5,7))-1; }
+  var y=schedPickY, m=schedPickM;
+  var days=new Date(y,m+1,0).getDate();
+  var startDay=(new Date(y,m,1).getDay()+6)%7;
+  var h='<div class="smc"><div class="smc-head">'+
+      '<button type="button" class="smc-nav" onclick="schedCalMove(-1)" title="上个月">‹</button>'+
+      '<span class="smc-title">'+y+' 年 '+pad2(m+1)+' 月</span>'+
+      '<button type="button" class="smc-nav" onclick="schedCalMove(1)" title="下个月">›</button>'+
+    '</div><div class="monthcal smc-grid">'+
+      '<div class="wd">一</div><div class="wd">二</div><div class="wd">三</div><div class="wd">四</div><div class="wd">五</div><div class="wd">六</div><div class="wd">日</div>';
+  for(var i=0;i<startDay;i++) h+='<div class="d"></div>';
+  for(var d=1;d<=days;d++){
+    var ds=y+'-'+pad2(m+1)+'-'+pad2(d);
+    h+='<div class="d'+(schedPickDates.indexOf(ds)>=0?' pick':'')+'" onclick="schedPickToggle(\''+ds+'\')">'+d+'</div>';
+  }
+  h+='</div><div class="smc-quick">'+
+      '<button type="button" class="chipbtn" onclick="schedPickQuick(\'today\')">今天</button>'+
+      '<button type="button" class="chipbtn" onclick="schedPickQuick(\'weekday\')">本月工作日</button>'+
+      '<button type="button" class="chipbtn" onclick="schedPickQuick(\'weekend\')">本月周末</button>'+
+      '<button type="button" class="chipbtn" onclick="schedPickQuick(\'all\')">全月</button>'+
+      '<button type="button" class="chipbtn" onclick="schedPickQuick(\'clear\')">清空</button>'+
+      '<span class="smc-cnt">已选 '+schedPickDates.length+' 天</span>'+
+    '</div></div>';
+  return h;
+}
+function renderSchedPickBlock(){
+  var el=document.getElementById('s-dates-block'); if(!el) return;
+  el.innerHTML=schedPickInnerHTML();
+  var b=document.getElementById('s-submit');
+  if(b) b.textContent = schedPickDates.length>1 ? ('添加（'+schedPickDates.length+' 天）') : '添加';
+}
+function schedPickToggle(ds){
+  var i=schedPickDates.indexOf(ds);
+  if(i>=0) schedPickDates.splice(i,1); else schedPickDates.push(ds);
+  schedPickDates.sort(); renderSchedPickBlock();
+}
+function schedCalMove(delta){
+  schedPickM+=delta;
+  if(schedPickM<0){ schedPickM=11; schedPickY--; }
+  else if(schedPickM>11){ schedPickM=0; schedPickY++; }
+  renderSchedPickBlock();
+}
+function schedPickQuick(kind){
+  var y=schedPickY, m=schedPickM, arr=[];
+  var days=new Date(y,m+1,0).getDate();
+  if(kind==='today'){ arr=[today()]; }
+  else if(kind==='all'){ for(var d=1;d<=days;d++) arr.push(y+'-'+pad2(m+1)+'-'+pad2(d)); }
+  else if(kind==='weekday'){ for(var d=1;d<=days;d++){ var w=new Date(y,m,d).getDay(); if(w!==0&&w!==6) arr.push(y+'-'+pad2(m+1)+'-'+pad2(d)); } }
+  else if(kind==='weekend'){ for(var d=1;d<=days;d++){ var w=new Date(y,m,d).getDay(); if(w===0||w===6) arr.push(y+'-'+pad2(m+1)+'-'+pad2(d)); } }
+  schedPickDates=arr; renderSchedPickBlock();
+}
+function schedFormHTML(){
+  return '<div class="form sched-form-compact sched-form-narrow">'+
+    '<div class="sched-add">'+
+      '<div class="sched-grid">'+
+        '<div class="fld c-6"><label>事项</label><input id="s-title" placeholder="要做什么？"></div>'+
+        '<div class="fld cat-cell c-6"><label>分类</label>'+
+          '<div class="cat-line"><select id="s-cat" onchange="onSchedCatChange()"><option value="" selected>选择分类…</option>'+optHTML(getSchedCats(),'')+'</select><button type="button" class="btn sm" onclick="openCatEditor()" title="编辑分类">✎</button></div>'+
+          '<div class="fld" id="s-quad-wrap" style="display:none;margin-top:8px"><label>重要/紧急</label><select id="s-quad">'+quadOptions('Q1')+'</select></div>'+
+        '</div>'+
+      '</div>'+
+      '<div class="sched-grid">'+
+        '<div class="fld c-3"><label>开始</label><div class="time-sel"><select id="s-st-h">'+hourOpts()+'</select><span>:</span><select id="s-st-m">'+minOpts()+'</select></div></div>'+
+        '<div class="fld c-3"><label>结束</label><div class="time-sel"><select id="s-en-h">'+hourOpts()+'</select><span>:</span><select id="s-en-m">'+minOpts()+'</select></div></div>'+
+        '<div class="fld c-6"><label>地点</label><input id="s-place" placeholder="选填"></div>'+
+      '</div>'+
+      '<div class="sched-grid">'+
+        '<div class="fld c-12"><label>备注</label><input id="s-note" placeholder="选填"></div>'+
+      '</div>'+
+      '<div class="fld sched-dates-fld"><label>日期 · 点日期可多选（一次添加到多个日程）</label>'+
+        '<div id="s-dates-block">'+schedPickInnerHTML()+'</div>'+
+      '</div>'+
+      '<div class="actions sched-actions-3"><button class="btn primary sm c-8" id="s-submit" onclick="submitSched()">添加</button>'+
+        '<button class="btn sm c-2" onclick="openPasteImport()" title="粘贴通知文本 / CSV / Excel，批量导入日程">📥 批量导入</button>'+
+        '<button class="btn sm c-2" onclick="openExportPicker()" title="导出日程（Excel / PDF / CSV）">📤 导出</button>'+
+      '</div>'+
+    '</div>'+
+  '</div>';
+}
+function openSchedAddModal(){
+  var m=document.getElementById('sched-add-modal');
+  if(!m){ m=document.createElement('div'); m.id='sched-add-modal'; m.className='imp-modal-mask'; document.body.appendChild(m); }
+  schedPickDates=[today()]; schedPickY=null; schedPickM=null;
+  m.innerHTML='<div class="imp-modal-card sched-add-card" onclick="event.stopPropagation()">'+
+      '<div class="sa-head"><h3>＋ 本月事项</h3><button type="button" class="sa-close" onclick="closeSchedAddModal()" title="关闭">✕</button></div>'+
+      schedFormHTML()+
+    '</div>';
+  m.onclick=function(e){ if(e.target===m) closeSchedAddModal(); };
+  m.style.display='flex';
+  try{ bindDraft('sched', m, ['s-title','s-cat','s-quad','s-place','s-note']); }catch(e){}
+  try{ onSchedCatChange(); }catch(e){}
+  try{ var el=document.getElementById('s-title'); if(el) el.focus(); }catch(e){}
+}
+function closeSchedAddModal(){ var m=document.getElementById('sched-add-modal'); if(m) m.style.display='none'; }
 function toggleSchedDone(id, cur){
   var nx = cur==='是' ? '否' : '是';
   updRec(DB.schedule, id, {"完成":{select:nx}}).then(function(){ LOADERS.schedule(); }).catch(function(e){ toast('更新失败：'+((e&&e.message)||'错误'),true); });

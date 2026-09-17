@@ -1,5 +1,6 @@
-/* 日常集生活工作台 · Service Worker（离线缓存 + 快速打开） */
-const CACHE = 'daily-workbench-v1';
+/* 日常集生活工作台 · Service Worker（离线缓存 + 快速打开）
+   v2：导航请求改走 no-cache 校验，保证发布后无需强刷即可看到新版 */
+const CACHE = 'daily-workbench-v2';   /* ← 升版本号：强制旧设备重建缓存 */
 const ASSETS = [
   './',
   './index.html',
@@ -31,10 +32,11 @@ self.addEventListener('fetch', function (e) {
   var url = new URL(req.url);
   if (url.origin !== self.location.origin) return;
 
-  // 页面导航：网络优先，保证发布新版本后能看到更新；离线时回退缓存
+  // 页面导航：网络优先 + no-cache 校验（绕过 max-age=600）
+  // 有更新 -> 立即拿新版；无更新 -> 服务器返回 304，复用本地，基本不耗流量
   if (req.mode === 'navigate') {
     e.respondWith(
-      fetch(req).then(function (r) {
+      fetch(req, { cache: 'no-cache' }).then(function (r) {
         var cp = r.clone();
         caches.open(CACHE).then(function (c) { c.put('./index.html', cp); });
         return r;

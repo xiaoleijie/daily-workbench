@@ -430,9 +430,9 @@
   /* 日程统筹：左列=窄表单+本月日程+本月安排+日程列表；右列=幸福行动历（收窄，给左侧让空间） */
   .sched-top-layout{display:flex;gap:18px;align-items:flex-start;margin-bottom:16px}
   /* --cal-w / --sticky-w：月历列与便利贴列的基准宽度，筛选条复用同一组值以保证严格对齐 */
-  .sched-left-col{flex:0 0 42%;width:42%;max-width:42%;min-width:0;--cal-w:300px;--sticky-w:180px}
+  .sched-left-col{flex:0 0 32%;width:32%;max-width:32%;min-width:0;--cal-w:300px;--sticky-w:180px}
   .sched-left-col>.form.sched-form-narrow{margin:0 0 14px}
-  .sched-top-right{flex:0 0 27%;width:27%;max-width:27%;min-width:0;position:sticky;top:12px}
+  .sched-top-right{flex:0 0 38%;width:38%;max-width:38%;min-width:0;position:sticky;top:12px}
   /* 行动历在右半栏：内部改上下排，格子占满整宽，灵感区移到下方 */
   .sched-top-right .actcal-layout{flex-direction:column;gap:0}
   .sched-top-right .actcal-left{width:100%}
@@ -502,7 +502,7 @@
   .sched-mid-col .filter-row.sched-filters>button:not(.date-filt):not(:only-of-type){margin-top:-2px}
   .sched-mid-col .sched-list-panel{margin-top:0}
   .sched-mid-col .sched-list-panel .list{max-height:none}
-  /* 三列宽度由上方 62% / 剩余 / 34% 统一控制（此处不再覆盖左列宽度） */
+  /* 三列宽度：左 32% / 中 自适应 / 右 38%（幸福行动历恢复原有观感） */
   @media(max-width:980px){
     .sched-left-col{flex:1 1 auto;width:100%;max-width:100%}
     .sched-mid-col{flex:1 1 auto;width:100%}
@@ -3760,10 +3760,10 @@ function togglePomoMute(){
 }
 function renderPomoMuteBtn(){
   var b=document.getElementById('pomoMuteBtn'); if(!b) return;
-  /* 只要「音量 > 0」就视为不静音：显示喇叭图标（📢），与静音态 🔕 明确区分
+  /* 只要「音量 > 0」就视为不静音：显示铃铛图标（🔔），与静音态 🔕 明确区分
      —— 音量由音量按钮决定，静音按钮只是它的镜像 */
   var muted = (POMO_VOL<=0);
-  b.textContent = muted ? '🔕' : '📢';
+  b.textContent = muted ? '🔕' : '🔔';
   b.classList.toggle('on', muted);
   b.title = muted ? '已静音（点击恢复声音，或进音效音量调大）' : '点击一键静音番茄钟声音';
 }

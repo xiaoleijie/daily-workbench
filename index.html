@@ -121,7 +121,17 @@
   .badge.想买,.badge.想看{background:#fdf3da;color:#9a7b1e;border-color:#f0e0b0}
   /* 日程状态：待办 / 已完成 / 未完成已过期（三态，视觉区分"做过"与"没做"） */
   .s-acts{display:flex;gap:6px;flex:0 0 auto;align-items:center}
-  .s-act-btn{font-size:12px;font-weight:600;border-radius:8px;padding:6px 9px;border:1px solid transparent;cursor:pointer;white-space:nowrap;line-height:1;transition:background .12s,border-color .12s}
+  .s-act-btn{font-size:12px;font-weight:600;border-radius:8px;padding:6px 9px;border:1px solid transparent;cursor:pointer;white-space:nowrap;line-height:1;transition:background .12s,border-color .12s,transform .12s}
+  /* 图标态：✓ / ✗ 只显示符号，鼠标悬停出原生提示（title） */
+  .s-act-btn.ico,.s-pill.ico{width:28px;height:28px;padding:0;display:inline-flex;align-items:center;justify-content:center;
+    font-size:15px;font-weight:800;border-radius:50%;flex:0 0 auto}
+  .s-act-btn.ico:hover{transform:scale(1.08)}
+  .s-act-btn.ico.done{background:var(--sage-soft);color:#3f6b35;border-color:#cfe0c4}
+  .s-act-btn.ico.done:hover{background:#d4e6c8;border-color:#a9cd95}
+  .s-act-btn.ico.exp{background:#f4f4f4;color:#9a9a9a;border-color:#e2e2e2}
+  .s-act-btn.ico.exp:hover{background:#eaeaea;border-color:#cfcfcf;color:#7a7a7a}
+  .s-pill.ico{cursor:pointer}
+  .s-pill.ico.exp{cursor:default}
   .s-act-btn.done{background:var(--sage-soft);color:#3f6b35;border-color:#cfe0c4}
   .s-act-btn.done:hover{background:#e4eedd}
   .s-act-btn.exp{background:#f2f2f2;color:#8a8a8a;border-color:#e2e2e2}
@@ -420,9 +430,9 @@
   /* 日程统筹：左列=窄表单+本月日程+本月安排+日程列表；右列=幸福行动历（收窄，给左侧让空间） */
   .sched-top-layout{display:flex;gap:18px;align-items:flex-start;margin-bottom:16px}
   /* --cal-w / --sticky-w：月历列与便利贴列的基准宽度，筛选条复用同一组值以保证严格对齐 */
-  .sched-left-col{flex:1 1 50%;min-width:0;--cal-w:300px;--sticky-w:180px}
+  .sched-left-col{flex:0 0 42%;width:42%;max-width:42%;min-width:0;--cal-w:300px;--sticky-w:180px}
   .sched-left-col>.form.sched-form-narrow{margin:0 0 14px}
-  .sched-top-right{flex:1 1 50%;min-width:0;position:sticky;top:12px}
+  .sched-top-right{flex:0 0 27%;width:27%;max-width:27%;min-width:0;position:sticky;top:12px}
   /* 行动历在右半栏：内部改上下排，格子占满整宽，灵感区移到下方 */
   .sched-top-right .actcal-layout{flex-direction:column;gap:0}
   .sched-top-right .actcal-left{width:100%}
@@ -468,25 +478,40 @@
   .cal-stack .sticky-note{height:auto}
   .cal-stack .sticky-note .sticky-area{min-height:118px}
   /* 中列：筛选条 + 明细 */
-  .sched-mid-col{flex:1 1 46%;min-width:0}
+  .sched-mid-col{flex:1 1 0;min-width:260px}
   .sched-mid-col .filter-row{margin:0 0 10px}
+  /* 明细收窄后统一缩小字号，保证内容仍看得清 */
+  .sched-mid-col .sched-list-panel .item{padding:9px 11px;gap:8px}
+  .sched-mid-col .sched-list-panel .item .ttl{font-size:13.5px}
+  .sched-mid-col .sched-list-panel .item .meta{font-size:11.5px;gap:6px;margin-top:3px}
+  .sched-mid-col .sched-list-panel .item .badge{font-size:10.5px;padding:1px 7px}
+  .sched-mid-col .sched-list-panel .item .icon-btn{width:26px;height:26px}
+  .sched-mid-col .sched-list-panel .item .ops{gap:4px}
+  .sched-mid-col .sched-list-panel .item .s-acts{gap:5px}
   /* 三个筛选控件并排一行（分类 / 状态 / 日期） */
-  .sched-filters{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;flex-wrap:nowrap}
-  .sched-filters>*{min-width:0;width:100%}
-  .sched-filters>select.filt-btn{flex:none}
-  .sched-filters>button.filt-btn{flex:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .sched-filters>button.date-filt.on{background:var(--accent-soft);border-color:var(--accent);color:var(--accent-deep);font-weight:700}
+  /* 覆盖后面 .filter-row 的 flex-wrap:wrap —— 必须单行三列 */
+  .sched-mid-col .filter-row.sched-filters{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:6px;flex-wrap:nowrap;align-items:stretch}
+  .sched-mid-col .filter-row.sched-filters>*{min-width:0;width:100%;flex:none}
+  .sched-mid-col .filter-row.sched-filters>select.filt-btn,
+  .sched-mid-col .filter-row.sched-filters>button.filt-btn{
+    min-width:0;font-size:12px;padding:6px 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center}
+  .sched-mid-col .filter-row.sched-filters>button.date-filt.on{background:var(--accent-soft);border-color:var(--accent);color:var(--accent-deep);font-weight:700}
+  /* 多出来的「清除状态」按钮：跨满整行，不挤占上面三个 */
+  .sched-mid-col .filter-row.sched-filters>button:not(.date-filt){grid-column:1/-1}
+  .sched-mid-col .filter-row.sched-filters>button:not(.date-filt):not(:only-of-type){margin-top:-2px}
   .sched-mid-col .sched-list-panel{margin-top:0}
   .sched-mid-col .sched-list-panel .list{max-height:none}
-  /* 左列宽度收紧，让中列明细有更多空间 */
-  .sched-left-col{flex:0 1 300px}
+  /* 三列宽度由上方 62% / 剩余 / 34% 统一控制（此处不再覆盖左列宽度） */
   @media(max-width:980px){
     .sched-left-col{flex:1 1 auto;width:100%;max-width:100%}
     .sched-mid-col{flex:1 1 auto;width:100%}
+    .sched-top-right{flex:1 1 auto;width:100%;max-width:100%}
   }
   @media(max-width:560px){
     .cal-stack .sticky-note .sticky-area{min-height:96px}
-    .sched-filters{grid-template-columns:1fr 1fr;gap:6px}
+    /* 极窄屏才允许筛选条折成两列，保证可用 */
+    .sched-mid-col .filter-row.sched-filters{grid-template-columns:1fr 1fr;gap:6px}
   }
   /* ===== 本月事项：入口按钮 + 弹窗表单 + 多选日期 ===== */
   .mc-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
@@ -501,13 +526,14 @@
   .sched-form-narrow .c-12{grid-column:span 12}
   .sched-dates-fld{margin-top:4px}
   .sched-dates-fld>label{display:block;margin-bottom:6px}
-  .smc{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--surface)}
-  .smc-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
-  .smc-title{font-weight:700;font-size:13px}
-  .smc-nav{background:none;border:1px solid var(--line2);border-radius:8px;width:28px;height:28px;cursor:pointer;color:var(--ink);font-size:15px;line-height:1;padding:0}
+  .smc{border:1px solid var(--line);border-radius:12px;padding:7px 9px 6px;background:var(--surface)}
+  .smc-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px}
+  .smc-title{font-weight:700;font-size:12.5px}
+  .smc-nav{background:none;border:1px solid var(--line2);border-radius:7px;width:24px;height:24px;cursor:pointer;color:var(--ink);font-size:14px;line-height:1;padding:0}
   .smc-nav:hover{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
-  .smc-grid{max-width:100%;gap:6px}
-  .smc-grid .d{cursor:pointer;border:1px solid transparent;user-select:none;font-size:13px;color:var(--ink)}
+  .smc-grid{max-width:100%;gap:3px}
+  .smc-grid .d{cursor:pointer;border:1px solid transparent;user-select:none;font-size:12.5px;color:var(--ink);
+    height:24px;display:flex;align-items:center;justify-content:center;border-radius:6px}
   .smc-grid .d:hover{background:var(--accent-soft)}
   .smc-grid .d.pick{background:var(--accent);color:var(--on-accent);font-weight:700}
   .chipbtn{border:1px solid var(--line2);background:var(--surface);border-radius:999px;padding:5px 12px;font-size:12px;cursor:pointer;color:var(--ink)}
@@ -515,9 +541,9 @@
   /* 添加本月事项：左 2/3 日历 + 右 1/3 竖排等宽按钮 */
   .sa-flex{display:flex;gap:14px;align-items:flex-start}
   .sa-cal{flex:2 1 0;min-width:0}
-  .sa-ops{flex:1 1 0;min-width:112px;display:flex;flex-direction:column;gap:8px;padding-top:22px}
-  .sa-ops>.btn{width:100%;min-width:0;height:34px;padding:0 8px;font-size:13px;justify-content:center;box-sizing:border-box}
-  .smc-cnt-row{font-size:12px;font-weight:700;color:var(--accent);margin-top:10px;text-align:center}
+  .sa-ops{flex:1 1 0;min-width:106px;display:flex;flex-direction:column;gap:6px;padding-top:18px}
+  .sa-ops>.btn{width:100%;min-width:0;height:30px;padding:0 6px;font-size:12.5px;justify-content:center;box-sizing:border-box}
+  .smc-cnt-row{font-size:11.5px;font-weight:700;color:var(--accent);margin-top:6px;text-align:center}
   /* 修改明细：改全部日期 */
   .es-batch-box{margin:10px 0 4px;padding:10px 12px;border:1px dashed var(--accent);border-radius:10px;background:var(--accent-soft)}
   .es-batch-lab{display:flex;align-items:flex-start;gap:8px;cursor:pointer;font-size:13px;font-weight:700;color:var(--ink);line-height:1.5}
@@ -2750,14 +2776,14 @@ function renderSchedule(rows){
     var cls='item'+(isDone?' s-done':'')+(isExp?' s-expired':'');
     var acts='<div class="s-acts">';
     if(st==='todo'){
-      acts+='<button class="s-act-btn done" onclick="openSchedDoneModal(\''+rid(r)+'\',__schedById(\''+rid(r)+'\'))">✓ 已完成</button>'+
-            '<button class="s-act-btn exp" onclick="markSchedExpired(\''+rid(r)+'\')">✗ 未完成</button>';
+      acts+='<button class="s-act-btn done ico" title="已完成" onclick="openSchedDoneModal(\''+rid(r)+'\',__schedById(\''+rid(r)+'\'))">✓</button>'+
+            '<button class="s-act-btn exp ico" title="未完成" onclick="markSchedExpired(\''+rid(r)+'\')">✗</button>';
     } else if(isDone){
-      acts+='<span class="s-pill done" title="点击查看/编辑完成详情" onclick="openSchedDoneModal(\''+rid(r)+'\',__schedById(\''+rid(r)+'\'))">✓ 已完成</span>'+
+      acts+='<span class="s-pill done ico" title="已完成（点击查看/编辑完成详情）" onclick="openSchedDoneModal(\''+rid(r)+'\',__schedById(\''+rid(r)+'\'))">✓</span>'+
             (r['完成详情']?'<span class="s-note-flag" onclick="openSchedDoneModal(\''+rid(r)+'\',__schedById(\''+rid(r)+'\'))">📝 详情</span>':'')+
             '<button class="s-act-btn rev" title="恢复为待办" onclick="revertSched(\''+rid(r)+'\')">↺</button>';
     } else {
-      acts+='<span class="s-pill exp" title="未完成已过期">✗ 已过期</span>'+
+      acts+='<span class="s-pill exp ico" title="未完成（已过期）">✗</span>'+
             '<button class="s-act-btn rev" title="恢复为待办" onclick="revertSched(\''+rid(r)+'\')">↺</button>';
     }
     acts+='</div>';
@@ -3598,6 +3624,7 @@ function savePomoSfx(){ try{ localStorage.setItem('lw_pomo_sfx', POMO_SFX.key); 
 /* ===== 全局音量（0~100），同时作用于小猫吃饼干 / 丢垃圾音效 ===== */
 var POMO_VOL=60;
   var POMO_MUTED=false;
+  var POMO_VOL_SAVED=60;   /* 记住静音前的音量，取消静音时恢复 */
 function loadPomoVol(){ try{ var raw=localStorage.getItem('lw_pomo_vol'); if(raw!==null){ var v=Number(raw); if(v>=0&&v<=100) POMO_VOL=v; } }catch(e){} }
 function savePomoVol(){ try{ localStorage.setItem('lw_pomo_vol',String(POMO_VOL)); }catch(e){} }
 function adjPomoVol(d){ POMO_VOL=Math.max(0,Math.min(100,POMO_VOL+d)); savePomoVol(); syncMuteWithVol(); renderPomoVol(); if(POMO_VOL>0) playPomoTick(); }
@@ -3710,20 +3737,35 @@ function renderPomoSfxBtn(){
    —— 音量 > 0 → 解除静音（按钮回新图标）；音量 = 0 → 进入静音（按钮 🔕） */
 function syncMuteWithVol(){
   var m = (POMO_VOL<=0);
-  if(m === POMO_MUTED) return;
+  if(m === POMO_MUTED){ renderPomoMuteBtn(); renderPomoSfxBtn(); return; }
   POMO_MUTED = m;
+  if(POMO_VOL>0) POMO_VOL_SAVED = POMO_VOL;
+  renderPomoMuteBtn(); renderPomoSfxBtn();
   if(!m && POMO_VOL>0) playPomoTick();
 }
 function togglePomoMute(){
-  POMO_MUTED=!POMO_MUTED; renderPomoMuteBtn();
-  if(!POMO_MUTED && POMO_VOL>0) playPomoTick();
+  /* 静音按钮 = 音量的镜像（用户要求：音量不是 0 就不能显示静音样子）
+     所以点「静音」= 把音量调到 0；再点 = 恢复到静音前的音量 */
+  if(POMO_VOL>0){
+    POMO_VOL_SAVED = POMO_VOL;   /* 记住，便于一键恢复 */
+    POMO_VOL = 0;
+    POMO_MUTED = true;
+  } else {
+    POMO_VOL = (POMO_VOL_SAVED>0 ? POMO_VOL_SAVED : 60);
+    POMO_MUTED = false;
+  }
+  savePomoVol(); renderPomoVol();
+  renderPomoMuteBtn(); renderPomoSfxBtn();
+  if(POMO_VOL>0) playPomoTick();
 }
 function renderPomoMuteBtn(){
   var b=document.getElementById('pomoMuteBtn'); if(!b) return;
-  /* 常态：铃铛（无红斜线、无外圈红）；静音态：🔕 + 主题色底 */
-  b.textContent = POMO_MUTED ? '🔕' : '🔔';
-  b.classList.toggle('on', POMO_MUTED);
-  b.title = POMO_MUTED ? '已静音（点击恢复声音，或进音效音量调大）' : '点击一键静音番茄钟声音';
+  /* 只要「音量 > 0」就视为不静音：显示喇叭图标（📢），与静音态 🔕 明确区分
+     —— 音量由音量按钮决定，静音按钮只是它的镜像 */
+  var muted = (POMO_VOL<=0);
+  b.textContent = muted ? '🔕' : '📢';
+  b.classList.toggle('on', muted);
+  b.title = muted ? '已静音（点击恢复声音，或进音效音量调大）' : '点击一键静音番茄钟声音';
 }
 function openPomoSfxPicker(){
   var m=document.getElementById('pomosfx-modal');

@@ -198,7 +198,7 @@
   .tl-due{font-size:12px;color:var(--muted)}
   .tl-quad{font-size:12px;color:var(--muted)}
   .tl-ops{display:flex;gap:6px;justify-content:flex-end}
-  /* 今日工作·四象限白板 + 传统便利贴 */
+  /* 今日安排·四象限白板 + 传统便利贴 */
   .quad-wrap{margin:4px 0 10px}
   .quad-cap{font-size:12px;color:var(--muted);margin:0 2px 8px}
   .quad-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
@@ -458,11 +458,41 @@
   .sched-left-col .monthcal .d .d-cnt{font-size:9px;font-weight:700;color:var(--accent);margin-top:1px;line-height:1}
   .sched-left-col .monthcal .wd{font-size:10px;padding-bottom:2px}
   @media(max-width:560px){ .cal-top{flex-direction:column} .cal-top .mini-cal-panel{max-width:100%;flex:1} }
+  /* ===== 日程统筹改版：左(月历+便签上下) / 中(筛选+明细) / 右(幸福行动历) ===== */
+  .mc-tip{font-size:11px;color:var(--muted);margin-top:9px;line-height:1.5}
+  .mc-tip .mc-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--accent);margin:0 4px;vertical-align:middle}
+  /* 月历 + 便签 改为上下堆叠，宽度对齐 */
+  .cal-stack{display:flex;flex-direction:column;gap:12px;min-width:0}
+  .cal-stack .mini-cal-panel{width:100%;max-width:none;min-width:0}
+  .cal-stack .sticky-wrap{width:100%;min-width:0}
+  .cal-stack .sticky-note{height:auto}
+  .cal-stack .sticky-note .sticky-area{min-height:118px}
+  /* 中列：筛选条 + 明细 */
+  .sched-mid-col{flex:1 1 46%;min-width:0}
+  .sched-mid-col .filter-row{margin:0 0 10px}
+  /* 三个筛选控件并排一行（分类 / 状态 / 日期） */
+  .sched-filters{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;flex-wrap:nowrap}
+  .sched-filters>*{min-width:0;width:100%}
+  .sched-filters>select.filt-btn{flex:none}
+  .sched-filters>button.filt-btn{flex:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .sched-filters>button.date-filt.on{background:var(--accent-soft);border-color:var(--accent);color:var(--accent-deep);font-weight:700}
+  .sched-mid-col .sched-list-panel{margin-top:0}
+  .sched-mid-col .sched-list-panel .list{max-height:none}
+  /* 左列宽度收紧，让中列明细有更多空间 */
+  .sched-left-col{flex:0 1 300px}
+  @media(max-width:980px){
+    .sched-left-col{flex:1 1 auto;width:100%;max-width:100%}
+    .sched-mid-col{flex:1 1 auto;width:100%}
+  }
+  @media(max-width:560px){
+    .cal-stack .sticky-note .sticky-area{min-height:96px}
+    .sched-filters{grid-template-columns:1fr 1fr;gap:6px}
+  }
   /* ===== 本月事项：入口按钮 + 弹窗表单 + 多选日期 ===== */
   .mc-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
   .mc-head h3{margin:0;font-size:15px}
   .sched-add-btn{white-space:nowrap;font-weight:700;padding:6px 12px}
-  .sched-add-card{width:640px;max-width:94vw;max-height:90vh;overflow:auto}
+  .sched-add-card{width:720px;max-width:94vw;max-height:90vh;overflow:auto}
   .sched-add-card .form{background:none;border:none;box-shadow:none;padding:0;margin:0}
   .sched-add-card .sa-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
   .sched-add-card .sa-head h3{margin:0;font-size:17px}
@@ -480,11 +510,21 @@
   .smc-grid .d{cursor:pointer;border:1px solid transparent;user-select:none;font-size:13px;color:var(--ink)}
   .smc-grid .d:hover{background:var(--accent-soft)}
   .smc-grid .d.pick{background:var(--accent);color:var(--on-accent);font-weight:700}
-  .smc-quick{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px}
   .chipbtn{border:1px solid var(--line2);background:var(--surface);border-radius:999px;padding:5px 12px;font-size:12px;cursor:pointer;color:var(--ink)}
   .chipbtn:hover{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
-  .smc-cnt{margin-left:auto;font-size:12px;font-weight:700;color:var(--accent)}
+  /* 添加本月事项：左 2/3 日历 + 右 1/3 竖排等宽按钮 */
+  .sa-flex{display:flex;gap:14px;align-items:flex-start}
+  .sa-cal{flex:2 1 0;min-width:0}
+  .sa-ops{flex:1 1 0;min-width:112px;display:flex;flex-direction:column;gap:8px;padding-top:22px}
+  .sa-ops>.btn{width:100%;min-width:0;height:34px;padding:0 8px;font-size:13px;justify-content:center;box-sizing:border-box}
+  .smc-cnt-row{font-size:12px;font-weight:700;color:var(--accent);margin-top:10px;text-align:center}
+  /* 修改明细：改全部日期 */
+  .es-batch-box{margin:10px 0 4px;padding:10px 12px;border:1px dashed var(--accent);border-radius:10px;background:var(--accent-soft)}
+  .es-batch-lab{display:flex;align-items:flex-start;gap:8px;cursor:pointer;font-size:13px;font-weight:700;color:var(--ink);line-height:1.5}
+  .es-batch-lab input{margin-top:2px;flex:0 0 auto;width:15px;height:15px;accent-color:var(--accent);cursor:pointer}
+  .es-batch-tip{font-size:11px;color:var(--muted);margin-top:6px;line-height:1.55;padding-left:23px}
   @media(max-width:560px){ .sched-add-card{width:96vw} .smc-grid .d{font-size:12px} }
+  @media(max-width:560px){ .sa-flex{flex-direction:column;gap:10px} .sa-cal,.sa-ops{flex:none;width:100%} .sa-ops{padding-top:0;display:grid;grid-template-columns:repeat(3,1fr);gap:8px} }
   .sticky-note{background:#FFF7C2;border:1px solid #EADF8E;box-shadow:0 8px 18px rgba(0,0,0,.12);border-radius:6px;padding:12px 14px;transform:none;margin:0;height:100%;display:flex;flex-direction:column}
   .sticky-note .sticky-title{font-weight:800;color:#7a6a2a;margin-bottom:8px;font-size:14px}
   /* 记事本横格：line-height(30px) 与横线周期(30px) 一致，文字正好落在横线上 */
@@ -719,7 +759,9 @@
   .pomo-step-btn{width:36px;height:34px;border-radius:10px;border:1px solid var(--line2);background:var(--surface);color:var(--ink);font-size:20px;font-weight:800;line-height:1;cursor:pointer;transition:transform .08s,background .15s}
   .pomo-step-btn:hover{background:var(--surface-2)}
   .pomo-step-btn:active{transform:scale(.92)}
-  #pomoMuteBtn.on{color:var(--accent-deep,#c98a3e);border-color:var(--accent-deep,#c98a3e)}
+  /* 静音按钮：常态无底色；静音态加主题色底（与配色方案一致） */
+  #pomoMuteBtn{transition:background .15s,color .15s,border-color .15s}
+  #pomoMuteBtn.on{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
   .pomo-reset{margin-top:2px;padding:5px 14px;border:1px solid var(--accent);background:var(--surface);color:var(--accent-deep);font-size:12px;border-radius:999px;cursor:pointer;font-family:inherit;transition:background .12s,color .12s,transform .12s,border-color .12s}
   .pomo-reset:hover{background:var(--accent-soft)}
   .pomo-reset:active{transform:scale(.95)}
@@ -909,7 +951,7 @@
   <div class="main" data-page-node-id="N6VKWd2ojYPKRLWfuce1Ix">
     <div class="topbar" data-page-node-id="HEHeyITQXT48XVLyUWzeVj">
       <div data-page-node-id="9X9mUNiYtaz4jk5IaM1F2O">
-        <h1 id="pageTitle" data-page-node-id="VKjrA6pGqOeE739kna90cb">今日工作</h1>
+        <h1 id="pageTitle" data-page-node-id="VKjrA6pGqOeE739kna90cb">今日安排</h1>
         <div class="sub" id="pageSub" data-page-node-id="eTxtK5iYvgzeaIaxFW9CpW">把今天要紧的事排好，做完一件勾一件</div>
       </div>
       <div class="spacer" data-page-node-id="jA8KlMHh3kKlH7QKyJFUht"></div>
@@ -949,7 +991,7 @@
     </div>
     <div class="content" id="content" data-page-node-id="M12jGOZO35So5tN2AzujHk">
       <section class="module" id="mod-tasks" data-sp-bindable="database" data-sp-database-id="Erv9LK43hpsktGQ3Q4nTKf" data-page-node-id="ae0aU2vhUtUQ2IkU7VEzjd">
-        <div class="mod-head" data-page-node-id="znrEZNEq80Z4sMKIpY9WXt"><h2 data-page-node-id="GlAgF4X2bwHn4tqi4aScSS">今日工作</h2><span class="desc" data-page-node-id="I8qtzimZEtjf4pHr3PPxkJ">把今天要紧的事排好，做完一件勾一件</span></div>
+        <div class="mod-head" data-page-node-id="znrEZNEq80Z4sMKIpY9WXt"><h2 data-page-node-id="GlAgF4X2bwHn4tqi4aScSS">今日安排</h2><span class="desc" data-page-node-id="I8qtzimZEtjf4pHr3PPxkJ">今天的日程安排，一页排开</span></div>
         <div id="tasks-body" data-page-node-id="zBueIRIq1qpwES4YPxcUG2"></div>
       </section>
       <section class="module" id="mod-finance" data-sp-bindable="database" data-sp-database-id="VDJ7npH13yRDIkMBUcnQO4" data-page-node-id="604q7hRjHHZVdpt6vt1hWU">
@@ -1475,7 +1517,7 @@ function icon(name){
 
 /* ============ 模块注册 ============ */
 var MODULES=[
-  {key:'tasks',    name:'今日工作', icon:'work',     db:DB.tasks,    sub:'把今天要紧的事排好，做完一件勾一件'},
+  {key:'tasks',    name:'今日安排', icon:'work',     db:DB.tasks,    sub:'今天的日程安排，一页排开'},
   {key:'finance',  name:'记账理财', icon:'coin',     db:DB.finance,  sub:'收支、预算、月度对比与支出结构一目了然'},
   {key:'habits',   name:'习惯健康', icon:'leaf',     db:DB.habits,   sub:'三种打卡方式 + 30 天热力图，坚持看得见'},
   {key:'body',     name:'减脂健身', icon:'run',      db:DB.body,     sub:'体重体脂趋势、热量缺口与可自定义的周计划'},
@@ -1544,7 +1586,7 @@ function retryModule(key){ var l=LOADERS[key]; if(l) l(); }
 function setBody(key, html){ var el=document.getElementById(key+'-body'); if(el) el.innerHTML=html; }
 function getBody(key){ return document.getElementById(key+'-body'); }
 
-/* ============ 1. 今日工作 ============ */
+/* ============ 1. 今日安排 ============ */
 var taskEditId=null;
 LOADERS.tasks=function(){
   var body=getBody('tasks'); body.innerHTML=statusHTML(true);
@@ -1563,7 +1605,7 @@ function renderTasks(tasks, works){
   (works||[]).forEach(function(r){
     var ft=r["_fromTask"];
     var ftId=(ft&&typeof ft==='object'&&'text' in ft)?ft.text:ft;   // 兼容平台DB对象 / 本地DB字符串
-    if(ftId && taskIds[ftId]) return;   // 今日工作新增产生的镜像记录在今日工作内去重，避免同一件事出现两次
+    if(ftId && taskIds[ftId]) return;   // 今日安排新增产生的镜像记录在今日安排内去重，避免同一件事出现两次
     items.push({src:'sched', r:r});
   });
   var QMAP={Q1:[],Q2:[],Q3:[],Q4:[]};
@@ -1571,6 +1613,9 @@ function renderTasks(tasks, works){
     var q=it.r["象限"]; if(!q||!QMAP[q]) q='Q2';
     it.q=q;
     if(it.r["完成"]==='是') return;        // 已完成的从白板移除（撕下拿走）
+    /* 四象限白板只放「今天」的安排 */
+    var due = it.src==='task' ? it.r["截止日期"] : it.r["日期"];
+    if(dateSub(due)!==td) return;
     QMAP[q].push(it);
   });
   function noteHTML(it){
@@ -1609,7 +1654,7 @@ function renderTasks(tasks, works){
       '<div class="q-body">'+body+'</div></div>';
   });
   grid+='</div>';
-  var board='<div class="quad-wrap"><div class="quad-cap">四象限法：上=重要，左=紧急。把便利贴拖到对应格子即可，位置会自动保存。</div>'+grid+'</div>';
+  var board='<div class="quad-wrap"><div class="quad-cap">'+td+' 今日安排 · 四象限法：上=重要，左=紧急。拖到对应格子即可，位置自动保存。</div>'+grid+'</div>';
   var add='<div class="wb-add"><div class="wb-add-title">➕ 添加一张便利贴</div>'+
     '<div class="three-col">'+
       '<div class="fld"><label>要做什么</label><input id="t-title" placeholder="要做什么？"></div>'+
@@ -1620,7 +1665,8 @@ function renderTasks(tasks, works){
     (taskEditId?'<button class="btn" onclick="cancelTaskEdit()">取消</button>':'')+'</div></div>';
   var QLAB={'Q1':'重要且紧急','Q2':'重要不紧急','Q3':'紧急不重要','Q4':'不紧急不重要'};
   var HAND='<svg viewBox="0 0 24 24"><path d="M11 13V4.8a1.3 1.3 0 0 1 2.6 0V13"/><path d="M13.6 13V5.4a1.3 1.3 0 0 1 2.6 0V13"/><path d="M16.2 13.2a1.3 1.3 0 0 1 2.3 1.1v2.7a5.5 5.5 0 0 1-5.5 5.5H14a5.5 5.5 0 0 1-4-1.8l-2.8-3.1a1.3 1.3 0 0 1 1.9-1.8l2 2.1V8.5a1.3 1.3 0 0 1 2.6 0v4.5"/></svg>';
-  var listRows = items.map(function(it){
+  var shownItems = items.filter(function(it){ var due = it.src==='task' ? it.r["截止日期"] : it.r["日期"]; return dateSub(due)===td; });
+  var listRows = shownItems.map(function(it){
     var r=it.r, src=it.src, done=r["完成"]==='是', cur=r["完成"]||'否';
     var due = src==='task' ? r["截止日期"] : r["日期"];
     var dueStr = due?dateSub(due):'—';
@@ -1640,11 +1686,11 @@ function renderTasks(tasks, works){
         '<button class="icon-btn" title="删除" onclick="delWorkItem(\''+src+'\',\''+id+'\',\''+esc(delLink)+'\')">'+icon('trash')+'</button>'+
       '</div></div>';
   }).join('');
-  var list='<div class="task-list"><div class="task-list-head"><span>📋 全部事项（含已完成历史）</span>'+
+  var list='<div class="task-list"><div class="task-list-head"><span>📋 今日安排（含已完成）</span>'+
     '<span class="tl-head-ops">'+
       '<button class="btn sm ghost" onclick="restoreAllToQuadrants()" title="把全部事项恢复回四象限（标记为未完成）">↩ 全部恢复四象限</button>'+
       '<button class="btn sm danger" onclick="deleteAllItems()" title="清空全部事项（不可撤销）">🗑 全部删除</button>'+
-    '</span></div>'+(listRows||'<div class="empty">还没有事项</div>')+'</div>';
+    '</span></div>'+(listRows||'<div class="empty">今天还没有安排</div>')+'</div>';
   setBody('tasks', board+add+list);
   bindDraft('task', getBody('tasks'), ['t-title','t-due','t-quad']);
   if(taskEditId){ var ed=window.__taskEdit; if(ed){ document.getElementById('t-title').value=ed['标题']||''; document.getElementById('t-due').value=dateSub(ed['截止日期'])||td; document.getElementById('t-quad').value=(ed['象限']||'Q1'); } }
@@ -2684,20 +2730,19 @@ function renderSchedule(rows){
     '<div class="monthcal"><div class="wd">一</div><div class="wd">二</div><div class="wd">三</div><div class="wd">四</div><div class="wd">五</div><div class="wd">六</div><div class="wd">日</div>';
   for(var i=0;i<startDay;i++) mini+='<div class="d"></div>';
   for(var d=1;d<=days;d++){ var ds=y+'-'+('0'+(mo+1)).slice(-2)+'-'+('0'+d).slice(-2); var cls='d'+(haveDates[ds]?' have':'')+(schedSelDate===ds?' sel':''); var dc=dayCount[ds]||0; mini+='<div class="'+cls+'" onclick="schedSelDate=\''+ds+'\';renderSchedule(window.__sched)">'+d+(dc?'<span class="d-cnt">'+dc+'</span>':'')+'</div>'; }
-  mini+='</div><div style="font-size:11px;color:var(--muted);margin-top:9px;line-height:1.5">点击日期可筛选下方日程｜<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--accent);margin:0 4px;vertical-align:middle"></span>当天有安排</div></div>';
+  mini+='</div><div class="mc-tip">点击日期可筛选右侧日程｜<span class="mc-dot"></span>当天有安排</div></div>';
 
   // 下方：筛选条 + 日程列表（直接写在月历下面空白）
   var cats=getSchedCats();
-  var filterBar='<div class="filter-row" style="margin:12px 0 10px">'+
-    '<select class="filt-btn" onchange="schedFilter=this.value;renderSchedule(window.__sched)"><option value="全部"'+(schedFilter==='全部'?' selected':'')+'>全部分类</option>'+cats.map(function(c){return '<option'+(c===schedFilter?' selected':'')+'>'+c+'</option>';}).join('')+'</select>'+
-    '<select class="filt-btn" onchange="schedStatusF=this.value;renderSchedule(window.__sched)"><option value="全部状态"'+(schedStatusF==='全部状态'?' selected':'')+'>全部状态</option><option'+(schedStatusF==='待办'?' selected':'')+'>待办</option><option'+(schedStatusF==='已完成'?' selected':'')+'>已完成</option><option'+(schedStatusF==='未完成已过期'?' selected':'')+'>未完成已过期</option></select>'+
-    (schedSelDate?'<button class="btn sm filt-btn" onclick="schedSelDate=null;renderSchedule(window.__sched)">清除日期筛选（'+schedSelDate+'）</button>':'')+
-    (schedStatusF!=='全部状态'?'<button class="btn sm filt-btn" onclick="schedStatusF=\'全部状态\';renderSchedule(window.__sched)">清除状态筛选</button>':'')+
-    '<span class="fr-spacer"></span>'+
+  var filterBar='<div class="filter-row sched-filters">'+
+    '<select class="filt-btn" onchange="schedFilter=this.value;renderSchedule(window.__sched)"><option value="全部"'+(schedFilter==='全部'?' selected':'')+'>分类</option>'+cats.map(function(c){return '<option'+(c===schedFilter?' selected':'')+'>'+c+'</option>';}).join('')+'</select>'+
+    '<select class="filt-btn" onchange="schedStatusF=this.value;renderSchedule(window.__sched)"><option value="全部状态"'+(schedStatusF==='全部状态'?' selected':'')+'>状态</option><option'+(schedStatusF==='待办'?' selected':'')+'>待办</option><option'+(schedStatusF==='已完成'?' selected':'')+'>已完成</option><option'+(schedStatusF==='未完成已过期'?' selected':'')+'>未完成已过期</option></select>'+
+    '<button class="btn sm filt-btn date-filt'+(schedSelDate?' on':'')+'" title="'+(schedSelDate?('已筛选 '+schedSelDate+'，点击清除'):'点左侧月历选日期')+'" onclick="'+(schedSelDate?'schedSelDate=null;renderSchedule(window.__sched)':'toast(\'点左侧月历里的日期即可筛选\')')+'">日期'+(schedSelDate?' · '+schedSelDate.slice(8,10)+'日':'')+'</button>'+
+    (schedStatusF!=='全部状态'?'<button class="btn sm filt-btn" onclick="schedStatusF=\'全部状态\';renderSchedule(window.__sched)">清除状态</button>':'')+
     '</div>';
   var sticky='<div class="sticky-note"><div class="sticky-title">📌 本月安排</div><textarea class="sticky-area" id="month-note" onchange="saveMonthNote(this.value)" placeholder="还没定下日期的安排，先记在这里…">'+esc(getMonthNote())+'</textarea></div>';
   var shown=rows.filter(function(r){ var st=schedStatus(r); return (schedFilter==='全部'||r["分类"]===schedFilter) && (!schedSelDate||dateSub(r["日期"])===schedSelDate) && (schedStatusF==='全部状态'||(schedStatusF==='待办'&&st==='todo')||(schedStatusF==='已完成'&&st==='done')||(schedStatusF==='未完成已过期'&&st==='expired')); });
-  var list='<div class="panel" style="margin-top:2px"><div class="list">';
+  var list='<div class="panel sched-list-panel"><div class="list">';
   if(!shown.length) list+='<div class="empty">这段时间还没有安排</div>';
   shown.forEach(function(r){
     var st=schedStatus(r);
@@ -2746,10 +2791,11 @@ function renderSchedule(rows){
       '</div>'+
     '</aside></div>';
 
-  // 顶部：窄表单(左) + 先知先觉幸福行动历(右，整体上移)；底部：本月日程+本月安排(整宽)
-  var leftCol='<div class="sched-left-col">'+
-    '<div class="cal-top">'+mini+'<div class="sticky-wrap">'+sticky+'</div></div>'+filterBar+list+'</div>';
-  var topBlock='<div class="sched-top-layout">'+leftCol+'<div class="sched-top-right">'+cal+'</div></div>';
+  // 左列：本月日程(上) + 本月安排便签(下)，上下对齐；右列：筛选条 + 明细
+  var calSticky='<div class="cal-stack">'+mini+'<div class="sticky-wrap">'+sticky+'</div></div>';
+  var leftCol='<div class="sched-left-col">'+calSticky+'</div>';
+  var midCol='<div class="sched-mid-col">'+filterBar+list+'</div>';
+  var topBlock='<div class="sched-top-layout">'+leftCol+midCol+'<div class="sched-top-right">'+cal+'</div></div>';
 
   setBody('schedule', topBlock);
   try{ renderActionCal(haveDates); }catch(e){ console.error('行动历渲染失败',e); }
@@ -2793,21 +2839,14 @@ function schedPickInnerHTML(){
     var ds=y+'-'+pad2(m+1)+'-'+pad2(d);
     h+='<div class="d'+(schedPickDates.indexOf(ds)>=0?' pick':'')+'" onclick="schedPickToggle(\''+ds+'\')">'+d+'</div>';
   }
-  h+='</div><div class="smc-quick">'+
-      '<button type="button" class="chipbtn" onclick="schedPickQuick(\'today\')">今天</button>'+
-      '<button type="button" class="chipbtn" onclick="schedPickQuick(\'weekday\')">本月工作日</button>'+
-      '<button type="button" class="chipbtn" onclick="schedPickQuick(\'weekend\')">本月周末</button>'+
-      '<button type="button" class="chipbtn" onclick="schedPickQuick(\'all\')">全月</button>'+
-      '<button type="button" class="chipbtn" onclick="schedPickQuick(\'clear\')">清空</button>'+
-      '<span class="smc-cnt">已选 '+schedPickDates.length+' 天</span>'+
-    '</div></div>';
+  h+='</div><div class="smc-cnt-row">已选 <b>'+schedPickDates.length+'</b> 天</div></div>';
   return h;
 }
 function renderSchedPickBlock(){
   var el=document.getElementById('s-dates-block'); if(!el) return;
   el.innerHTML=schedPickInnerHTML();
   var b=document.getElementById('s-submit');
-  if(b) b.textContent = schedPickDates.length>1 ? ('添加（'+schedPickDates.length+' 天）') : '添加';
+  if(b) b.textContent = schedPickDates.length>1 ? ('添加 '+schedPickDates.length+' 天') : '添加';
 }
 function schedPickToggle(ds){
   var i=schedPickDates.indexOf(ds);
@@ -2836,23 +2875,30 @@ function schedFormHTML(){
         '<div class="fld c-6"><label>事项</label><input id="s-title" placeholder="要做什么？"></div>'+
         '<div class="fld cat-cell c-6"><label>分类</label>'+
           '<div class="cat-line"><select id="s-cat" onchange="onSchedCatChange()"><option value="" selected>选择分类…</option>'+optHTML(getSchedCats(),'')+'</select><button type="button" class="btn sm" onclick="openCatEditor()" title="编辑分类">✎</button></div>'+
-          '<div class="fld" id="s-quad-wrap" style="display:none;margin-top:8px"><label>重要/紧急</label><select id="s-quad">'+quadOptions('Q1')+'</select></div>'+
         '</div>'+
       '</div>'+
       '<div class="sched-grid">'+
         '<div class="fld c-3"><label>开始</label><div class="time-sel"><select id="s-st-h">'+hourOpts()+'</select><span>:</span><select id="s-st-m">'+minOpts()+'</select></div></div>'+
         '<div class="fld c-3"><label>结束</label><div class="time-sel"><select id="s-en-h">'+hourOpts()+'</select><span>:</span><select id="s-en-m">'+minOpts()+'</select></div></div>'+
-        '<div class="fld c-6"><label>地点</label><input id="s-place" placeholder="选填"></div>'+
+        '<div class="fld c-6"><label>重要/紧急</label><select id="s-quad">'+quadOptions('Q1')+'</select></div>'+
       '</div>'+
       '<div class="sched-grid">'+
-        '<div class="fld c-12"><label>备注</label><input id="s-note" placeholder="选填"></div>'+
+        '<div class="fld c-6"><label>备注</label><input id="s-note" placeholder="选填"></div>'+
+        '<div class="fld c-6"><label>地点</label><input id="s-place" placeholder="选填"></div>'+
       '</div>'+
-      '<div class="fld sched-dates-fld"><label>日期 · 点日期可多选（一次添加到多个日程）</label>'+
-        '<div id="s-dates-block">'+schedPickInnerHTML()+'</div>'+
-      '</div>'+
-      '<div class="actions sched-actions-3"><button class="btn primary sm c-8" id="s-submit" onclick="submitSched()">添加</button>'+
-        '<button class="btn sm c-2" onclick="openPasteImport()" title="粘贴通知文本 / CSV / Excel，批量导入日程">📥 批量导入</button>'+
-        '<button class="btn sm c-2" onclick="openExportPicker()" title="导出日程（Excel / PDF / CSV）">📤 导出</button>'+
+      '<div class="sa-flex">'+
+        '<div class="sa-cal"><div class="fld sched-dates-fld"><label>日期 · 点日期可多选（一次添加到多个日程）</label>'+
+          '<div id="s-dates-block">'+schedPickInnerHTML()+'</div>'+
+        '</div></div>'+
+        '<div class="sa-ops">'+
+          '<button type="button" class="btn sm" onclick="schedPickQuick(&quot;today&quot;)">今天</button>'+
+          '<button type="button" class="btn sm" onclick="schedPickQuick(&quot;weekday&quot;)">工作日</button>'+
+          '<button type="button" class="btn sm" onclick="schedPickQuick(&quot;weekend&quot;)">周末</button>'+
+          '<button type="button" class="btn sm" onclick="schedPickQuick(&quot;clear&quot;)">清空</button>'+
+          '<button type="button" class="btn sm primary" id="s-submit" onclick="submitSched()">添加</button>'+
+          '<button type="button" class="btn sm" onclick="openPasteImport()" title="粘贴通知文本 / CSV / Excel，批量导入日程">导入</button>'+
+          '<button type="button" class="btn sm" onclick="openExportPicker()" title="导出日程（Excel / PDF / CSV）">导出</button>'+
+        '</div>'+
       '</div>'+
     '</div>'+
   '</div>';
@@ -2861,6 +2907,7 @@ function openSchedAddModal(){
   var m=document.getElementById('sched-add-modal');
   if(!m){ m=document.createElement('div'); m.id='sched-add-modal'; m.className='imp-modal-mask'; document.body.appendChild(m); }
   schedPickDates=[today()]; schedPickY=null; schedPickM=null;
+  document.body.classList.remove('sa-subpage');
   m.innerHTML='<div class="imp-modal-card sched-add-card" onclick="event.stopPropagation()">'+
       '<div class="sa-head"><h3>＋ 本月事项</h3><button type="button" class="sa-close" onclick="closeSchedAddModal()" title="关闭">✕</button></div>'+
       schedFormHTML()+
@@ -2868,7 +2915,6 @@ function openSchedAddModal(){
   m.onclick=function(e){ if(e.target===m) closeSchedAddModal(); };
   m.style.display='flex';
   try{ bindDraft('sched', m, ['s-title','s-cat','s-quad','s-place','s-note']); }catch(e){}
-  try{ onSchedCatChange(); }catch(e){}
   try{ var el=document.getElementById('s-title'); if(el) el.focus(); }catch(e){}
 }
 function closeSchedAddModal(){ var m=document.getElementById('sched-add-modal'); if(m) m.style.display='none'; }
@@ -2938,9 +2984,13 @@ function openEditSchedModal(rec){
     '</div>'+
     '<div class="es-row es-row-2">'+
       '<div class="fld"><label>分类</label><select id="es-cat">'+optHTML(getSchedCats(), rec['分类']||'')+'</select></div>'+
+      '<div class="fld"><label>重要/紧急</label><select id="es-quad">'+quadOptions(rec['象限']||'Q1')+'</select></div>'+
+    '</div>'+
+    '<div class="es-row es-row-2">'+
+      '<div class="fld"><label>备注</label><input id="es-note" value="'+esc(rec['备注']||'')+'" placeholder="选填"></div>'+
       '<div class="fld"><label>地点</label><input id="es-place" value="'+esc(rec['地点']||'')+'" placeholder="选填"></div>'+
     '</div>'+
-    '<div class="fld"><label>备注</label><input id="es-note" value="'+esc(rec['备注']||'')+'" placeholder="选填"></div>'+
+    _esBatchPanelHTML(rec)+
     '<div class="imp-foot"><button class="btn" onclick="closeEditSchedModal()">取消</button>'+
       '<button class="btn primary" onclick="saveEditSchedItem(\''+rid(rec)+'\')">保存修改</button></div>'+
   '</div>';
@@ -2948,18 +2998,51 @@ function openEditSchedModal(rec){
   m.style.display='flex';
 }
 function closeEditSchedModal(){ var m=document.getElementById('editsched-modal'); if(m) m.style.display='none'; }
+/* ===== 批量改日期：找出与当前记录「同标题+同开始/结束时间」的同组日程 ===== */
+function esBatchIds(rec){
+  var key=function(r){ return [r['标题']||'', r['开始时间']||'', r['结束时间']||''].join('|'); };
+  var k=key(rec), out=[];
+  (window.__sched||[]).forEach(function(r){ if(key(r)===k) out.push(rid(r)); });
+  if(out.indexOf(rid(rec))<0) out.push(rid(rec));
+  return out;
+}
+function _esBatchPanelHTML(rec){
+  var n=esBatchIds(rec).length;
+  if(n<=1) return '';
+  return '<div class="es-batch-box">'+
+    '<label class="es-batch-lab"><input type="checkbox" id="es-batch"><span>改全部日期（同标题同时段的 '+n+' 条日程一起改）</span></label>'+
+    '<div class="es-batch-tip">勾选后，上面的标题 / 时间 / 分类 / 重要紧急 / 备注 / 地点 会一次性同步到全部 '+n+' 条，日期则按你填的统一设置。</div>'+
+    '</div>';
+}
 function saveEditSchedItem(id){
   var ti=val('es-title'); if(!ti){ toast('请填写事项',true); return; }
   var rec=(window.__sched||[]).filter(function(r){ return rid(r)===id; })[0]||{};
   var st=timeVal('es-st-h','es-st-m'), en=timeVal('es-en-h','es-en-m');
   if(st && en && en<=st){ toast('结束时间不能早于开始时间',true); return; }
-  var p={ "标题":{text:ti}, "分类":{select:val('es-cat')||'其他'}, "日期":{date:val('es-date')},
-          "开始时间":{text:st}, "结束时间":{text:en},
-          "地点":{text:val('es-place')}, "备注":{text:val('es-note')} };
-  var ops=[updRec(DB.schedule, id, p)];
-  if(rec['_fromTask']){ ops.push(updRec(DB.tasks, rec['_fromTask'], {"标题":{text:ti},"日期":{date:val('es-date')}})); }
+  /* 公共字段（不含日期）——所有同组日程都套用 */
+  var common={ "标题":{text:ti}, "分类":{select:val('es-cat')||'其他'},
+    "开始时间":{text:st}, "结束时间":{text:en},
+    "象限":{select:val('es-quad')||'Q1'},
+    "地点":{text:val('es-place')}, "备注":{text:val('es-note')} };
+  var newDate=val('es-date');
+  var batch=document.getElementById('es-batch') && document.getElementById('es-batch').checked;
+  var ops=[];
+  if(batch){
+    var ids=esBatchIds(rec);
+    ids.forEach(function(xid){
+      var pp={}; for(var k in common) pp[k]=common[k];
+      pp["日期"]={date:newDate};
+      ops.push(updRec(DB.schedule, xid, pp));
+    });
+  } else {
+    var p={}; for(var k2 in common) p[k2]=common[k2];
+    p["日期"]={date:newDate};
+    ops.push(updRec(DB.schedule, id, p));
+  }
+  if(rec['_fromTask']){ ops.push(updRec(DB.tasks, rec['_fromTask'], {"标题":{text:ti},"日期":{date:newDate}})); }
   Promise.all(ops).then(function(){
-    closeEditSchedModal(); LOADERS.schedule(); LOADERS.tasks(); toast('已保存修改');
+    closeEditSchedModal(); LOADERS.schedule(); LOADERS.tasks();
+    toast(batch ? ('已批量修改 '+(esBatchIds(rec).length)+' 条同组日程') : '已保存修改');
   }).catch(function(e){ toast('保存失败：'+((e&&e.message)||'错误'),true); });
 }
 
@@ -3517,7 +3600,7 @@ var POMO_VOL=60;
   var POMO_MUTED=false;
 function loadPomoVol(){ try{ var raw=localStorage.getItem('lw_pomo_vol'); if(raw!==null){ var v=Number(raw); if(v>=0&&v<=100) POMO_VOL=v; } }catch(e){} }
 function savePomoVol(){ try{ localStorage.setItem('lw_pomo_vol',String(POMO_VOL)); }catch(e){} }
-function adjPomoVol(d){ POMO_VOL=Math.max(0,Math.min(100,POMO_VOL+d)); savePomoVol(); renderPomoVol(); if(POMO_VOL>0) playPomoTick(); }
+function adjPomoVol(d){ POMO_VOL=Math.max(0,Math.min(100,POMO_VOL+d)); savePomoVol(); syncMuteWithVol(); renderPomoVol(); if(POMO_VOL>0) playPomoTick(); }
 function volScale(){ return POMO_VOL/100; }
 function sfxGain(base){ return Math.min(0.95, base*4.5*volScale()); } /* 基础音量放大到 4.5 倍（在上轮 3 倍基础上再响 50%），并防止削波 */
 function renderPomoVol(){ var v=document.getElementById('pomoVolVal'); if(v) v.textContent=POMO_VOL+'%'; var b=document.getElementById('pomoVolBtn'); if(b) b.title='当前音量 '+POMO_VOL+'%（点击打开音效面板）'; renderPomoVolSlider(); }
@@ -3623,15 +3706,24 @@ function renderPomoSfxBtn(){
   b.textContent = (POMO_VOL===0?'🔇':'🔊')+' 音效音量';
   b.title = POMO_VOL===0 ? '番茄钟音效已静音（音量 0），点击打开面板调大' : '当前音效：'+POMO_SFX_LABEL[k]+' · 音量 '+POMO_VOL+'%（点击可更换或调节）';
 }
+/* 静音守卫：任何「让音量变大 / 调到 0」的操作都同步静音态
+   —— 音量 > 0 → 解除静音（按钮回新图标）；音量 = 0 → 进入静音（按钮 🔕） */
+function syncMuteWithVol(){
+  var m = (POMO_VOL<=0);
+  if(m === POMO_MUTED) return;
+  POMO_MUTED = m;
+  if(!m && POMO_VOL>0) playPomoTick();
+}
 function togglePomoMute(){
   POMO_MUTED=!POMO_MUTED; renderPomoMuteBtn();
   if(!POMO_MUTED && POMO_VOL>0) playPomoTick();
 }
 function renderPomoMuteBtn(){
   var b=document.getElementById('pomoMuteBtn'); if(!b) return;
-  b.textContent = '🔕';
+  /* 常态：铃铛（无红斜线、无外圈红）；静音态：🔕 + 主题色底 */
+  b.textContent = POMO_MUTED ? '🔕' : '🔔';
   b.classList.toggle('on', POMO_MUTED);
-  b.title = POMO_MUTED ? '已静音（点击恢复番茄钟声音）' : '点击一键静音番茄钟声音';
+  b.title = POMO_MUTED ? '已静音（点击恢复声音，或进音效音量调大）' : '点击一键静音番茄钟声音';
 }
 function openPomoSfxPicker(){
   var m=document.getElementById('pomosfx-modal');
@@ -3687,7 +3779,7 @@ function bindPomoVolSlider(){
   function setFromY(clientY){
     var r=track.getBoundingClientRect();
     var pct=Math.max(0,Math.min(100, Math.round((1-(clientY-r.top)/r.height)*100)));
-    POMO_VOL=pct; savePomoVol(); renderPomoVol();
+    POMO_VOL=pct; savePomoVol(); syncMuteWithVol(); renderPomoVol();
     if(POMO_VOL>0 && !SFX_AUDITION_TIMER) playPomoTick();
   }
   var dragging=false;
@@ -4411,7 +4503,7 @@ function buildSchedTemplateWb(){
     ['象限','选填','Q1 重要且紧急｜Q2 重要不紧急｜Q3 紧急不重要｜Q4 不紧急不重要，默认 Q1','Q1'],
     ['',''],
     ['注意','','第 1 张表里带「示例-」开头的两行是格式示范，导入时会自动跳过；直接改写成你自己的内容就不再跳过',''],
-    ['注意','','分类如果填「工作」，该条会自动进入今日工作四象限',''],
+    ['注意','','日程里「日期=今天」的安排，会自动进入「今日安排」四象限',''],
     ['注意','','同「日期+标题」的已有条目会被判为重复，默认不勾选',''],
     ['注意','','导入前会先给预览，勾选确认后才真正写入','导入预览']
   ];

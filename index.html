@@ -429,9 +429,9 @@
   /* 日程统筹：左列=窄表单+本月日程+本月安排+日程列表；右列=幸福行动历（收窄，给左侧让空间） */
   .sched-top-layout{display:flex;gap:18px;align-items:flex-start;margin-bottom:16px}
   /* --cal-w / --sticky-w：月历列与便利贴列的基准宽度，筛选条复用同一组值以保证严格对齐 */
-  .sched-left-col{flex:0 0 25.09%;width:25.09%;max-width:25.09%;min-width:0;--cal-w:300px;--sticky-w:180px}
+  .sched-left-col{flex:0 0 24.10%;width:24.10%;max-width:24.10%;min-width:0;--cal-w:300px;--sticky-w:180px}
   .sched-left-col>.form.sched-form-narrow{margin:0 0 14px}
-  .sched-top-right{flex:0 0 44.44%;width:44.44%;max-width:44.44%;min-width:0;position:sticky;top:12px}
+  .sched-top-right{flex:0 0 46.42%;width:46.42%;max-width:46.42%;min-width:0;position:sticky;top:12px}
   /* 行动历在右半栏：内部改上下排，格子占满整宽，灵感区移到下方 */
   .sched-top-right .actcal-layout{flex-direction:column;gap:0}
   .sched-top-right .actcal-left{width:100%}
@@ -827,9 +827,9 @@
   .btn.sfx-opt .sfx-cur{margin-left:auto;font-size:11px;font-weight:700;color:var(--accent-deep);flex:0 0 auto}
   .btn.ghost{background:transparent;border:1px solid var(--line2);color:var(--muted)}
   /* ===== 右上角宠物（可拖拽 AI 位图） ===== */
-  .pet{position:fixed;right:12px;top:62px;z-index:55;width:auto;text-align:center;user-select:none;pointer-events:none}
+  .pet{position:fixed;right:12px;top:62px;z-index:55;display:flex;flex-direction:column;align-items:center;width:auto;text-align:center;user-select:none;pointer-events:none}
   .pet-cat{display:inline-block;width:116px;height:116px;object-fit:contain;cursor:grab;pointer-events:auto;touch-action:none;-webkit-user-drag:none;user-drag:none;filter:drop-shadow(0 7px 12px rgba(60,50,40,.20));transition:transform .25s ease;transform-origin:50% 22%}
-  .pet-cat-wrap{display:inline-block;position:relative}
+  .pet-cat-wrap{display:block;position:relative;line-height:0}
   .pet-cat-wrap.breathing{animation:breathe 3.2s ease-in-out infinite}
   .pet-cat-wrap.breathing-soft{animation:breatheSoft 3.0s ease-in-out infinite}
   .pet-cat-wrap.dragging{animation:none}
@@ -839,9 +839,9 @@
   .pet-tray{font-size:22px;line-height:1;margin-bottom:2px;filter:drop-shadow(0 2px 3px rgba(0,0,0,.12));pointer-events:none;display:none}
   @keyframes breatheSoft{0%,100%{transform:scale(1) translateY(0)}50%{transform:scale(1.024) translateY(-1.8px)}}
   .pet-cat.breathing-soft{animation:breatheSoft 3.0s ease-in-out infinite}
-  .pet-speech{position:absolute;right:8px;bottom:100%;margin-bottom:-4px;max-width:168px;background:#fffdf7;border:2px solid #f0e6d2;border-radius:14px;padding:6px 11px;font-size:13px;line-height:1.45;color:#5a4632;font-weight:700;box-shadow:0 4px 10px rgba(60,50,40,.16);pointer-events:none;z-index:60;display:none;white-space:normal}
-  .pet-speech:before{content:"";position:absolute;right:20px;bottom:-9px;width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-top:9px solid #f0e6d2}
-  .pet-speech:after{content:"";position:absolute;right:22px;bottom:-6px;width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:6px solid #fffdf7}
+  .pet-speech{position:absolute;right:calc(100% + 11px);top:50%;transform:translateY(-50%);width:max-content;max-width:168px;background:#fffdf7;border:2px solid #f0e6d2;border-radius:14px;padding:6px 11px;font-size:13px;line-height:1.45;text-align:left;color:#5a4632;font-weight:700;box-shadow:0 4px 10px rgba(60,50,40,.16);pointer-events:none;z-index:60;display:none;white-space:normal}
+  .pet-speech:before{content:"";position:absolute;right:-9px;top:50%;margin-top:-7px;width:0;height:0;border-top:7px solid transparent;border-bottom:7px solid transparent;border-left:9px solid #f0e6d2}
+  .pet-speech:after{content:"";position:absolute;right:-6px;top:50%;margin-top:-5px;width:0;height:0;border-top:5px solid transparent;border-bottom:5px solid transparent;border-left:6px solid #fffdf7}
   .pet-speech.show{display:block;animation:speechPop .25s ease}
   @keyframes speechPop{0%{opacity:0}100%{opacity:1}}
   .nav-sfx{font-size:10px;color:var(--muted);font-weight:400;margin-left:3px;vertical-align:1px}
@@ -978,16 +978,17 @@
   .topbar .btn{min-height:34px;padding:7px 12px;font-size:12.5px;gap:5px;border-radius:9px}
   /* 小猫：可缩放 + 回小窝按钮 + 走回小窝动画 */
   .pet-cat{width:var(--pet-size,116px);height:var(--pet-size,116px)}
-  .pet-cat-wrap .pet-resize{position:absolute;right:-2px;bottom:-2px;width:16px;height:16px;border-radius:50%;
-    background:var(--surface);border:1px solid var(--line2);cursor:nwse-resize;pointer-events:auto;
-    display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s ease;
-    box-shadow:0 2px 6px rgba(60,50,40,.18);z-index:4}
-  .pet-cat-wrap .pet-resize:after{content:'';width:7px;height:7px;border-right:2px solid var(--muted);
-    border-bottom:2px solid var(--muted);border-radius:0 0 2px 0}
-  .pet-cat-wrap:hover .pet-resize,.pet-cat-wrap .pet-resize.on{opacity:1}
+  .pet-cat-wrap .pet-resize{position:absolute;right:-3px;top:-3px;width:24px;height:24px;border-radius:50%;
+    background:var(--surface);border:1px solid var(--line2);cursor:nesw-resize;pointer-events:auto;
+    display:flex;align-items:center;justify-content:center;opacity:.92;color:var(--muted);
+    transition:opacity .2s ease,transform .2s ease,box-shadow .2s ease,color .2s ease,border-color .2s ease;
+    box-shadow:0 2px 8px rgba(60,50,40,.24);z-index:6}
+  .pet-cat-wrap .pet-resize svg{display:block;width:15px;height:15px}
+  .pet-cat-wrap .pet-resize:hover,.pet-cat-wrap .pet-resize.on{opacity:1;transform:scale(1.12);
+    color:var(--accent);border-color:var(--accent);box-shadow:0 3px 10px rgba(60,50,40,.30)}
   .pet-cat.walkhome{animation:petWalk .4s ease-in-out infinite}
   @keyframes petWalk{0%,100%{transform:translateY(0) rotate(-2.5deg)}50%{transform:translateY(-4px) rotate(2.5deg)}}
-  .pet-home-btn{margin-top:3px;display:inline-block;pointer-events:auto;font-size:9.5px;line-height:1;
+  .pet-home-btn{margin-top:6px;display:inline-block;pointer-events:auto;font-size:9.5px;line-height:1;
     color:var(--muted);background:var(--surface);border:1px solid var(--line2);border-radius:20px;
     padding:4px 9px;cursor:pointer;white-space:nowrap;opacity:.82;
     box-shadow:0 2px 6px rgba(60,50,40,.10);transition:opacity .2s,color .2s,border-color .2s}
@@ -1447,9 +1448,12 @@ function toggleThemeMenu(){ openPanelNear('themeBtn','themeCard'); }
 function initTheme(){ var k='red'; try{ k=localStorage.getItem('lw_theme')||'red'; }catch(e){} applyTheme(k); }
 document.addEventListener('click', function(e){
   var t=e.target;
-  [['themeCard','themeBtn'],['idCard','idChip'],['backupCard','backupBtn'],['aboutCard','aboutBtn']].forEach(function(p){
-    var c=document.getElementById(p[0]);
-    if(c && c.style.display!=='none' && t && t.id!==p[1] && !c.contains(t)) c.style.display='none';
+  [['themeCard','themeBtn'],['idCard','switchIdBtn'],['backupCard','backupBtn'],['aboutCard','aboutBtn']].forEach(function(p){
+    var c=document.getElementById(p[0]), b=document.getElementById(p[1]);
+    if(!c || c.style.display==='none' || !t) return;
+    if(c.contains(t)) return;                        /* 点面板内部：不关 */
+    if(b && (b===t || b.contains(t))) return;        /* 点触发按钮：交给它自己开关 */
+    c.style.display='none';
   });
 });
 
@@ -4837,7 +4841,7 @@ function enablePetResize(){
   });
   h.addEventListener('pointermove', function(e){
     if(!on) return;
-    var d=((e.clientX-sx)+(e.clientY-sy))/2;
+    var d=((e.clientX-sx)-(e.clientY-sy))/2;
     applyPetSize(s0 + d*1.6);
     e.preventDefault(); e.stopPropagation();
   });
@@ -4891,7 +4895,7 @@ function petComeOut(){
   door.classList.add('opening');
   setSpeech(''); setPlate(false); setTrash(false);
   setPetImg('open');
-  pet.style.display='block';
+  pet.style.display='flex';
   pet.style.transition='none';
   pet.style.opacity='0';
   var dr=door.getBoundingClientRect(), pr=pet.getBoundingClientRect();
@@ -5005,7 +5009,7 @@ function boot(){
   if(!D()){ document.getElementById('content').innerHTML='<div class="errbox"><div class="msg">⚠ 数据库环境未就绪，请刷新页面重试</div><button class="btn sm primary" onclick="location.reload()">刷新</button></div>'; return; }
   buildNav(); showModule('tasks'); updateIdChip();
   buildThemeSwatches(); initTheme(); initPet();
-  if(FIRST_RUN){ var ic=document.getElementById('idCard'); if(ic) ic.style.display='block'; }
+  if(FIRST_RUN){ openPanelNear('switchIdBtn','idCard'); }
   reloadAll();
   document.getElementById('refreshAll').onclick=function(){ toast('正在刷新…'); reloadAll(); };
 }
@@ -5013,12 +5017,12 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
 </script>
 <div id="pet" class="pet" data-page-node-id="KmTiISEwgUEPEvsGPHA9aD">
   <div class="pet-tray" id="petTray" data-page-node-id="qLzJ22EReCR4Ai5ZcLnv9p"></div>
-  <div class="pet-speech" id="petSpeech" data-page-node-id="DuVR5ZqzQE7BjWzOtnF45z"></div>
-  <div class="pet-plate" id="petPlate" data-page-node-id="tz4VZUlVP7lzQEw2EzE04K"><svg viewBox="0 0 60 24" width="80" height="33" xmlns="http://www.w3.org/2000/svg" data-page-node-id="osXoY4hhH5r77rw187zpn7"><ellipse cx="30" cy="15" rx="28" ry="8.5" fill="#f1e9dd" stroke="#d8cbb6" stroke-width="1.5" data-page-node-id="Pd7wSFOO3ItHI1IiNn7NkJ"/><ellipse cx="30" cy="13" rx="20" ry="5" fill="#fffaf2" stroke="#e6dac8" stroke-width="1" data-page-node-id="4yvcTTgE1UyeefDz3NdmLI"/></svg></div>
-  <div class="pet-trash" id="petTrash" data-page-node-id="XZB4ex5gCZrv9R3TPA1rq3"><svg viewBox="0 0 80 54" width="82" height="56" xmlns="http://www.w3.org/2000/svg" data-page-node-id="uf3wERLp6jXx5Iuuh8M60B"><circle cx="22" cy="34" r="10" fill="#fffdf7" stroke="#e0d6c4" stroke-width="1.4" data-page-node-id="Uk3xgOZVOkt0k2IMOYCvGJ"/><path d="M15 31 l6 4 M22 26 l1 7 M28 32 l-5 5" stroke="#cdbfa6" stroke-width="1" fill="none" stroke-linecap="round" data-page-node-id="GkJLp492vXqlipzqJBU8N6"/><rect x="46" y="20" width="26" height="6" rx="2" fill="#b9c2cc" data-page-node-id="1G2SPDLEO4cCImHF6N7J8a"/><path d="M50 14 h18 M59 11 v3" stroke="#8c98a6" stroke-width="2.4" fill="none" stroke-linecap="round" data-page-node-id="ZlFY8oe5AKTpv6UABFuVHP"/><path d="M49 26 h20 l-3 22 a3 3 0 0 1 -3 3 h-8 a3 3 0 0 1 -3 -3 z" fill="#cdd6df" stroke="#9aa6b3" stroke-width="1.4" data-page-node-id="fAEK616EvE4Mg3sMTByT01"/><path d="M54 30 v15 M59 30 v15 M64 30 v15" stroke="#9aa6b3" stroke-width="1" opacity=".5" data-page-node-id="N0u7ZioajKuw9HPwbMzTm2"/></svg></div>
   <div class="pet-cat-wrap" id="petCatWrap" data-page-node-id="vT85OHyXlTya6pWYqOGHcN">
     <img class="pet-cat" id="petCat" src="" alt="二木管家的小猫" title="拖动我可以挪位置" draggable="false" data-page-node-id="1K1qDqipqCMoMXSJaYtQJS">
-    <span class="pet-resize" id="petResize" title="拖动缩放小猫（最小 56 / 最大 200）"></span>
+    <span class="pet-resize" id="petResize" title="拖动缩放小猫（最小 56 / 最大 200）"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M6.5 17.5 L17.5 6.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M17.5 12.6 V6.5 H11.4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M6.5 11.4 V17.5 H12.6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg></span>
+    <div class="pet-speech" id="petSpeech" data-page-node-id="DuVR5ZqzQE7BjWzOtnF45z"></div>
+    <div class="pet-plate" id="petPlate" data-page-node-id="tz4VZUlVP7lzQEw2EzE04K"><svg viewBox="0 0 60 24" width="80" height="33" xmlns="http://www.w3.org/2000/svg" data-page-node-id="osXoY4hhH5r77rw187zpn7"><ellipse cx="30" cy="15" rx="28" ry="8.5" fill="#f1e9dd" stroke="#d8cbb6" stroke-width="1.5" data-page-node-id="Pd7wSFOO3ItHI1IiNn7NkJ"/><ellipse cx="30" cy="13" rx="20" ry="5" fill="#fffaf2" stroke="#e6dac8" stroke-width="1" data-page-node-id="4yvcTTgE1UyeefDz3NdmLI"/></svg></div>
+    <div class="pet-trash" id="petTrash" data-page-node-id="XZB4ex5gCZrv9R3TPA1rq3"><svg viewBox="0 0 80 54" width="82" height="56" xmlns="http://www.w3.org/2000/svg" data-page-node-id="uf3wERLp6jXx5Iuuh8M60B"><circle cx="22" cy="34" r="10" fill="#fffdf7" stroke="#e0d6c4" stroke-width="1.4" data-page-node-id="Uk3xgOZVOkt0k2IMOYCvGJ"/><path d="M15 31 l6 4 M22 26 l1 7 M28 32 l-5 5" stroke="#cdbfa6" stroke-width="1" fill="none" stroke-linecap="round" data-page-node-id="GkJLp492vXqlipzqJBU8N6"/><rect x="46" y="20" width="26" height="6" rx="2" fill="#b9c2cc" data-page-node-id="1G2SPDLEO4cCImHF6N7J8a"/><path d="M50 14 h18 M59 11 v3" stroke="#8c98a6" stroke-width="2.4" fill="none" stroke-linecap="round" data-page-node-id="ZlFY8oe5AKTpv6UABFuVHP"/><path d="M49 26 h20 l-3 22 a3 3 0 0 1 -3 3 h-8 a3 3 0 0 1 -3 -3 z" fill="#cdd6df" stroke="#9aa6b3" stroke-width="1.4" data-page-node-id="fAEK616EvE4Mg3sMTByT01"/><path d="M54 30 v15 M59 30 v15 M64 30 v15" stroke="#9aa6b3" stroke-width="1" opacity=".5" data-page-node-id="N0u7ZioajKuw9HPwbMzTm2"/></svg></div>
   </div>
   <button class="pet-home-btn" id="petHomeBtn" onclick="petGoHome()" type="button" title="点击让小猫回小窝">点击猫咪 回小窝</button>
 </div>

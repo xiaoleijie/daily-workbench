@@ -438,11 +438,11 @@
   .sched-top-right .actcal-left{width:100%}
   .sched-top-right .actcal-grid{gap:6px}
   /* 格子改「圆角正方形」：不再 min-height:120px 导致细长 */
-  .sched-top-right .actcal-cell{min-height:0;aspect-ratio:1/1;padding:7px 7px 8px;border-radius:12px}
-  .sched-top-right .actcal-cell.empty{min-height:0;padding:0;aspect-ratio:1/1}
+  .sched-top-right .actcal-cell{min-height:0;aspect-ratio:1/1.42;padding:7px 7px 8px;border-radius:12px}
+  .sched-top-right .actcal-cell.empty{min-height:0;padding:0;aspect-ratio:1/1.42}
   .sched-top-right .actcal-cell.doodle-cell{min-height:0;padding:6px}
   .sched-top-right .actcal-cell .num{font-size:12px;line-height:1;font-weight:800}
-  .sched-top-right .actcal-cell .act{font-size:11px;line-height:1.38;margin-top:4px;flex:0 1 auto;
+  .sched-top-right .actcal-cell .act{font-size:11px;line-height:1.38;margin-top:4px;flex:0 0 auto;
     display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
   .sched-top-right .actcal-cell .chk{width:16px;height:16px;font-size:10px;top:4px;right:4px}
   .sched-top-right .actcal-cell .evt{width:6px;height:6px;bottom:5px;right:5px}
@@ -953,7 +953,47 @@
 /* 日程时间下拉 */
 .time-sel{display:flex;align-items:center;gap:4px}
 .time-sel select{width:auto;padding:6px 8px;border:1px solid var(--line2);border-radius:8px;background:var(--surface);color:var(--ink)}
-.time-sel span{color:var(--muted)}
+  .time-sel span{color:var(--muted)}
+  /* ===== 2026-09-18：品牌区名字 / 侧栏门线 / 顶部按钮缩小 / 小猫缩放与回窝 ===== */
+  .brand{gap:8px}
+  .brand-txt{min-width:0;flex:1 1 auto;overflow:hidden}
+  .brand .t2{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:10px;letter-spacing:0}
+  .brand-user{flex:0 0 auto;margin-left:6px;font-size:10.5px;font-weight:700;color:var(--muted);
+    max-width:62px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:right}
+  /* 门线：像一扇门的一条线；悬停展开并提示「召唤小猫」，点击开门 */
+  .door-slot{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+    height:56px;border-radius:12px;cursor:pointer;transition:background .2s ease;margin-top:2px}
+  .door-slot:hover{background:rgba(120,110,95,.07)}
+  .door-slot .door-line{display:block;width:3px;height:26px;border-radius:3px;border:0 solid transparent;background:var(--line2);
+    transition:width .4s cubic-bezier(.2,.8,.2,1),height .4s cubic-bezier(.2,.8,.2,1),background .3s ease,transform .4s cubic-bezier(.2,.8,.2,1);
+    transform-origin:left center}
+  .door-slot:hover .door-line,.door-slot.opening .door-line{width:22px;height:30px;background:transparent;
+    border-width:2px;border-color:var(--line2);border-radius:4px;transform:perspective(140px) rotateY(-30deg)}
+  .door-slot.opening .door-line{border-color:var(--accent);transform:perspective(140px) rotateY(-70deg)}
+  .door-slot .door-hint{font-size:10px;line-height:12px;height:12px;color:var(--muted);letter-spacing:.06em;
+    opacity:0;transition:opacity .22s ease;white-space:nowrap;pointer-events:none}
+  .door-slot:hover .door-hint{opacity:1}
+  .door-slot.has-cat:after{content:'';position:absolute;top:8px;left:calc(50% + 16px);width:6px;height:6px;border-radius:50%;
+    background:var(--accent);animation:doorPulse 1.6s ease-in-out infinite}
+  @keyframes doorPulse{0%,100%{opacity:.35;transform:scale(.85)}50%{opacity:1;transform:scale(1.15)}}
+  /* 顶部按钮：字体与整体宽度一起缩小 */
+  .topbar .btn{min-height:34px;padding:7px 12px;font-size:12.5px;gap:5px;border-radius:9px}
+  /* 小猫：可缩放 + 回小窝按钮 + 走回小窝动画 */
+  .pet-cat{width:var(--pet-size,116px);height:var(--pet-size,116px)}
+  .pet-cat-wrap .pet-resize{position:absolute;right:-2px;bottom:-2px;width:16px;height:16px;border-radius:50%;
+    background:var(--surface);border:1px solid var(--line2);cursor:nwse-resize;pointer-events:auto;
+    display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s ease;
+    box-shadow:0 2px 6px rgba(60,50,40,.18);z-index:4}
+  .pet-cat-wrap .pet-resize:after{content:'';width:7px;height:7px;border-right:2px solid var(--muted);
+    border-bottom:2px solid var(--muted);border-radius:0 0 2px 0}
+  .pet-cat-wrap:hover .pet-resize,.pet-cat-wrap .pet-resize.on{opacity:1}
+  .pet-cat.walkhome{animation:petWalk .4s ease-in-out infinite}
+  @keyframes petWalk{0%,100%{transform:translateY(0) rotate(-2.5deg)}50%{transform:translateY(-4px) rotate(2.5deg)}}
+  .pet-home-btn{margin-top:3px;display:inline-block;pointer-events:auto;font-size:9.5px;line-height:1;
+    color:var(--muted);background:var(--surface);border:1px solid var(--line2);border-radius:20px;
+    padding:4px 9px;cursor:pointer;white-space:nowrap;opacity:.82;
+    box-shadow:0 2px 6px rgba(60,50,40,.10);transition:opacity .2s,color .2s,border-color .2s}
+  .pet-home-btn:hover{opacity:1;color:var(--accent);border-color:var(--accent)}
 </style>
 </head>
 <body data-page-node-id="jjZX3HXy56TvKKnx3zBBoa">
@@ -961,7 +1001,8 @@
   <aside class="sidebar" data-page-node-id="tCnbosZvRP9Yqp9Jw9MTxb">
     <div class="brand" data-page-node-id="9HGU7VoM90tX4ZddPtEdBZ">
       <div class="logo" data-page-node-id="qJrfXanCYEjvb0M7hgzEiV">日</div>
-      <div data-page-node-id="BculszVB4pCRi3e5Z4U1dc"><div class="t1" data-page-node-id="dMP1gcB1zMTdAwQy0Q3R3G">日常集</div><div class="t2" data-page-node-id="SES2bTnlNWfbUDSqxXa8eL">LIFE WORKBENCH</div></div>
+      <div class="brand-txt" data-page-node-id="BculszVB4pCRi3e5Z4U1dc"><div class="t1" data-page-node-id="dMP1gcB1zMTdAwQy0Q3R3G">日常集</div><div class="t2" data-page-node-id="SES2bTnlNWfbUDSqxXa8eL">LIFE WORKBENCH</div></div>
+      <div class="brand-user" id="brandUser" title="当前使用者">小蕾姐</div>
     </div>
     <nav class="nav" id="nav" data-page-node-id="GqTnVaoolNt2Dpm7Ceh5mv"></nav>
     <div class="side-foot" data-page-node-id="ni1uJEObveDFQeotUm9EIn">数据云端同步 · 换设备不离线<br data-page-node-id="che75WIKiHDES2ULwsYkmQ">@二木管家
@@ -970,7 +1011,10 @@
           <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true" data-page-node-id="3HpJYGVYZvUYWrnjSVaCtv"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2" data-page-node-id="AimiPX5M3qFbDGoN7T1vM1"/><circle cx="8.5" cy="8.5" r="2.3" fill="currentColor" data-page-node-id="AsFaucw8SrC93CeCEbvshg"/><circle cx="15.5" cy="9" r="2.3" fill="currentColor" data-page-node-id="gN9f3aP8HAwEFW0kRMqCVh"/><circle cx="9" cy="15.5" r="2.3" fill="currentColor" data-page-node-id="4aVVeNciIZKzaXFhQSoGYj"/><circle cx="15.5" cy="15" r="2.3" fill="currentColor" data-page-node-id="CvFvB7zNQW6k1aCk5VGh8C"/></svg>
           配色<span class="side-theme-dot" id="themeDot" data-page-node-id="WDXjE7pRgIGG7janrgprnH"></span>
         </button>
-        <button class="btn sm side-id-btn" id="idChip" onclick="toggleIdMenu()" type="button" data-page-node-id="3jvr5FyKOJfDaKkAeFTF9y">身份</button>
+        <div class="door-slot" id="doorSlot" onclick="petComeOut()" title="召唤小猫" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();petComeOut();}">
+          <span class="door-line"></span>
+          <span class="door-hint">召唤小猫</span>
+        </div>
       </div>
     </div>
   </aside>
@@ -985,9 +1029,16 @@
       <button class="btn" id="refreshAll" data-page-node-id="Ev8BveRp9IDbv2DIdf7pD3">↻ 刷新全部</button>
       <button class="btn" id="backupBtn" onclick="toggleBackupMenu()" type="button" style="margin-left:8px" data-page-node-id="0pIl8jcDFcCKtTOchbkqh6">💾 数据备份</button>
       <button class="btn" id="aboutBtn" onclick="toggleAboutMenu()" type="button" style="margin-left:8px">ℹ️ 关于</button>
+      <button class="btn" id="switchIdBtn" onclick="toggleIdMenu()" type="button" style="margin-left:8px">切换身份</button>
     </div>
     <div id="idCard" style="display:none;position:fixed;width:330px;max-width:92vw;background:#fff;border:1px solid #e7e1d6;border-radius:14px;box-shadow:0 14px 44px rgba(60,50,40,.18);padding:16px;z-index:60;font-size:13px;color:#4a423a;line-height:1.7" data-page-node-id="Tm2KPPYNvn9cCBB9IZ2QRx">
-      <div style="margin-bottom:10px" data-page-node-id="y4j9ARgCm8j4T9ocdIhAFQ">同一链接谁打开都能用，但每个人的内容会自动分开保存、互不干扰。请先选一下你的身份：</div>
+      <div style="margin-bottom:8px;font-weight:600" data-page-node-id="y4j9ARgCm8j4T9ocdIhAFQ">切换身份 / 你的名字</div>
+      <div style="margin-bottom:10px;color:#9a8f80;font-size:12px">同一链接谁打开都能用，但每个人的内容会自动分开保存、互不干扰。</div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap">
+        <span style="font-size:12px;color:#6b5f50;flex:0 0 auto">你的名字</span>
+        <input id="nickInput" type="text" maxlength="8" placeholder="例如：小蕾姐" style="flex:1;min-width:0;padding:6px 9px;border:1px solid #e7e1d6;border-radius:8px;font-size:12.5px;color:#4a423a">
+        <button class="btn sm primary" onclick="saveNick()" type="button">保存</button>
+      </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap" data-page-node-id="0TEZwMgGGYqSD1mAt5k63E">
         <button class="btn sm primary" onclick="chooseIdentity('owner')" data-page-node-id="LFjHmgJzhpU0rZw9DUDQBc">我是小蕾姐（本子主人）</button>
         <button class="btn sm" onclick="chooseIdentity('guest')" data-page-node-id="vMfinZGdqQV3DNx7ziX5bD">我是访客 / 新用户</button>
@@ -1272,8 +1323,22 @@ function getUid(){
 var MY_UID = getUid();
 function isOwner(){ return MY_UID === OWNER_NAME; }
 function ownerCond(){ return { property: { property: "owner", text: { equals: MY_UID } } }; }
-function updateIdChip(){ var c=document.getElementById('idChip'); if(c) c.textContent = '身份：' + (isOwner()? '小蕾姐（主人）' : '访客'); }
-function toggleIdMenu(){ openPanelNear('idChip','idCard'); }
+function displayName(){
+  var n=''; try{ n=localStorage.getItem('lw_nick')||''; }catch(e){}
+  return n || (isOwner()? OWNER_NAME : '访客');
+}
+function updateIdChip(){ var c=document.getElementById('brandUser'); if(c) c.textContent = displayName(); }
+function toggleIdMenu(){
+  var el=document.getElementById('nickInput');
+  if(el){ try{ el.value=localStorage.getItem('lw_nick')||(isOwner()?OWNER_NAME:''); }catch(e){} }
+  openPanelNear('switchIdBtn','idCard');
+}
+function saveNick(){
+  var el=document.getElementById('nickInput'); if(!el) return;
+  var v=(el.value||'').trim().slice(0,8);
+  try{ if(v) localStorage.setItem('lw_nick',v); else localStorage.removeItem('lw_nick'); }catch(e){}
+  updateIdChip(); toast('名字已更新为「'+displayName()+'」');
+}
 var settingsInit = false;
 function finishIdentity(){
   MY_UID = getUid(); settingsInit = false;
@@ -1283,11 +1348,14 @@ function finishIdentity(){
 function chooseIdentity(role){
   if(role==='owner'){
     myConfirm('确认切换到「小蕾姐（本子主人）」身份？\n选错会看到 / 混入他人的数据。', function(){
-      localStorage.setItem('lw_uid', OWNER_NAME); finishIdentity();
+      localStorage.setItem('lw_uid', OWNER_NAME);
+      try{ if(!localStorage.getItem('lw_nick')) localStorage.setItem('lw_nick', OWNER_NAME); }catch(e){}
+      finishIdentity();
     });
   } else {
     var g = localStorage.getItem('lw_uid');
     if(!g || g===OWNER_NAME){ g='g_'+Math.random().toString(36).slice(2,10); }
+    try{ if(localStorage.getItem('lw_nick')===OWNER_NAME) localStorage.removeItem('lw_nick'); }catch(e){}
     localStorage.setItem('lw_uid', g); finishIdentity();
   }
 }
@@ -2807,7 +2875,7 @@ function renderSchedule(rows){
     '<button class="actcal-reset" onclick="resetActionCal()">重置（一键清空）</button></div>'+
     '<div class="actcal-subrow"><div class="actcal-tag">每日一践 · 行动日历 — 不考核，只鼓励</div>'+
     '<div class="actcal-cnt">本月已践行 <b id="act-cnt">0</b> 天</div></div>'+
-    '<div class="actcal-sub2" style="margin-top:2px">每天点一格，就是对自己的一次小小积极鼓励。错过也没关系——这里不惩罚、不清零，只要你愿意，随时回来就好。</div>'+
+    '<div class="actcal-sub2" id="actTip" style="margin-top:2px">每天点一点，就是对自己的小鼓励。不惩罚不清零，只要愿意，随时回来</div>'+
     '<div class="actcal-prog"><i id="act-bar"></i></div>'+
     '<div class="actcal-layout"><div class="actcal-left"><div class="actcal-grid" id="act-grid"></div></div></div>'+
     '<aside class="actcal-right">'+
@@ -4682,8 +4750,16 @@ function initPet(){
   if(cat){ cat.src=PET_IMGS.open; cat.addEventListener('mouseenter', onPetHover); cat.addEventListener('mouseleave', onPetLeave); }
   var pet=document.getElementById('pet');
   if(pet){ try{ var pos=JSON.parse(localStorage.getItem('lw_pet_pos')||'null'); if(pos&&typeof pos.x==='number'&&typeof pos.y==='number'){ pet.style.left=pos.x+'px'; pet.style.top=pos.y+'px'; pet.style.right='auto'; pet.style.bottom='auto'; } }catch(e){} }
+  loadPetSize();
+  enablePetResize();
   enablePetDrag();
-  startPetLoop();
+  var home=false; try{ home=localStorage.getItem('lw_pet_home')==='1'; }catch(e){}
+  if(home){
+    var pEl=document.getElementById('pet'); if(pEl) pEl.style.display='none';
+    setPetHomeState(true);
+  } else {
+    startPetLoop();
+  }
 }
 function onPetHover(){ PET_HOVER=true; setPlate(false); stopPetLoop(); startHoverLoop(); }
 function onPetLeave(){ PET_HOVER=false; stopHoverLoop(); startPetLoop(); }
@@ -4724,8 +4800,9 @@ function enablePetDrag(){
   cat.addEventListener('pointermove', function(e){
     if(!drag) return;
     var nx=ox+(e.clientX-sx), ny=oy+(e.clientY-sy);
-    nx=Math.max(0,Math.min(window.innerWidth-90,nx));
-    ny=Math.max(0,Math.min(window.innerHeight-90,ny));
+    var keep=Math.max(56,Math.round(PET_SIZE*0.8));
+    nx=Math.max(0,Math.min(window.innerWidth-keep,nx));
+    ny=Math.max(0,Math.min(window.innerHeight-keep,ny));
     pet.style.left=nx+'px'; pet.style.top=ny+'px';
   });
   function endDrag(){
@@ -4734,6 +4811,110 @@ function enablePetDrag(){
   }
   cat.addEventListener('pointerup', endDrag);
   cat.addEventListener('pointercancel', endDrag);
+}
+
+/* ---- 小猫缩放：拖动右下角手柄，范围 56~200px（默认 116） ---- */
+var PET_SIZE=116, PET_SIZE_MIN=56, PET_SIZE_MAX=200;
+function applyPetSize(px){
+  px=Math.max(PET_SIZE_MIN, Math.min(PET_SIZE_MAX, Math.round(px)));
+  PET_SIZE=px;
+  var wrap=document.getElementById('petCatWrap'); if(wrap) wrap.style.setProperty('--pet-size', px+'px');
+  var p=document.getElementById('pet'); if(p) p.style.setProperty('--pet-size', px+'px');
+  return px;
+}
+function savePetSize(){ try{ localStorage.setItem('lw_pet_size', String(PET_SIZE)); }catch(e){} }
+function loadPetSize(){
+  var v=0; try{ v=parseInt(localStorage.getItem('lw_pet_size'),10)||0; }catch(e){}
+  return applyPetSize(v?v:116);
+}
+function enablePetResize(){
+  var h=document.getElementById('petResize'); if(!h) return;
+  var sx=0, sy=0, s0=116, on=false;
+  h.addEventListener('pointerdown', function(e){
+    on=true; sx=e.clientX; sy=e.clientY; s0=PET_SIZE;
+    h.classList.add('on');
+    var wrap=document.getElementById('petCatWrap'); if(wrap) wrap.classList.add('dragging');
+    try{ h.setPointerCapture(e.pointerId); }catch(_){}
+    e.preventDefault(); e.stopPropagation();
+  });
+  h.addEventListener('pointermove', function(e){
+    if(!on) return;
+    var d=((e.clientX-sx)+(e.clientY-sy))/2;
+    applyPetSize(s0 + d*1.6);
+    e.preventDefault(); e.stopPropagation();
+  });
+  function done(){
+    if(!on) return; on=false; h.classList.remove('on');
+    var wrap=document.getElementById('petCatWrap'); if(wrap) wrap.classList.remove('dragging');
+    savePetSize(); toast('小猫大小：'+PET_SIZE+'px');
+  }
+  h.addEventListener('pointerup', done);
+  h.addEventListener('pointercancel', done);
+}
+
+/* ---- 小猫回窝 / 召唤出来 ---- */
+var PET_AT_HOME=false, PET_ANIM=false;
+function setPetHomeState(flag){
+  PET_AT_HOME=!!flag;
+  try{ localStorage.setItem('lw_pet_home', PET_AT_HOME?'1':'0'); }catch(e){}
+  var d=document.getElementById('doorSlot'); if(d) d.classList.toggle('has-cat', PET_AT_HOME);
+}
+/* 小猫站起来 -> 走到侧栏门线 -> 消失 */
+function petGoHome(){
+  if(PET_ANIM || PET_AT_HOME) return;
+  var pet=document.getElementById('pet'), cat=document.getElementById('petCat'), door=document.getElementById('doorSlot');
+  if(!pet||!cat||!door) return;
+  PET_ANIM=true;
+  stopPetLoop(); stopHoverLoop();
+  setPlate(false); setTrash(false); setSpeech('');
+  setBreath(false,false); setPetImg('stand'); cat.classList.add('walkhome');
+  var pr=pet.getBoundingClientRect(), dr=door.getBoundingClientRect();
+  var dx=(dr.left+dr.width/2)-(pr.left+pr.width/2);
+  var dy=(dr.top+dr.height/2)-(pr.top+pr.height/2);
+  pet.style.transition='transform 1.45s cubic-bezier(.45,.05,.35,1), opacity .5s ease .95s';
+  requestAnimationFrame(function(){ requestAnimationFrame(function(){
+    pet.style.transform='translate('+dx+'px,'+dy+'px) scale(.8)';
+    pet.style.opacity='0';
+  }); });
+  setTimeout(function(){
+    cat.classList.remove('walkhome');
+    pet.style.display='none';
+    pet.style.transition=''; pet.style.transform=''; pet.style.opacity='';
+    PET_ANIM=false; setPetHomeState(true);
+  }, 1600);
+}
+/* 点门 -> 开门动画 -> 小猫走出来 -> 恢复默认 */
+function petComeOut(){
+  if(PET_ANIM) return;
+  var pet=document.getElementById('pet'), cat=document.getElementById('petCat'), door=document.getElementById('doorSlot');
+  if(!pet||!cat||!door) return;
+  if(!PET_AT_HOME){ toast('小猫已经在家外面啦'); return; }
+  PET_ANIM=true;
+  door.classList.add('opening');
+  setSpeech(''); setPlate(false); setTrash(false);
+  setPetImg('open');
+  pet.style.display='block';
+  pet.style.transition='none';
+  pet.style.opacity='0';
+  var dr=door.getBoundingClientRect(), pr=pet.getBoundingClientRect();
+  var dx=(dr.left+dr.width/2)-(pr.left+pr.width/2);
+  var dy=(dr.top+dr.height/2)-(pr.top+pr.height/2);
+  pet.style.transform='translate('+dx+'px,'+dy+'px) scale(.8)';
+  cat.classList.add('walkhome');
+  requestAnimationFrame(function(){ requestAnimationFrame(function(){
+    pet.style.transition='transform 1.45s cubic-bezier(.45,.05,.35,1), opacity .45s ease';
+    pet.style.transform='translate(0,0) scale(1)';
+    pet.style.opacity='1';
+  }); });
+  setTimeout(function(){ door.classList.remove('opening'); }, 950);
+  setTimeout(function(){
+    cat.classList.remove('walkhome');
+    pet.style.transition=''; pet.style.transform=''; pet.style.opacity='';
+    PET_STATE='open'; setPetImg('open'); setBreath(true,false); setPlate(true);
+    PET_ANIM=false; setPetHomeState(false);
+    setSpeech('我回来啦～');
+    setTimeout(function(){ setSpeech(''); if(!PET_HOVER) startPetLoop(); }, 2400);
+  }, 1600);
 }
 function petRender(){ /* AI 小猫由循环驱动，无需常驻状态样式 */ }
 function showTray(emoji){
@@ -4839,8 +5020,9 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   <div class="pet-trash" id="petTrash" data-page-node-id="XZB4ex5gCZrv9R3TPA1rq3"><svg viewBox="0 0 80 54" width="82" height="56" xmlns="http://www.w3.org/2000/svg" data-page-node-id="uf3wERLp6jXx5Iuuh8M60B"><circle cx="22" cy="34" r="10" fill="#fffdf7" stroke="#e0d6c4" stroke-width="1.4" data-page-node-id="Uk3xgOZVOkt0k2IMOYCvGJ"/><path d="M15 31 l6 4 M22 26 l1 7 M28 32 l-5 5" stroke="#cdbfa6" stroke-width="1" fill="none" stroke-linecap="round" data-page-node-id="GkJLp492vXqlipzqJBU8N6"/><rect x="46" y="20" width="26" height="6" rx="2" fill="#b9c2cc" data-page-node-id="1G2SPDLEO4cCImHF6N7J8a"/><path d="M50 14 h18 M59 11 v3" stroke="#8c98a6" stroke-width="2.4" fill="none" stroke-linecap="round" data-page-node-id="ZlFY8oe5AKTpv6UABFuVHP"/><path d="M49 26 h20 l-3 22 a3 3 0 0 1 -3 3 h-8 a3 3 0 0 1 -3 -3 z" fill="#cdd6df" stroke="#9aa6b3" stroke-width="1.4" data-page-node-id="fAEK616EvE4Mg3sMTByT01"/><path d="M54 30 v15 M59 30 v15 M64 30 v15" stroke="#9aa6b3" stroke-width="1" opacity=".5" data-page-node-id="N0u7ZioajKuw9HPwbMzTm2"/></svg></div>
   <div class="pet-cat-wrap" id="petCatWrap" data-page-node-id="vT85OHyXlTya6pWYqOGHcN">
     <img class="pet-cat" id="petCat" src="" alt="二木管家的小猫" title="拖动我可以挪位置" draggable="false" data-page-node-id="1K1qDqipqCMoMXSJaYtQJS">
+    <span class="pet-resize" id="petResize" title="拖动缩放小猫（最小 56 / 最大 200）"></span>
   </div>
-  <div class="pet-name" data-page-node-id="WgivXNCkHwREB5mvQJ2JXa">二木管家的小猫</div>
+  <button class="pet-home-btn" id="petHomeBtn" onclick="petGoHome()" type="button" title="点击让小猫回小窝">点击猫咪 回小窝</button>
 </div>
 <script>
 /* PWA：注册 Service Worker，使手机可“添加到主屏幕”并支持离线打开 */

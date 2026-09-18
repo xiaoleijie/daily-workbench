@@ -430,9 +430,9 @@
   /* 日程统筹：左列=窄表单+本月日程+本月安排+日程列表；右列=幸福行动历（收窄，给左侧让空间） */
   .sched-top-layout{display:flex;gap:18px;align-items:flex-start;margin-bottom:16px}
   /* --cal-w / --sticky-w：月历列与便利贴列的基准宽度，筛选条复用同一组值以保证严格对齐 */
-  .sched-left-col{flex:0 0 26.07%;width:26.07%;max-width:26.07%;min-width:0;--cal-w:300px;--sticky-w:180px}
+  .sched-left-col{flex:0 0 25.09%;width:25.09%;max-width:25.09%;min-width:0;--cal-w:300px;--sticky-w:180px}
   .sched-left-col>.form.sched-form-narrow{margin:0 0 14px}
-  .sched-top-right{flex:0 0 42.47%;width:42.47%;max-width:42.47%;min-width:0;position:sticky;top:12px}
+  .sched-top-right{flex:0 0 44.44%;width:44.44%;max-width:44.44%;min-width:0;position:sticky;top:12px}
   /* 行动历在右半栏：内部改上下排，格子占满整宽，灵感区移到下方 */
   .sched-top-right .actcal-layout{flex-direction:column;gap:0}
   .sched-top-right .actcal-left{width:100%}
@@ -441,8 +441,8 @@
   .sched-top-right .actcal-cell{min-height:0;aspect-ratio:1/1;padding:7px 7px 8px;border-radius:12px}
   .sched-top-right .actcal-cell.empty{min-height:0;padding:0;aspect-ratio:1/1}
   .sched-top-right .actcal-cell.doodle-cell{min-height:0;padding:6px}
-  .sched-top-right .actcal-cell .num{font-size:13px;line-height:1;font-weight:800}
-  .sched-top-right .actcal-cell .act{font-size:12px;line-height:1.38;margin-top:4px;flex:0 1 auto;
+  .sched-top-right .actcal-cell .num{font-size:12px;line-height:1;font-weight:800}
+  .sched-top-right .actcal-cell .act{font-size:11px;line-height:1.38;margin-top:4px;flex:0 1 auto;
     display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
   .sched-top-right .actcal-cell .chk{width:16px;height:16px;font-size:10px;top:4px;right:4px}
   .sched-top-right .actcal-cell .evt{width:6px;height:6px;bottom:5px;right:5px}
@@ -481,13 +481,14 @@
   .sched-mid-col{flex:1 1 0;min-width:260px}
   .sched-mid-col .filter-row{margin:0 0 10px}
   /* 明细收窄后统一缩小字号，保证内容仍看得清 */
-  .sched-mid-col .sched-list-panel .item{padding:9px 11px;gap:8px}
-  .sched-mid-col .sched-list-panel .item .ttl{font-size:13.5px}
+  .sched-mid-col .sched-list-panel .item{padding:8px 10px;gap:6px}
+  .sched-mid-col .sched-list-panel .item .ttl{font-size:12.5px}
   .sched-mid-col .sched-list-panel .item .meta{font-size:11.5px;gap:6px;margin-top:3px}
   .sched-mid-col .sched-list-panel .item .badge{font-size:10.5px;padding:1px 7px}
-  .sched-mid-col .sched-list-panel .item .icon-btn{width:26px;height:26px}
-  .sched-mid-col .sched-list-panel .item .ops{gap:4px}
-  .sched-mid-col .sched-list-panel .item .s-acts{gap:5px}
+  .sched-mid-col .sched-list-panel .item .icon-btn{width:22px;height:22px}
+  .sched-mid-col .sched-list-panel .item .ops{gap:2px}
+  .sched-mid-col .sched-list-panel .item .s-acts{gap:3px}
+  .sched-mid-col .sched-list-panel .item .s-act-btn.ico,.sched-mid-col .sched-list-panel .item .s-pill.ico{width:22px;height:22px;font-size:13px}
   /* 三个筛选控件并排一行（分类 / 状态 / 日期） */
   /* 覆盖后面 .filter-row 的 flex-wrap:wrap —— 必须单行三列 */
   .sched-mid-col .filter-row.sched-filters{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
@@ -2792,7 +2793,7 @@ function renderSchedule(rows){
       '<div class="meta"><span class="badge '+esc(r["分类"])+'">'+esc(r["分类"])+'</span>'+
       (r["开始时间"]||r["结束时间"]?'<span>'+(r["开始时间"]||'')+(r["结束时间"]?'–'+r["结束时间"]:'')+'</span>':'')+
       (r["地点"]?'<span>📍'+esc(r["地点"])+'</span>':'')+(r["备注"]?'<span>'+esc(r["备注"])+'</span>':'')+'</div></div>'+
-      '<div style="font-family:Georgia,serif;color:var(--muted);font-size:13px;flex:0 0 auto">'+dateSub(r["日期"])+'</div>'+
+      '<div style="font-family:Georgia,serif;color:var(--muted);font-size:11px;flex:0 0 auto">'+dateSub(r["日期"])+'</div>'+
       '<div class="ops">'+
         '<button class="icon-btn" title="修改" onclick="editSchedItem(\''+rid(r)+'\')">'+icon('edit')+'</button>'+
         '<button class="icon-btn" onclick="delSchedItem(\''+rid(r)+'\',\''+esc(r["_fromTask"]||'')+'\')">'+icon('trash')+'</button>'+

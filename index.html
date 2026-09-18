@@ -145,6 +145,9 @@
   .item.s-done{background:#f6fbf4}
   .item.s-done .ops{opacity:.85}
   .s-note-flag{display:inline-flex;align-items:center;gap:3px;font-size:11px;color:#3f6b35;background:var(--sage-soft);border:1px solid #cfe0c4;border-radius:999px;padding:1px 7px;cursor:pointer;margin-left:4px}
+  .s-done-stack{display:flex;flex-direction:column;align-items:center;gap:4px;flex:0 0 auto}
+  .s-act-btn.note{background:var(--sage-soft);color:#3f6b35;border-color:#cfe0c4}
+  .s-act-btn.note:hover{background:#dce9d2}
   .sched-done-modal textarea{width:100%;min-height:210px;resize:vertical;font-size:14px;line-height:1.7;padding:12px;border:1px solid var(--line2);border-radius:10px;font-family:inherit;box-sizing:border-box;background:#fffdf6}
   .sched-done-modal .sd-title{font-weight:600;margin:2px 0 4px;color:var(--ink);font-size:15px}
   .sched-done-modal .sd-meta{font-size:12px;color:var(--muted);margin-bottom:12px}
@@ -429,20 +432,20 @@
   /* 日程统筹：左列=窄表单+本月日程+本月安排+日程列表；右列=幸福行动历（收窄，给左侧让空间） */
   .sched-top-layout{display:flex;gap:18px;align-items:flex-start;margin-bottom:16px}
   /* --cal-w / --sticky-w：月历列与便利贴列的基准宽度，筛选条复用同一组值以保证严格对齐 */
-  .sched-left-col{flex:0 0 24.10%;width:24.10%;max-width:24.10%;min-width:0;--cal-w:300px;--sticky-w:180px}
+  .sched-left-col{flex:0 0 22.32%;width:22.32%;max-width:22.32%;min-width:0;--cal-w:300px;--sticky-w:180px}
   .sched-left-col>.form.sched-form-narrow{margin:0 0 14px}
-  .sched-top-right{flex:0 0 46.42%;width:46.42%;max-width:46.42%;min-width:0;position:sticky;top:12px}
+  .sched-top-right{flex:0 0 48.40%;width:48.40%;max-width:48.40%;min-width:0;position:sticky;top:12px}
   /* 行动历在右半栏：内部改上下排，格子占满整宽，灵感区移到下方 */
   .sched-top-right .actcal-layout{flex-direction:column;gap:0}
   .sched-top-right .actcal-left{width:100%}
   .sched-top-right .actcal-grid{gap:6px}
   /* 格子改「圆角正方形」：不再 min-height:120px 导致细长 */
-  .sched-top-right .actcal-cell{min-height:0;aspect-ratio:1/1.42;padding:7px 7px 8px;border-radius:12px}
-  .sched-top-right .actcal-cell.empty{min-height:0;padding:0;aspect-ratio:1/1.42}
+  .sched-top-right .actcal-cell{min-height:120px;padding:7px 7px 8px;border-radius:12px}
+  .sched-top-right .actcal-cell.empty{min-height:120px;padding:0}
   .sched-top-right .actcal-cell.doodle-cell{min-height:0;padding:6px}
   .sched-top-right .actcal-cell .num{font-size:12px;line-height:1;font-weight:800}
   .sched-top-right .actcal-cell .act{font-size:11px;line-height:1.38;margin-top:4px;flex:0 0 auto;
-    display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+    display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical;overflow:hidden}
   .sched-top-right .actcal-cell .chk{width:16px;height:16px;font-size:10px;top:4px;right:4px}
   .sched-top-right .actcal-cell .evt{width:6px;height:6px;bottom:5px;right:5px}
   .sched-top-right .actcal-cell:hover{transform:translateY(-2px)}
@@ -839,9 +842,9 @@
   .pet-tray{font-size:22px;line-height:1;margin-bottom:2px;filter:drop-shadow(0 2px 3px rgba(0,0,0,.12));pointer-events:none;display:none}
   @keyframes breatheSoft{0%,100%{transform:scale(1) translateY(0)}50%{transform:scale(1.024) translateY(-1.8px)}}
   .pet-cat.breathing-soft{animation:breatheSoft 3.0s ease-in-out infinite}
-  .pet-speech{position:absolute;right:calc(100% + 11px);top:50%;transform:translateY(-50%);width:max-content;max-width:168px;background:#fffdf7;border:2px solid #f0e6d2;border-radius:14px;padding:6px 11px;font-size:13px;line-height:1.45;text-align:left;color:#5a4632;font-weight:700;box-shadow:0 4px 10px rgba(60,50,40,.16);pointer-events:none;z-index:60;display:none;white-space:normal}
-  .pet-speech:before{content:"";position:absolute;right:-9px;top:50%;margin-top:-7px;width:0;height:0;border-top:7px solid transparent;border-bottom:7px solid transparent;border-left:9px solid #f0e6d2}
-  .pet-speech:after{content:"";position:absolute;right:-6px;top:50%;margin-top:-5px;width:0;height:0;border-top:5px solid transparent;border-bottom:5px solid transparent;border-left:6px solid #fffdf7}
+  .pet-speech{position:absolute;left:50%;bottom:calc(100% + 10px);transform:translateX(-50%);width:max-content;max-width:168px;background:#fffdf7;border:2px solid #f0e6d2;border-radius:14px;padding:6px 11px;font-size:13px;line-height:1.45;text-align:center;color:#5a4632;font-weight:700;box-shadow:0 4px 10px rgba(60,50,40,.16);pointer-events:none;z-index:60;display:none;white-space:normal}
+  .pet-speech:before{content:"";position:absolute;left:50%;bottom:-9px;margin-left:-7px;width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-top:9px solid #f0e6d2}
+  .pet-speech:after{content:"";position:absolute;left:50%;bottom:-6px;margin-left:-5px;width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:6px solid #fffdf7}
   .pet-speech.show{display:block;animation:speechPop .25s ease}
   @keyframes speechPop{0%{opacity:0}100%{opacity:1}}
   .nav-sfx{font-size:10px;color:var(--muted);font-weight:400;margin-left:3px;vertical-align:1px}
@@ -849,7 +852,8 @@
   .mod-tip b{color:var(--accent-deep,#c98a3e)}
   .pomo-tip{font-size:13px;color:var(--muted);text-align:center;margin-top:10px;line-height:1.6}
   .pomo-tip b{color:var(--accent-deep);font-weight:700}
-  .pet-plate{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);width:80px;height:33px;pointer-events:none;z-index:3;display:none}
+  .pet-plate{position:absolute;left:50%;bottom:calc(var(--pet-size,116px)*0.14);transform:translateX(-50%);width:calc(var(--pet-size,116px)*0.69);height:calc(var(--pet-size,116px)*0.285);pointer-events:none;z-index:3;display:none}
+  .pet-plate svg{width:100%;height:100%;display:block}
   .pet-trash{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);width:82px;height:56px;pointer-events:none;z-index:3;display:none}
   @keyframes breathe{0%,100%{transform:scale(1) translateY(0)}50%{transform:scale(1.035) translateY(-1.5px)}}
   @keyframes petCheer{0%{transform:translateY(0) scale(1)}30%{transform:translateY(-14px) scale(1.12)}60%{transform:translateY(0) scale(1)}100%{transform:translateY(0)}}
@@ -978,8 +982,8 @@
   .topbar .btn{min-height:34px;padding:7px 12px;font-size:12.5px;gap:5px;border-radius:9px}
   /* 小猫：可缩放 + 回小窝按钮 + 走回小窝动画 */
   .pet-cat{width:var(--pet-size,116px);height:var(--pet-size,116px)}
-  .pet-cat-wrap .pet-resize{position:absolute;right:-3px;top:-3px;width:24px;height:24px;border-radius:50%;
-    background:var(--surface);border:1px solid var(--line2);cursor:nesw-resize;pointer-events:auto;
+  .pet-cat-wrap .pet-resize{position:absolute;right:-3px;bottom:-3px;width:24px;height:24px;border-radius:50%;
+    background:var(--surface);border:1px solid var(--line2);cursor:nwse-resize;pointer-events:auto;
     display:flex;align-items:center;justify-content:center;opacity:.92;color:var(--muted);
     transition:opacity .2s ease,transform .2s ease,box-shadow .2s ease,color .2s ease,border-color .2s ease;
     box-shadow:0 2px 8px rgba(60,50,40,.24);z-index:6}
@@ -1018,7 +1022,31 @@
     </div>
   </aside>
 
-  <div class="main" data-page-node-id="N6VKWd2ojYPKRLWfuce1Ix">
+      <div id="profileGate" style="display:none;position:fixed;inset:0;z-index:200;background:linear-gradient(160deg,#fbf7f0,#f3ece0);align-items:center;justify-content:center;padding:20px">
+      <div style="width:360px;max-width:94vw;background:#fff;border:1px solid #e7e1d6;border-radius:18px;box-shadow:0 20px 60px rgba(60,50,40,.22);padding:26px 24px;font-size:14px;color:#4a423a">
+        <div id="pgTitle" style="font-size:18px;font-weight:700;margin-bottom:4px">创建本地档案</div>
+        <div id="pgSub" style="color:#9a8f80;font-size:12.5px;line-height:1.6;margin-bottom:18px"></div>
+        <div id="pgNameRow" style="margin-bottom:12px">
+          <div style="font-size:12px;color:#6b5f50;margin-bottom:6px">档案名字</div>
+          <input id="pgName" type="text" maxlength="8" placeholder="给自己起个名字（最多 8 字）" style="width:100%;padding:11px 12px;border:1px solid #e7e1d6;border-radius:10px;font-size:14px;color:#4a423a;box-sizing:border-box">
+        </div>
+        <div id="pgNameStatic" style="display:none;margin-bottom:12px">
+          <div style="font-size:12px;color:#6b5f50;margin-bottom:6px">当前档案</div>
+          <div id="pgNameVal" style="font-size:15px;font-weight:600;padding:8px 0"></div>
+        </div>
+        <div style="font-size:12px;color:#6b5f50;margin-bottom:6px">密码</div>
+        <input id="pgPinA" type="password" inputmode="numeric" autocomplete="off" maxlength="8" placeholder="4-8 位数字" style="width:100%;padding:11px 12px;border:1px solid #e7e1d6;border-radius:10px;font-size:14px;color:#4a423a;margin-bottom:10px;box-sizing:border-box" onkeydown="if(event.key==='Enter') pgSubmit()">
+        <div id="pgPinBRow" style="margin-bottom:10px">
+          <div style="font-size:12px;color:#6b5f50;margin-bottom:6px">再输一次确认</div>
+          <input id="pgPinB" type="password" inputmode="numeric" autocomplete="off" maxlength="8" placeholder="确认密码" style="width:100%;padding:11px 12px;border:1px solid #e7e1d6;border-radius:10px;font-size:14px;color:#4a423a;box-sizing:border-box" onkeydown="if(event.key==='Enter') pgSubmit()">
+        </div>
+        <div id="pgErr" style="display:none;color:#c0392b;font-size:12.5px;margin-bottom:10px"></div>
+        <button id="pgSubmit" class="btn primary" style="width:100%;padding:12px;font-size:15px" onclick="pgSubmit()" type="button">创建并进入</button>
+        <div id="pgForgot" style="display:none;text-align:center;margin-top:12px;color:#9a8f80;font-size:12.5px">忘记密码？<span onclick="pgForgot()" style="color:#b8862f;cursor:pointer;text-decoration:underline">重置（数据不丢）</span></div>
+      </div>
+    </div>
+
+<div class="main" data-page-node-id="N6VKWd2ojYPKRLWfuce1Ix">
     <div class="topbar" data-page-node-id="HEHeyITQXT48XVLyUWzeVj">
       <div data-page-node-id="9X9mUNiYtaz4jk5IaM1F2O">
         <h1 id="pageTitle" data-page-node-id="VKjrA6pGqOeE739kna90cb">今日安排</h1>
@@ -1028,21 +1056,21 @@
       <button class="btn" id="refreshAll" data-page-node-id="Ev8BveRp9IDbv2DIdf7pD3">↻ 刷新全部</button>
       <button class="btn" id="backupBtn" onclick="toggleBackupMenu()" type="button" style="margin-left:8px" data-page-node-id="0pIl8jcDFcCKtTOchbkqh6">💾 数据备份</button>
       <button class="btn" id="aboutBtn" onclick="toggleAboutMenu()" type="button" style="margin-left:8px">ℹ️ 关于</button>
-      <button class="btn" id="switchIdBtn" onclick="toggleIdMenu()" type="button" style="margin-left:8px">切换身份</button>
+      <button class="btn" id="switchIdBtn" onclick="toggleIdMenu()" type="button" style="margin-left:8px">我的档案</button>
     </div>
-    <div id="idCard" style="display:none;position:fixed;width:330px;max-width:92vw;background:#fff;border:1px solid #e7e1d6;border-radius:14px;box-shadow:0 14px 44px rgba(60,50,40,.18);padding:16px;z-index:60;font-size:13px;color:#4a423a;line-height:1.7" data-page-node-id="Tm2KPPYNvn9cCBB9IZ2QRx">
-      <div style="margin-bottom:8px;font-weight:600" data-page-node-id="y4j9ARgCm8j4T9ocdIhAFQ">切换身份 / 你的名字</div>
-      <div style="margin-bottom:10px;color:#9a8f80;font-size:12px">同一链接谁打开都能用，但每个人的内容会自动分开保存、互不干扰。</div>
+    <div id="idCard" style="display:none;position:fixed;width:330px;max-width:92vw;background:#fff;border:1px solid #e7e1d6;border-radius:14px;box-shadow:0 14px 44px rgba(60,50,40,.18);padding:16px;z-index:60;font-size:13px;color:#4a423a;line-height:1.7">
+      <div style="margin-bottom:8px;font-weight:600">你的档案</div>
+      <div style="margin-bottom:10px;color:#9a8f80;font-size:12px">内容只存在本机浏览器里。同一链接谁打开都用自己的档案，互不可见、互不干扰——你看不到别人的，别人也看不到你的。</div>
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap">
-        <span style="font-size:12px;color:#6b5f50;flex:0 0 auto">你的名字</span>
+        <span style="font-size:12px;color:#6b5f50;flex:0 0 auto">档案名字</span>
         <input id="nickInput" type="text" maxlength="8" placeholder="例如：小蕾姐" style="flex:1;min-width:0;padding:6px 9px;border:1px solid #e7e1d6;border-radius:8px;font-size:12.5px;color:#4a423a">
         <button class="btn sm primary" onclick="saveNick()" type="button">保存</button>
       </div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap" data-page-node-id="0TEZwMgGGYqSD1mAt5k63E">
-        <button class="btn sm primary" onclick="chooseIdentity('owner')" data-page-node-id="LFjHmgJzhpU0rZw9DUDQBc">我是小蕾姐（本子主人）</button>
-        <button class="btn sm" onclick="chooseIdentity('guest')" data-page-node-id="vMfinZGdqQV3DNx7ziX5bD">我是访客 / 新用户</button>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn sm" id="idPinBtn" onclick="openPinManage()" type="button">🔑 设置密码</button>
+        <button class="btn sm" id="idLockBtn" onclick="logoutProfile()" type="button">🔒 退出到锁屏</button>
       </div>
-      <div id="idCardFoot" style="margin-top:10px;color:#9a8f80;font-size:12px" data-page-node-id="tSBZ6Qb91DWdqZVLssUbLd"></div>
+      <div id="idCardFoot" style="margin-top:10px;color:#9a8f80;font-size:12px"><span id="idIdentityState"></span></div>
     </div>
     <div id="themeCard" style="display:none;position:fixed;width:300px;max-width:92vw;background:#fff;border:1px solid #e7e1d6;border-radius:14px;box-shadow:0 14px 44px rgba(60,50,40,.18);padding:14px;z-index:60" data-page-node-id="plPOJIruLAfMVJVfQrb4qB">
       <div style="font-size:13px;color:#4a423a;margin-bottom:10px;font-weight:600" data-page-node-id="1hbQw8MmF7D6spPFFwOYoS">选择工作台配色</div>
@@ -1052,6 +1080,7 @@
     <div id="backupCard" style="display:none;position:fixed;width:320px;max-width:92vw;background:#fff;border:1px solid #e7e1d6;border-radius:14px;box-shadow:0 14px 44px rgba(60,50,40,.18);padding:16px;z-index:60;font-size:13px;color:#4a423a;line-height:1.7" data-page-node-id="abRpnKDuj4bipLUkI17Ukz">
       <div style="font-size:13px;font-weight:600;margin-bottom:6px" data-page-node-id="JX412x6C5cgdlmXDwtVSb1">数据备份 / 恢复</div>
       <div style="color:#9a8f80;font-size:12px;margin-bottom:12px" data-page-node-id="CZYDryOw1PRcSi5CQC45Td">导出会把本链接下所有数据（日程、记账、习惯、番茄钟设置等）存成一个 JSON 文件；换链接或换设备后，用「恢复备份」导入即可。</div>
+      <div style="color:#8a7f6e;font-size:12px;margin-bottom:12px;background:#faf7f1;border:1px dashed #e7e1d6;border-radius:9px;padding:8px 10px;line-height:1.6">📱 <b>多设备同步</b>：在原设备「导出全部数据」→ 用微信「文件传输助手」发给自己 → 新设备打开本链接后「从备份文件恢复」。朋友各自设备上的内容互相看不到，也不会传到你这里。</div>
       <button class="btn primary" style="width:100%;margin-bottom:8px" onclick="backupAllData()" data-page-node-id="DFy09lp5W9cu2mhc3uyeqA">⬇️ 导出全部数据为 JSON</button>
       <button class="btn" style="width:100%" onclick="document.getElementById('backupFile').click()" data-page-node-id="5gVRTves3SSIyaUTXiRxyt">⬆️ 从备份文件恢复</button>
       <input id="backupFile" type="file" accept="application/json,.json" style="display:none" onchange="restoreAllDataFromFile(this)" data-page-node-id="1URjfeY4z9FzNevAu3oiSr">
@@ -1309,56 +1338,219 @@ var PET_IMGS={
 
 var SETTINGS = {};
 
-/* ============ 多人独立身份（同名链接、各自隔离） ============ */
-var OWNER_NAME = "小蕾姐";
-var FIRST_RUN = !localStorage.getItem('lw_uid');
-function getUid(){
-  var u = localStorage.getItem('lw_uid');
-  if(u) return u;
-  var g = 'g_' + Math.random().toString(36).slice(2,10);
-  localStorage.setItem('lw_uid', g);
-  return g;
-}
-var MY_UID = getUid();
+/* ============ 本地档案（单人单设备：创建档案 → 密码进入，互不可见） ============ */
+var OWNER_NAME = "小蕾姐"; // 历史兼容：本机旧数据 owner 标记；新档案用自定义名字
+var FIRST_RUN = false;     // 已废弃，改用 isRealProfile()
+function getUid(){ var u=localStorage.getItem('lw_uid'); if(u) return u; var g='g_'+Math.random().toString(36).slice(2,10); try{ localStorage.setItem('lw_uid',g); }catch(e){} return g; }
+function isRealProfile(){ var u=localStorage.getItem('lw_uid'); return !!u && u.indexOf('g_')!==0; }
+var MY_UID = localStorage.getItem('lw_uid') || getUid();
+function profileName(){ return localStorage.getItem('lw_uid') || ''; }
 function isOwner(){ return MY_UID === OWNER_NAME; }
 function ownerCond(){ return { property: { property: "owner", text: { equals: MY_UID } } }; }
 function displayName(){
   var n=''; try{ n=localStorage.getItem('lw_nick')||''; }catch(e){}
-  return n || (isOwner()? OWNER_NAME : '访客');
+  return n || profileName() || '我';
 }
 function updateIdChip(){ var c=document.getElementById('brandUser'); if(c) c.textContent = displayName(); }
 function toggleIdMenu(){
   var el=document.getElementById('nickInput');
-  if(el){ try{ el.value=localStorage.getItem('lw_nick')||(isOwner()?OWNER_NAME:''); }catch(e){} }
+  if(el){ try{ el.value=displayName(); }catch(e){} }
+  updateIdCardUI();
   openPanelNear('switchIdBtn','idCard');
 }
 function saveNick(){
   var el=document.getElementById('nickInput'); if(!el) return;
   var v=(el.value||'').trim().slice(0,8);
-  try{ if(v) localStorage.setItem('lw_nick',v); else localStorage.removeItem('lw_nick'); }catch(e){}
-  updateIdChip(); toast('名字已更新为「'+displayName()+'」');
+  if(!v){ toast('名字不能为空'); closeIdCard(); return; }
+  try{ localStorage.setItem('lw_nick',v); }catch(e){}
+  updateIdChip(); updateIdCardUI(); reloadAll(); closeIdCard();
+  toast('名字已更新为「'+displayName()+'」');
 }
 var settingsInit = false;
+function closeIdCard(){ var c=document.getElementById('idCard'); if(c) c.style.display='none'; }
 function finishIdentity(){
-  MY_UID = getUid(); settingsInit = false;
-  var c=document.getElementById('idCard'); if(c) c.style.display='none';
+  MY_UID = localStorage.getItem('lw_uid'); settingsInit = false;
+  closeIdCard();
   updateIdChip(); reloadAll();
 }
-function chooseIdentity(role){
-  if(role==='owner'){
-    myConfirm('确认切换到「小蕾姐（本子主人）」身份？\n选错会看到 / 混入他人的数据。', function(){
-      localStorage.setItem('lw_uid', OWNER_NAME);
-      try{ if(!localStorage.getItem('lw_nick')) localStorage.setItem('lw_nick', OWNER_NAME); }catch(e){}
-      finishIdentity();
-    });
-  } else {
-    var g = localStorage.getItem('lw_uid');
-    if(!g || g===OWNER_NAME){ g='g_'+Math.random().toString(36).slice(2,10); }
-    try{ if(localStorage.getItem('lw_nick')===OWNER_NAME) localStorage.removeItem('lw_nick'); }catch(e){}
-    localStorage.setItem('lw_uid', g); finishIdentity();
+/* chooseIdentity 已废弃：改为本地档案模型（创建/解锁档案） */
+
+/* ============ 主人密码锁（方案A：本机 PIN，防误入 / 防手滑） ============
+   说明：纯前端无服务端，密码只存在本机浏览器（哈希存储，不落明文）。
+   它挡的是「在共享设备上随手进入你档案」的人；朋友在自己设备上打开，
+   看到的也只是他自己浏览器里的空数据，因此不会有信息泄露。 */
+function hasPin(){ try{ return !!localStorage.getItem('lw_pin'); }catch(e){ return false; } }
+function pinHash(p){
+  var h=5381, s='lw$'+String(p)+'$claw26';
+  for(var i=0;i<s.length;i++){ h=(((h<<5)+h)+s.charCodeAt(i))>>>0; }
+  return 'h'+h.toString(36);
+}
+function setPin(p){ try{ localStorage.setItem('lw_pin', pinHash(p)); }catch(e){} }
+function clearPin(){ try{ localStorage.removeItem('lw_pin'); }catch(e){} }
+function verifyPin(p){ try{ return hasPin() && localStorage.getItem('lw_pin')===pinHash(p); }catch(e){ return false; } }
+var PIN_INPUT_STYLE='width:100%;padding:9px 11px;border:1px solid #e7e1d6;border-radius:9px;font-size:14px;color:#4a423a;margin-bottom:8px;box-sizing:border-box';
+function updateIdCardUI(){
+  var b3=document.getElementById('idPinBtn'), b4=document.getElementById('idLockBtn');
+  if(b3){ b3.textContent = hasPin() ? '🔑 修改密码' : '🔑 设置密码'; }
+  if(b4){ b4.textContent = '🔒 退出到锁屏'; }
+  var st=document.getElementById('idIdentityState');
+  if(st){ st.textContent='当前档案：'+displayName()+'　·　密码：'+(hasPin()?'已开启 🔒':'未设置'); }
+}
+function pinDialogHTML(mode){
+  var head='<div style="font-weight:600;font-size:14px;margin-bottom:6px">'+(mode==='set'?'设置档案密码':'输入档案密码')+'</div>';
+  var tip = (mode==='set')
+    ? '<div style="color:#9a8f80;font-size:12px;margin-bottom:10px;line-height:1.6">设一个 4-8 位数字密码，用来在本机进入你的档案。它只存在这台设备的浏览器里。</div>'
+    : '<div style="color:#9a8f80;font-size:12px;margin-bottom:10px;line-height:1.6">密码只保存在这台设备上，忘了没法找回；可点下方「忘记密码」重置，数据不受影响。</div>';
+  var a='<input id="pinA" type="password" inputmode="numeric" autocomplete="off" maxlength="8" placeholder="'+(mode==='set'?'新密码（4-8 位数字）':'档案密码')+'" style="'+PIN_INPUT_STYLE+'" onkeydown="pinEnter(event,'+(mode==='set'?'0':'1')+')">';
+  var b=(mode==='set') ? '<input id="pinB" type="password" inputmode="numeric" autocomplete="off" maxlength="8" placeholder="再输一次确认" style="'+PIN_INPUT_STYLE+'" onkeydown="pinEnter(event,1)">' : '';
+  return head+tip+a+b+'<div id="pinErr" style="display:none;color:#c0392b;font-size:12px"></div>';
+}
+function pinErr(msg){ var e=document.getElementById('pinErr'); if(e){ e.textContent=msg; e.style.display='block'; } }
+function pinEnter(e,target){
+  if(e && e.key!=='Enter') return;
+  if(target===0){ var b=document.getElementById('pinB'); if(b) b.focus(); }
+  else { if(e) e.preventDefault(); appDialogClick(1); }
+}
+function askPinSetup(after, okLabel){
+  appDialog({html:pinDialogHTML('set'), closable:true,
+    buttons:[{label:'取消'},
+             {label:okLabel||'保存', cls:'primary', stay:true, onClick:function(){ doPinSetup(after); }}]});
+  var a=document.getElementById('pinA');
+  if(a){ setTimeout(function(){ try{ a.focus(); }catch(e){} }, 30); }
+}
+function askPinVerify(after){
+  appDialog({html:pinDialogHTML('verify'), closable:true,
+    buttons:[{label:'忘记密码？', stay:true, onClick:function(){ appDialogClose(true); forgotPin(); }},
+             {label:'确定', cls:'primary', stay:true, onClick:function(){ doPinVerify(after); }}]});
+  var a=document.getElementById('pinA');
+  if(a){ setTimeout(function(){ try{ a.focus(); }catch(e){} }, 30); }
+}
+function doPinSetup(after){
+  var a=document.getElementById('pinA'), b=document.getElementById('pinB');
+  var p=((a&&a.value)||'').trim(), q=((b&&b.value)||'').trim();
+  if(!/^\d{4,8}$/.test(p)){ pinErr('请输入 4-8 位数字密码'); return; }
+  if(p!==q){ pinErr('两次输入不一致，请重新输入'); if(b){ b.value=''; try{ b.focus(); }catch(e){} } return; }
+  setPin(p); appDialogClose(true); toast('主人密码已设置 🔒');
+  if(after) after();
+}
+function doPinVerify(after){
+  var a=document.getElementById('pinA');
+  var p=((a&&a.value)||'').trim();
+  if(verifyPin(p)){ appDialogClose(true); if(after) after(); return; }
+  pinErr('密码不对，再试一次');
+  if(a){ a.value=''; try{ a.focus(); }catch(e){} }
+}
+function forgotPin(){
+  appDialog({msg:'密码只存在这台设备的浏览器里，忘了没法找回。\n\n可以重置密码：重置后重新设一个即可，你的日程、记账等数据都不会丢。',
+    buttons:[{label:'先不重置'},
+             {label:'重置密码', cls:'primary', stay:true, onClick:function(){
+               clearPin(); appDialogClose(true);
+               askPinSetup(function(){ toast('密码已更新 🔒'); updateIdCardUI(); }, '保存新密码');
+             }}]});
+}
+/* enterOwner 已废弃：改为本地档案模型 */
+function logoutProfile(){
+  closeIdCard();
+  showProfileGate('unlock');
+}
+function openPinManage(){
+  if(!hasPin()){
+    askPinSetup(function(){ toast('密码已设置 🔒'); updateIdCardUI(); }, '保存');
+    return;
   }
+  askPinVerify(function(){ pinManageMenu(); });
+}
+function pinManageMenu(){
+  appDialog({msg:'密码已开启。要修改还是移除？',
+    buttons:[{label:'取消'},
+             {label:'修改密码', cls:'primary', stay:true, onClick:function(){ appDialogClose(true); askPinSetup(function(){ toast('密码已更新 🔒'); updateIdCardUI(); }, '保存新密码'); }},
+             {label:'移除密码', stay:true, onClick:function(){ appDialogClose(true); clearPin(); toast('已移除密码'); updateIdCardUI(); }}]});
 }
 function reloadAll(){ loadSettings().then(function(){ Object.keys(LOADERS).forEach(function(k){ try{ LOADERS[k](); }catch(e){} }); }); }
+
+
+/* ============ 档案锁 / 创建本地档案（本地单人档案） ============ */
+var gateMode = 'create';
+function showProfileGate(mode){
+  gateMode = mode;
+  var g=document.getElementById('profileGate'); if(!g) return;
+  g.style.display='flex';
+  var t=document.getElementById('pgTitle'), s=document.getElementById('pgSub');
+  var nameRow=document.getElementById('pgNameRow'), nameStatic=document.getElementById('pgNameStatic'), nameVal=document.getElementById('pgNameVal');
+  var pinBRow=document.getElementById('pgPinBRow'), submit=document.getElementById('pgSubmit'), forgot=document.getElementById('pgForgot');
+  if(mode==='create'){
+    if(t) t.textContent='创建本地档案';
+    if(s) s.textContent='设一个名字和密码，用来在本机存放你的专属内容。数据只存在这台设备的浏览器里，不上传任何服务器；换设备需手动导出导入。';
+    if(nameRow) nameRow.style.display=''; if(nameStatic) nameStatic.style.display='none';
+    if(pinBRow) pinBRow.style.display=''; if(submit) submit.textContent='创建并进入'; if(forgot) forgot.style.display='none';
+  } else if(mode==='setpin'){
+    if(t) t.textContent='设置档案密码';
+    if(s) s.textContent='你的档案已存在，先设一个密码，之后每次打开用它进入。只存本机，不上传服务器。';
+    if(nameRow) nameRow.style.display='none'; if(nameStatic) nameStatic.style.display=''; if(nameVal) nameVal.textContent=displayName();
+    if(pinBRow) pinBRow.style.display=''; if(submit) submit.textContent='保存并进入'; if(forgot) forgot.style.display='none';
+  } else {
+    if(t) t.textContent='解锁档案';
+    if(s) s.textContent='输入密码进入你的专属档案。内容只存在本机浏览器，互不可见。';
+    if(nameRow) nameRow.style.display='none'; if(nameStatic) nameStatic.style.display=''; if(nameVal) nameVal.textContent=displayName();
+    if(pinBRow) pinBRow.style.display='none'; if(submit) submit.textContent='进入'; if(forgot) forgot.style.display= hasPin()?'block':'none';
+  }
+  pgClearErr();
+  var nm=document.getElementById('pgName'), pa=document.getElementById('pgPinA'), pb=document.getElementById('pgPinB');
+  if(mode==='create'){ if(nm) nm.value=''; if(pa) pa.value=''; if(pb) pb.value=''; setTimeout(function(){ try{ nm.focus(); }catch(e){} },60); }
+  else { if(pa) pa.value=''; if(pb) pb.value=''; setTimeout(function(){ try{ pa.focus(); }catch(e){} },60); }
+}
+function pgSubmit(){
+  var name=((document.getElementById('pgName')||{}).value||'').trim();
+  var pa=((document.getElementById('pgPinA')||{}).value||'').trim();
+  var pb=((document.getElementById('pgPinB')||{}).value||'').trim();
+  if(gateMode==='create'){
+    if(!name){ pgErr('请先起一个档案名字'); return; }
+    if(!/^\d{4,8}$/.test(pa)){ pgErr('密码需为 4-8 位数字'); return; }
+    if(pa!==pb){ pgErr('两次密码不一致'); return; }
+    createProfile(name, pa);
+  } else if(gateMode==='setpin'){
+    if(!/^\d{4,8}$/.test(pa)){ pgErr('密码需为 4-8 位数字'); return; }
+    if(pa!==pb){ pgErr('两次密码不一致'); return; }
+    setPin(pa); pgHide(); enterApp(); toast('密码已设置 🔒');
+  } else {
+    if(verifyPin(pa)){ pgHide(); enterApp(); }
+    else { pgErr('密码不对，再试一次'); var a=document.getElementById('pgPinA'); if(a){ a.value=''; try{ a.focus(); }catch(e){} } }
+  }
+}
+function createProfile(name, pw){
+  var old = localStorage.getItem('lw_uid');
+  var doEnter = function(){
+    try{ localStorage.setItem('lw_uid', name); localStorage.setItem('lw_nick', name); }catch(e){}
+    setPin(pw); MY_UID = name; pgHide(); enterApp(); toast('档案已创建，欢迎「'+name+'」');
+  };
+  if(old && old.indexOf('g_')===0){
+    pgErr('正在迁移旧数据…');
+    migrateOwner(old, name).then(function(){ doEnter(); }, function(){ doEnter(); });
+  } else { doEnter(); }
+}
+function migrateOwner(oldU, newU){
+  var ids = Object.keys(DB).map(function(k){ return DB[k]; });
+  var tasks = ids.map(function(dbId){
+    return rawQuery(dbId, { filter:{ property:{ property:'owner', text:{ equals:oldU } } }, pageSize:500 })
+      .then(function(r){ var rs=(r&&r.results)||[]; return Promise.all(rs.map(function(rec){ return rawUpd(dbId, rec.id, { owner:{ text:newU } }); })); });
+  });
+  return Promise.all(tasks);
+}
+function pgHide(){ var g=document.getElementById('profileGate'); if(g) g.style.display='none'; }
+function pgErr(m){ var e=document.getElementById('pgErr'); if(e){ e.textContent=m; e.style.display='block'; } }
+function pgClearErr(){ var e=document.getElementById('pgErr'); if(e){ e.textContent=''; e.style.display='none'; } }
+function pgForgot(){
+  appDialog({msg:'密码只存在这台设备的浏览器里，忘了没法找回。\n\n可以重置密码：重置后重新设一个即可，你的内容都不会丢。',
+    buttons:[{label:'先不重置'},
+             {label:'重置密码', cls:'primary', stay:true, onClick:function(){ appDialogClose(true); clearPin(); showProfileGate('setpin'); }}]});
+}
+function enterApp(){
+  MY_UID = localStorage.getItem('lw_uid');
+  buildNav(); showModule('tasks'); updateIdChip(); updateIdCardUI();
+  var rf=document.getElementById('refreshAll'); if(rf) rf.onclick=function(){ toast('正在刷新…'); reloadAll(); };
+  reloadAll();
+  pgHide();
+}
 
 /* ============ 数据备份 / 恢复（跨链接、跨设备搬运） ============ */
 function toggleBackupMenu(){ openPanelNear('backupBtn','backupCard'); }
@@ -2850,8 +3042,10 @@ function renderSchedule(rows){
       acts+='<button class="s-act-btn done ico" title="已完成" onclick="openSchedDoneModal(\''+rid(r)+'\',__schedById(\''+rid(r)+'\'))">✓</button>'+
             '<button class="s-act-btn exp ico" title="未完成" onclick="markSchedExpired(\''+rid(r)+'\')">✗</button>';
     } else if(isDone){
-      acts+='<span class="s-pill done ico" title="已完成（点击查看/编辑完成详情）" onclick="openSchedDoneModal(\''+rid(r)+'\',__schedById(\''+rid(r)+'\'))">✓</span>'+
-            (r['完成详情']?'<span class="s-note-flag" onclick="openSchedDoneModal(\''+rid(r)+'\',__schedById(\''+rid(r)+'\'))">📝 详情</span>':'')+
+      acts+='<div class="s-done-stack">'+
+              '<span class="s-pill done ico" title="已完成（点击查看/编辑完成详情）" onclick="openSchedDoneModal(\''+rid(r)+'\',__schedById(\''+rid(r)+'\'))">✓</span>'+
+              '<button class="s-act-btn note" title="查看/编辑完成详情" onclick="openSchedDoneModal(\''+rid(r)+'\',__schedById(\''+rid(r)+'\'))">📝 详情</button>'+
+            '</div>'+
             '<button class="s-act-btn rev" title="恢复为待办" onclick="revertSched(\''+rid(r)+'\')">↺</button>';
     } else {
       acts+='<span class="s-pill exp ico" title="未完成（已过期）">✗</span>'+
@@ -4841,7 +5035,7 @@ function enablePetResize(){
   });
   h.addEventListener('pointermove', function(e){
     if(!on) return;
-    var d=((e.clientX-sx)-(e.clientY-sy))/2;
+    var d=((e.clientX-sx)+(e.clientY-sy))/2;
     applyPetSize(s0 + d*1.6);
     e.preventDefault(); e.stopPropagation();
   });
@@ -5007,11 +5201,10 @@ function loadSettings(){
 }
 function boot(){
   if(!D()){ document.getElementById('content').innerHTML='<div class="errbox"><div class="msg">⚠ 数据库环境未就绪，请刷新页面重试</div><button class="btn sm primary" onclick="location.reload()">刷新</button></div>'; return; }
-  buildNav(); showModule('tasks'); updateIdChip();
   buildThemeSwatches(); initTheme(); initPet();
-  if(FIRST_RUN){ openPanelNear('switchIdBtn','idCard'); }
-  reloadAll();
-  document.getElementById('refreshAll').onclick=function(){ toast('正在刷新…'); reloadAll(); };
+  if(!isRealProfile()){ showProfileGate('create'); return; }
+  if(!hasPin()){ showProfileGate('setpin'); return; }
+  showProfileGate('unlock'); return;
 }
 if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', boot); else boot();
 </script>

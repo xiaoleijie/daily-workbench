@@ -583,7 +583,7 @@
   @media(max-width:560px){ .sched-add-card{width:96vw} .smc-grid .d{font-size:12px} }
   @media(max-width:560px){ .sa-flex{flex-direction:column;gap:10px} .sa-cal,.sa-ops{flex:none;width:100%} .sa-ops{padding-top:0;display:grid;grid-template-columns:repeat(3,1fr);gap:8px} }
   .sticky-note{background:#FFF7C2;border:1px solid #EADF8E;box-shadow:0 8px 18px rgba(0,0,0,.12);border-radius:6px;padding:12px 14px;transform:none;margin:0;height:100%;display:flex;flex-direction:column}
-  .sticky-note .sticky-title{font-weight:800;color:#7a6a2a;margin-bottom:8px;font-size:14px}
+  .sticky-note .sticky-rule{height:0;border-top:1.5px dashed rgba(122,106,42,.45);margin:2px 0 10px}
   /* 记事本横格：line-height(30px) 与横线周期(30px) 一致，文字正好落在横线上 */
   .sticky-note .sticky-area{width:100%;min-height:150px;flex:1;border:none;resize:vertical;
     font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;
@@ -863,7 +863,7 @@
   .btn.sfx-opt .sfx-cur{margin-left:auto;font-size:11px;font-weight:700;color:var(--accent-deep);flex:0 0 auto}
   .btn.ghost{background:transparent;border:1px solid var(--line2);color:var(--muted)}
   /* ===== 右上角宠物（可拖拽 AI 位图） ===== */
-  .pet{position:fixed;right:12px;top:62px;z-index:55;display:flex;flex-direction:column;align-items:center;width:auto;text-align:center;user-select:none;pointer-events:none}
+  .pet{--pet-size:116px;position:fixed;right:12px;top:62px;z-index:55;display:flex;flex-direction:column;align-items:center;width:auto;text-align:center;user-select:none;pointer-events:none}
   .pet-cat{display:inline-block;width:116px;height:116px;object-fit:contain;cursor:grab;pointer-events:auto;touch-action:none;-webkit-user-drag:none;user-drag:none;filter:drop-shadow(0 7px 12px rgba(60,50,40,.20));transition:transform .25s ease;transform-origin:50% 22%}
   .pet-cat-wrap{display:block;position:relative;line-height:0}
   .pet-cat-wrap.breathing{animation:breathe 3.2s ease-in-out infinite}
@@ -1029,9 +1029,13 @@
     color:var(--accent);border-color:var(--accent);box-shadow:0 3px 10px rgba(60,50,40,.30)}
   .pet-cat.walkhome{animation:petWalk .4s ease-in-out infinite}
   @keyframes petWalk{0%,100%{transform:translateY(0) rotate(-2.5deg)}50%{transform:translateY(-4px) rotate(2.5deg)}}
-  .pet-home-btn{margin-top:6px;display:inline-block;pointer-events:auto;font-size:9.5px;line-height:1;
+  .imp-altrow{display:flex;flex-wrap:nowrap;gap:8px;margin-top:10px}
+  .imp-altrow .btn{flex:1 1 0;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;padding:8px 6px}
+  @media(max-width:620px){ .imp-altrow{flex-wrap:wrap} .imp-altrow .btn{flex:1 1 100%} }
+  .pet-home-btn{margin-top:6px;display:inline-block;pointer-events:auto;line-height:1;
+    font-size:calc(var(--pet-size,116px)*0.095);font-weight:600;
     color:var(--muted);background:var(--surface);border:1px solid var(--line2);border-radius:20px;
-    padding:4px 9px;cursor:pointer;white-space:nowrap;opacity:.82;
+    padding:calc(var(--pet-size,116px)*0.045) calc(var(--pet-size,116px)*0.10);cursor:pointer;white-space:nowrap;opacity:.82;
     box-shadow:0 2px 6px rgba(60,50,40,.10);transition:opacity .2s,color .2s,border-color .2s}
   .pet-home-btn:hover{opacity:1;color:var(--accent);border-color:var(--accent)}
 </style>
@@ -3214,7 +3218,7 @@ function renderSchedule(rows){
   var days=new Date(y,mo+1,0).getDate();
   var first=new Date(y,mo,1); var startDay=(first.getDay()+6)%7;
   var mini='<div class="panel mini-cal-panel" style="padding:14px">'+
-    '<div class="mc-head"><h3>'+td.substring(0,7)+' · 本月日程</h3>'+
+    '<div class="mc-head"><h3>'+td.substring(0,7)+'</h3>'+
     '<button class="btn sm primary sched-add-btn" onclick="openSchedAddModal()" title="添加事项，可一次选中多个日期">＋ 本月事项</button></div>'+
     '<div class="monthcal"><div class="wd">一</div><div class="wd">二</div><div class="wd">三</div><div class="wd">四</div><div class="wd">五</div><div class="wd">六</div><div class="wd">日</div>';
   for(var i=0;i<startDay;i++) mini+='<div class="d"></div>';
@@ -3235,7 +3239,7 @@ function renderSchedule(rows){
     loadFilterOrder().map(function(k){ return filterCells[k]||''; }).join('')+
     (schedStatusF!=='全部状态'?'<button class="btn sm filt-btn f-clear" onclick="schedStatusF=\'全部状态\';renderSchedule(window.__sched)">清除状态</button>':'')+
     '</div>';
-  var sticky='<div class="sticky-note"><div class="sticky-title">📌 本月安排</div><textarea class="sticky-area" id="month-note" onchange="saveMonthNote(this.value)" placeholder="还没定下日期的安排，先记在这里…">'+esc(getMonthNote())+'</textarea></div>';
+  var sticky='<div class="sticky-note"><div class="sticky-rule"></div><textarea class="sticky-area" id="month-note" onchange="saveMonthNote(this.value)" placeholder="还没定下日期的安排，先记在这里…">'+esc(getMonthNote())+'</textarea></div>';
   var shown=rows.filter(function(r){ var st=schedStatus(r); return (schedFilter==='全部'||r["分类"]===schedFilter) && (!schedSelDate||dateSub(r["日期"])===schedSelDate) && (schedStatusF==='全部状态'||(schedStatusF==='待办'&&st==='todo')||(schedStatusF==='已完成'&&st==='done')||(schedStatusF==='未完成已过期'&&st==='expired')); });
   var list='<div class="panel sched-list-panel"><div class="list">';
   if(!shown.length) list+='<div class="empty">这段时间还没有安排</div>';
@@ -4801,10 +4805,14 @@ function openPasteImport(){
       '识别完还能在表格里直接改，改满意了再导入。'+
     '</div>'+
     '<textarea id="imp-paste" class="imp-textarea" placeholder="在这里粘贴通知原文…">'+esc(IMP_PASTE_TEXT)+'</textarea>'+
+    '<div class="imp-altrow">'+
+      '<button class="btn" onclick="pickCsv()" title="导入 CSV 文件">📄 导入 CSV 文件</button>'+
+      '<button class="btn" onclick="pickXlsx()" title="导入 Excel 文件（.xlsx / .xls）">📗 导入 Excel 文件</button>'+
+      '<button class="btn" onclick="downloadSchedTemplate()" title="下载 Excel 模板（含填写说明）">⬇ 下载 Excel 模板</button>'+
+    '</div>'+
     '<div class="imp-foot">'+
-      '<button class="btn" onclick="openImportPicker()">其他导入方式</button>'+
-      '<span style="flex:1"></span>'+
       '<button class="btn" onclick="closeImportModal()">取消</button>'+
+      '<span style="flex:1"></span>'+
       '<button class="btn primary" onclick="handlePasteText()">识别</button>'+
     '</div>'+
   '</div>';
@@ -4970,9 +4978,6 @@ function openImportPicker(){
     '<h3>导入日程</h3>'+
     '<div class="imp-pick">'+
       '<button class="btn primary" onclick="openPasteImport()">📋 粘贴通知文本（推荐 · 最省事）</button>'+
-      '<button class="btn" onclick="pickCsv()">📄 导入 CSV 文件</button>'+
-      '<button class="btn" onclick="pickXlsx()">📗 导入 Excel 文件（.xlsx / .xls）</button>'+
-      '<button class="btn primary" onclick="downloadSchedTemplate()">⬇ 下载 Excel 模板（含填写说明）</button>'+
     '</div>'+
     '<div class="imp-fields">'+IMP_FIELDS_HTML+'</div>'+
     '<div class="imp-foot"><button class="btn" onclick="closeImportModal()">关闭</button></div>'+
@@ -4998,7 +5003,7 @@ function impDownloadXlsx(wb, fname){
     return impDownload(base64ToBlob(b64,'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'), fname);
   }catch(e){ toast('生成失败：'+((e&&e.message)||e),true); return false; }
 }
-/* 下载 Excel 模板：第 1 张表是待填的数据表，第 2 张是字段说明 */
+/* 下载 Excel 模板：单张数据表，表内已带示例行示范怎么填 */
 function buildSchedTemplateWb(){
   var head=['日期','标题','分类','开始时间','结束时间','地点','备注','完成','象限'];
   // 示例行标题带「示例-」前缀，导入时会被自动跳过，避免没删示例就导入
@@ -5008,32 +5013,12 @@ function buildSchedTemplateWb(){
   ];
   var ws1=XLSX.utils.aoa_to_sheet([head].concat(demo));
   ws1['!cols']=[{wch:12},{wch:22},{wch:12},{wch:10},{wch:10},{wch:14},{wch:22},{wch:6},{wch:6}];
-  var desc=[
-    ['字段','必填','说明','示例'],
-    ['日期','必填','2026-09-03 / 2026/9/3 / 2026年9月3日 / 9-3；Excel 日期格式也认','2026-09-03'],
-    ['标题','必填','这条日程要做什么','月度主管会'],
-    ['分类','选填','留空则用导入弹窗里的「统一分类」','川分行事历'],
-    ['开始时间','选填','14:00 或 9:30','12:00'],
-    ['结束时间','选填','同上','16:00'],
-    ['地点','选填','文字','公司会议室'],
-    ['备注','选填','补充说明，如跨天信息','跨9/3~9/8（共6天）'],
-    ['完成','选填','是 / 否，默认否','否'],
-    ['象限','选填','Q1 重要且紧急｜Q2 重要不紧急｜Q3 紧急不重要｜Q4 不紧急不重要，默认 Q1','Q1'],
-    ['',''],
-    ['注意','','第 1 张表里带「示例-」开头的两行是格式示范，导入时会自动跳过；直接改写成你自己的内容就不再跳过',''],
-    ['注意','','日程里「日期=今天」的安排，会自动进入「今日安排」四象限',''],
-    ['注意','','同「日期+标题」的已有条目会被判为重复，默认不勾选',''],
-    ['注意','','导入前会先给预览，勾选确认后才真正写入','导入预览']
-  ];
-  var ws2=XLSX.utils.aoa_to_sheet(desc);
-  ws2['!cols']=[{wch:12},{wch:6},{wch:58},{wch:20}];
   var wb=XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws1, '日程模板');
-  XLSX.utils.book_append_sheet(wb, ws2, '填写说明');
   return wb;
 }
 function downloadSchedTemplate(){
-  if(impDownloadXlsx(buildSchedTemplateWb(), '日程导入模板.xlsx')) toast('模板已下载，填好后回来点「选择 Excel 文件」');
+  if(impDownloadXlsx(buildSchedTemplateWb(), '日程导入模板.xlsx')) toast('模板已下载，填好后回来点「📗 导入 Excel 文件」');
 }
 
 /* ---- 导出（Excel / PDF / CSV） ---- */
@@ -5433,7 +5418,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     <div class="pet-plate" id="petPlate" data-page-node-id="tz4VZUlVP7lzQEw2EzE04K"><svg viewBox="0 0 60 24" width="80" height="33" xmlns="http://www.w3.org/2000/svg" data-page-node-id="osXoY4hhH5r77rw187zpn7"><ellipse cx="30" cy="15" rx="28" ry="8.5" fill="#f1e9dd" stroke="#d8cbb6" stroke-width="1.5" data-page-node-id="Pd7wSFOO3ItHI1IiNn7NkJ"/><ellipse cx="30" cy="13" rx="20" ry="5" fill="#fffaf2" stroke="#e6dac8" stroke-width="1" data-page-node-id="4yvcTTgE1UyeefDz3NdmLI"/></svg></div>
     <div class="pet-trash" id="petTrash" data-page-node-id="XZB4ex5gCZrv9R3TPA1rq3"><svg viewBox="0 0 80 54" width="82" height="56" xmlns="http://www.w3.org/2000/svg" data-page-node-id="uf3wERLp6jXx5Iuuh8M60B"><circle cx="22" cy="34" r="10" fill="#fffdf7" stroke="#e0d6c4" stroke-width="1.4" data-page-node-id="Uk3xgOZVOkt0k2IMOYCvGJ"/><path d="M15 31 l6 4 M22 26 l1 7 M28 32 l-5 5" stroke="#cdbfa6" stroke-width="1" fill="none" stroke-linecap="round" data-page-node-id="GkJLp492vXqlipzqJBU8N6"/><rect x="46" y="20" width="26" height="6" rx="2" fill="#b9c2cc" data-page-node-id="1G2SPDLEO4cCImHF6N7J8a"/><path d="M50 14 h18 M59 11 v3" stroke="#8c98a6" stroke-width="2.4" fill="none" stroke-linecap="round" data-page-node-id="ZlFY8oe5AKTpv6UABFuVHP"/><path d="M49 26 h20 l-3 22 a3 3 0 0 1 -3 3 h-8 a3 3 0 0 1 -3 -3 z" fill="#cdd6df" stroke="#9aa6b3" stroke-width="1.4" data-page-node-id="fAEK616EvE4Mg3sMTByT01"/><path d="M54 30 v15 M59 30 v15 M64 30 v15" stroke="#9aa6b3" stroke-width="1" opacity=".5" data-page-node-id="N0u7ZioajKuw9HPwbMzTm2"/></svg></div>
   </div>
-  <button class="pet-home-btn" id="petHomeBtn" onclick="petGoHome()" type="button" title="点击让小猫回小窝">点击猫咪 回小窝</button>
+  <button class="pet-home-btn" id="petHomeBtn" onclick="petGoHome()" type="button" title="点击让小猫回小窝">回小窝</button>
 </div>
 <script>
 /* PWA：注册 Service Worker，使手机可“添加到主屏幕”并支持离线打开 */

@@ -49,6 +49,11 @@
   .nav button.dragging{opacity:.45}
   .nav button.drag-over{border-top:2px solid var(--accent);background:var(--accent-soft)}
   .side-foot{margin-top:18px;padding:10px 12px;font-size:11px;color:var(--muted);border-top:1px solid var(--line);line-height:1.7}
+  .side-note-link{cursor:pointer;border-radius:6px;padding:2px 4px;margin:-2px -4px;
+    text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;
+    text-decoration-color:rgba(150,140,125,.55);transition:color .2s,background .2s,text-decoration-color .2s}
+  .side-note-link:hover{color:var(--accent);background:var(--accent-soft);text-decoration-color:var(--accent)}
+  .side-note-link:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
   .side-btns{display:flex;flex-direction:column;gap:8px;margin-top:12px}
   .side-theme-btn{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;padding:11px 12px;border:none;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent-deep));color:var(--on-accent);font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 6px 16px rgba(0,0,0,.16);transition:transform .12s ease, box-shadow .12s ease}
   .side-theme-btn:hover{transform:translateY(-1px);box-shadow:0 9px 22px rgba(60,50,40,.22)}
@@ -1091,7 +1096,7 @@
       <div class="brand-user" id="brandUser" title="当前使用者">小蕾姐</div>
     </div>
     <nav class="nav" id="nav" data-page-node-id="GqTnVaoolNt2Dpm7Ceh5mv"></nav>
-    <div class="side-foot" data-page-node-id="ni1uJEObveDFQeotUm9EIn">数据只存在这台设备 · 换设备请先备份<br data-page-node-id="che75WIKiHDES2ULwsYkmQ">@二木管家
+    <div class="side-foot" data-page-node-id="ni1uJEObveDFQeotUm9EIn"><span class="side-note-link" id="sideBackupLink" onclick="openBackupFromSide()" title="点这里打开「数据备份 / 恢复」" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openBackupFromSide();}">数据只存在这台设备 · 换设备请先备份。<br data-page-node-id="che75WIKiHDES2ULwsYkmQ">@二木管家</span>
       <div class="side-btns" data-page-node-id="ENt73wc1P6AvEIQAut49C7">
         <button class="side-theme-btn" id="themeBtn" onclick="toggleThemeMenu()" type="button" data-page-node-id="6tJT6hUGyO6s4A8C4Pw0up">
           <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true" data-page-node-id="3HpJYGVYZvUYWrnjSVaCtv"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2" data-page-node-id="AimiPX5M3qFbDGoN7T1vM1"/><circle cx="8.5" cy="8.5" r="2.3" fill="currentColor" data-page-node-id="AsFaucw8SrC93CeCEbvshg"/><circle cx="15.5" cy="9" r="2.3" fill="currentColor" data-page-node-id="gN9f3aP8HAwEFW0kRMqCVh"/><circle cx="9" cy="15.5" r="2.3" fill="currentColor" data-page-node-id="4aVVeNciIZKzaXFhQSoGYj"/><circle cx="15.5" cy="15" r="2.3" fill="currentColor" data-page-node-id="CvFvB7zNQW6k1aCk5VGh8C"/></svg>
@@ -1637,6 +1642,16 @@ function enterApp(){
 
 /* ============ 数据备份 / 恢复（跨链接、跨设备搬运） ============ */
 function toggleBackupMenu(){ openPanelNear('backupBtn','backupCard'); }
+/* 从侧栏那行小字点开：把备份面板居中显示（锚在顶部按钮旁位置会很怪） */
+function openBackupFromSide(){
+  var c=document.getElementById('backupCard'); if(!c) return;
+  if(c.style.display==='block'){ c.style.display='none'; return; }
+  c.style.display='block';
+  var cw=c.offsetWidth||300, ch=c.offsetHeight||220;
+  var left=Math.max(8, Math.round((window.innerWidth-cw)/2));
+  var top=Math.max(8, Math.round((window.innerHeight-ch)/2.4));
+  c.style.left=left+'px'; c.style.top=top+'px'; c.style.right='auto';
+}
 function toggleAboutMenu(){ openPanelNear('aboutBtn','aboutCard'); }
 function copyAboutUrl(){ copyText('https://xiaoleijie.github.io/daily-workbench/', function(){ toast('链接已复制，可粘贴到浏览器或发给朋友'); }); }
 function backupAllData(){
@@ -1723,11 +1738,13 @@ function toggleThemeMenu(){ openPanelNear('themeBtn','themeCard'); }
 function initTheme(){ var k='red'; try{ k=localStorage.getItem('lw_theme')||'red'; }catch(e){} applyTheme(k); }
 document.addEventListener('click', function(e){
   var t=e.target;
-  [['themeCard','themeBtn'],['idCard','switchIdBtn'],['backupCard','backupBtn'],['aboutCard','aboutBtn']].forEach(function(p){
-    var c=document.getElementById(p[0]), b=document.getElementById(p[1]);
+  [['themeCard',['themeBtn']],['idCard',['switchIdBtn']],['backupCard',['backupBtn','sideBackupLink']],['aboutCard',['aboutBtn']]].forEach(function(p){
+    var c=document.getElementById(p[0]);
     if(!c || c.style.display==='none' || !t) return;
     if(c.contains(t)) return;                        /* 点面板内部：不关 */
-    if(b && (b===t || b.contains(t))) return;        /* 点触发按钮：交给它自己开关 */
+    var btns=p[1].map(function(id){ return document.getElementById(id); });
+    var hit=btns.some(function(b){ return b && (b===t || b.contains(t)); });
+    if(hit) return;                                  /* 点任一触发按钮：交给它自己开关 */
     c.style.display='none';
   });
 });

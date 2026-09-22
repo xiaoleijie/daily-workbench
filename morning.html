@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>晨间工作台 · 小蕾姐</title>
+<style>
+  :root{ --ink:#2b2722; --muted:#8a8178; --line:#ece7df; --sage:#3f6b35; --sage-soft:#eef4ea;
+         --sun:#f6a623; --sun-soft:#fff4e0; --rose:#c8553d; --rose-soft:#fbeae5; --card:#fff; --bg:#f7f4ef; }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+       line-height:1.55;padding:14px;max-width:560px;margin:0 auto;-webkit-text-size-adjust:100%}
+  .hd{display:flex;align-items:flex-end;justify-content:space-between;margin:4px 2px 14px}
+  .hd .hi{font-size:22px;font-weight:700;letter-spacing:.5px}
+  .hd .dt{font-size:13px;color:var(--muted);text-align:right}
+  .hd .wd{font-size:13px;color:var(--muted)}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 15px;margin-bottom:12px;
+        box-shadow:0 1px 3px rgba(0,0,0,.03)}
+  .card>.ttl{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:700;margin:0 0 10px}
+  .card>.ttl .ic{font-size:18px}
+  .card>.ttl .sub{font-size:12px;font-weight:400;color:var(--muted);margin-left:auto}
+  /* 日程 / 待办 行 */
+  .row{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-top:1px dashed var(--line)}
+  .row:first-of-type{border-top:none}
+  .row .tm{font-family:Georgia,serif;font-size:13px;color:var(--muted);flex:0 0 46px;padding-top:1px}
+  .row .bd{flex:1;min-width:0}
+  .row .bd .t{font-size:14px;font-weight:600}
+  .row .bd .m{font-size:12px;color:var(--muted);margin-top:2px}
+  .tag{display:inline-block;font-size:11px;padding:1px 7px;border-radius:999px;background:var(--sage-soft);color:var(--sage);margin-right:5px}
+  .tag.rose{background:var(--rose-soft);color:var(--rose)}
+  .done .t{text-decoration:line-through;color:var(--muted)}
+  .empty{font-size:13px;color:var(--muted);padding:6px 0}
+  /* 天气 */
+  .wx{display:flex;gap:10px}
+  .wx .city{flex:1;background:var(--sun-soft);border-radius:12px;padding:11px 12px;text-align:center}
+  .wx .city .nm{font-size:13px;font-weight:700;color:#a9710a}
+  .wx .city .tmp{font-size:26px;font-weight:800;line-height:1.1;margin:3px 0}
+  .wx .city .cd{font-size:12px;color:#9a6c12}
+  .wx .city .hl{font-size:11px;color:#b0821d;margin-top:2px}
+  /* 金句 */
+  .quote{font-size:15px;line-height:1.7;color:#5a5147;font-style:normal;position:relative;padding-left:14px}
+  .quote:before{content:"";position:absolute;left:0;top:4px;bottom:4px;width:4px;border-radius:3px;background:var(--sun)}
+  .quote .by{display:block;font-size:12px;color:var(--muted);margin-top:8px;font-style:normal}
+  /* 复盘 */
+  .rev-sum{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+  .rev-ring{flex:0 0 58px;height:58px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+           font-size:16px;font-weight:800;color:#fff;background:conic-gradient(var(--sage) calc(var(--p)*1%),#e6dfd4 0)}
+  .rev-txt{font-size:13px;color:var(--muted)}
+  .rev-txt b{color:var(--ink);font-size:15px}
+  .rev-todo{font-size:13px;color:var(--rose);margin-top:6px}
+  .rev-todo .it{display:block;padding:3px 0;border-top:1px dashed var(--line)}
+  .note{font-size:12px;color:var(--muted);text-align:center;margin-top:6px;padding:10px}
+  .note a{color:var(--sage)}
+  footer{font-size:11px;color:var(--muted);text-align:center;margin:4px 0 20px}
+</style>
+</head>
+<body>
+  <div class="hd">
+    <div>
+      <div class="hi" id="hi">早安，小蕾姐</div>
+      <div class="wd" id="wd"></div>
+    </div>
+    <div class="dt" id="dt"></div>
+  </div>
+
+  <div class="card" id="c-sched">
+    <div class="ttl"><span class="ic">📅</span>今日日程<span class="sub">按开始时间</span></div>
+    <div id="sched-list"><div class="empty">加载中…</div></div>
+  </div>
+
+  <div class="card" id="c-tasks">
+    <div class="ttl"><span class="ic">✅</span>今日待办<span class="sub">未完成的</span></div>
+    <div id="task-list"><div class="empty">加载中…</div></div>
+  </div>
+
+  <div class="card" id="c-wx">
+    <div class="ttl"><span class="ic">🌤️</span>双城天气<span class="sub">上海 · 成都</span></div>
+    <div class="wx" id="wx"><div class="empty">天气加载中…</div></div>
+  </div>
+
+  <div class="card" id="c-quote">
+    <div class="ttl"><span class="ic">💡</span>今日金句</div>
+    <div class="quote" id="quote"></div>
+  </div>
+
+  <div class="card" id="c-rev">
+    <div class="ttl"><span class="ic">📊</span>昨日复盘<span class="sub" id="rev-date"></span></div>
+    <div id="rev-body"><div class="empty">加载中…</div></div>
+  </div>
+
+  <div class="note" id="note" style="display:none"></div>
+  <footer>晨间工作台 · 数据来自你本机的行动历（同源读取）· 天气来自 Open-Meteo</footer>
+
+<script>
+/* ===== 数据读取（与 action 工作台同一套 localStorage 键，同源可读） ===== */
+var DB_SCHEDULE = "C9BuhORdN50GtgxsnXF40G";
+var DB_TASKS    = "Erv9LK43hpsktGQ3Q4nTKf";
+function loadDB(dbId){
+  try{ return JSON.parse(localStorage.getItem('lw_localdb_'+dbId)||'[]')||[]; }catch(e){ return []; }
+}
+function myUid(){ return localStorage.getItem('lw_uid') || ''; }
+function fmtDate(d){ var y=d.getFullYear(),m=('0'+(d.getMonth()+1)).slice(-2),da=('0'+d.getDate()).slice(-2); return y+'-'+m+'-'+da; }
+function today(){ return fmtDate(new Date()); }
+function addDays(iso,n){ var p=iso.split('-'); var d=new Date(+p[0],+p[1]-1,+p[2]); d.setDate(d.getDate()+n); return fmtDate(d); }
+function dateSub(iso){ return (iso||'').substring(0,10); }
+function esc(s){ return (s==null?'':String(s)).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+function isDone(r){ return (r&&r['完成']||'')==='是'; }
+
+/* ===== 顶部问候 / 日期 ===== */
+(function(){
+  var now=new Date();
+  var h=now.getHours();
+  var hi = h<5?'夜深了，小蕾姐' : h<11?'早安，小蕾姐' : h<14?'午安，小蕾姐' : h<18?'下午好，小蕾姐' : '晚上好，小蕾姐';
+  document.getElementById('hi').textContent=hi;
+  var wd=['周日','周一','周二','周三','周四','周五','周六'][now.getDay()];
+  document.getElementById('wd').textContent=wd;
+  document.getElementById('dt').textContent=today();
+})();
+
+/* ===== 今日日程（schedule：日期==今天） ===== */
+function renderSchedule(){
+  var uid=myUid();
+  var rows=loadDB(DB_SCHEDULE).filter(function(r){
+    if(uid && (r['owner']||'')!==uid) return false;
+    return dateSub(r['日期'])===today();
+  });
+  rows.sort(function(a,b){ return (a['开始时间']||'99:99').localeCompare(b['开始时间']||'99:99'); });
+  var box=document.getElementById('sched-list');
+  if(!rows.length){ box.innerHTML='<div class="empty">今天还没有安排，给自己留点空白也挺好 🍃</div>'; return; }
+  box.innerHTML=rows.map(function(r){
+    var cls=isDone(r)?'row done':'row';
+    var tag='<span class="tag">'+esc(r['分类']||'日程')+'</span>';
+    var m=[]; if(r['地点']) m.push('📍'+esc(r['地点'])); if(isDone(r)) m.push('已完成');
+    return '<div class="'+cls+'"><div class="tm">'+(r['开始时间']||'')+'</div><div class="bd"><div class="t">'+tag+esc(r['标题']||'(无标题)')+'</div>'+
+           (m.length?'<div class="m">'+m.join(' · ')+'</div>':'')+'</div></div>';
+  }).join('');
+}
+
+/* ===== 今日待办（tasks：未完成，且截止==今天 或 无日期的未完成） ===== */
+function renderTasks(){
+  var uid=myUid();
+  var rows=loadDB(DB_TASKS).filter(function(r){
+    if(uid && (r['owner']||'')!==uid) return false;
+    if(isDone(r)) return false;
+    var d=dateSub(r['截止日期']);
+    return d===today() || !d;
+  });
+  rows.sort(function(a,b){ return (a['截止日期']||'9999').localeCompare(b['截止日期']||'9999'); });
+  var box=document.getElementById('task-list');
+  if(!rows.length){ box.innerHTML='<div class="empty">今日待办都清空啦，了不起 🎉</div>'; return; }
+  box.innerHTML=rows.map(function(r){
+    var quad=r['象限']?'<span class="tag rose">'+esc(r['象限'])+'</span>':'';
+    return '<div class="row"><div class="tm"></div><div class="bd"><div class="t">'+quad+esc(r['标题']||'(无标题)')+'</div>'+
+           (r['截止日期']?'<div class="m">截止 '+esc(dateSub(r['截止日期']))+'</div>':'')+'</div></div>';
+  }).join('');
+}
+
+/* ===== 昨日复盘 ===== */
+function renderReview(){
+  var uid=myUid();
+  var y=addDays(today(),-1);
+  document.getElementById('rev-date').textContent=y;
+  var rows=loadDB(DB_SCHEDULE).filter(function(r){
+    if(uid && (r['owner']||'')!==uid) return false;
+    return dateSub(r['日期'])===y;
+  });
+  var total=rows.length, done=rows.filter(isDone).length, undone=rows.filter(function(r){return !isDone(r);});
+  var pct= total? Math.round(done/total*100):0;
+  var box=document.getElementById('rev-body');
+  if(!total){ box.innerHTML='<div class="empty">昨天没有排日程记录</div>'; return; }
+  var html='<div class="rev-sum"><div class="rev-ring" style="--p:'+pct+'">'+pct+'%</div>'+
+           '<div class="rev-txt">昨天共 <b>'+total+'</b> 项，完成 <b>'+done+'</b> 项<br>完成率 '+pct+'%</div></div>';
+  if(undone.length){
+    html+='<div class="rev-todo">未完成 '+undone.length+' 项（今天可以接着做）：';
+    html+=undone.map(function(r){return '<span class="it">• '+esc(r['标题']||'(无标题)')+' · '+(r['分类']||'日程')+'</span>';}).join('');
+    html+='</div>';
+  } else {
+    html+='<div class="rev-todo" style="color:var(--sage)">全部完成，给自己鼓个掌 👏</div>';
+  }
+  box.innerHTML=html;
+}
+
+/* ===== 金句（按年积日取，同日稳定） ===== */
+var QUOTES=[
+  {t:'行动是治愈恐惧的良药，而犹豫拖延将不断滋养恐惧。',b:'马克·吐温'},
+  {t:'你不需要很厉害才能开始，但你需要开始才能很厉害。',b:'佚名'},
+  {t:'把每一天过好，就是对未来最好的交代。',b:'佚名'},
+  {t:'所谓自由，不是想做什么就做什么，而是不想做什么就可以不做什么。',b:'康德'},
+  {t:'种一棵树最好的时间是十年前，其次是现在。',b:'谚语'},
+  {t:'真正的自律，是温柔地推自己一把，而不是责怪。',b:'佚名'},
+  {t:'我们终将成为自己持续做的事的总和。',b:'亚里士多德'},
+  {t:'今天的努力，是幸运的伏笔。',b:'佚名'},
+  {t:'慢慢来，比较快。',b:'佚名'},
+  {t:'把重要的事放在能量最好的时候做。',b:'佚名'},
+  {t:'幸福不是目的地，而是走路的方式。',b:'佚名'},
+  {t:'你如何过一天，就如何过一生。',b:'安妮·迪拉德'},
+  {t:'完成，好过完美。',b:'佚名'},
+  {t:'每一天都是一次新的开始，别让昨天的遗憾挡住今天的阳光。',b:'佚名'},
+  {t:'生活不是等待暴风雨过去，而是学会在雨中跳舞。',b:'佚名'},
+  {t:'哪怕只前进一小步，也胜过原地踏步一百次。',b:'佚名'},
+  {t:'照顾好自己，是你能做的最勇敢的事之一。',b:'佚名'},
+  {t:'时间花在哪里，成就就在哪里。',b:'佚名'},
+  {t:'把目标写下来，它就从愿望变成了计划。',b:'佚名'},
+  {t:'与其担心，不如行动；行动会给你答案。',b:'佚名'}
+];
+(function(){
+  var now=new Date();
+  var start=new Date(now.getFullYear(),0,0);
+  var dayOfYear=Math.floor((now-start)/86400000);
+  var q=QUOTES[dayOfYear % QUOTES.length];
+  document.getElementById('quote').innerHTML=esc(q.t)+'<span class="by">—— '+esc(q.b)+'</span>';
+})();
+
+/* ===== 天气（Open-Meteo，免 key，CORS 友好） ===== */
+var WX=[
+  {nm:'上海',lat:31.23,lon:121.47},
+  {nm:'成都',lat:30.57,lon:104.07}
+];
+var WX_CODE={0:'晴',1:'晴间多云',2:'多云',3:'阴',45:'雾',48:'雾凇',51:'毛毛雨',53:'小雨',55:'中雨',56:'冻雨',57:'冻雨',
+  61:'小雨',63:'中雨',65:'大雨',66:'冻雨',67:'冻雨',71:'小雪',73:'中雪',75:'大雪',77:'雪粒',80:'阵雨',81:'阵雨',82:'强阵雨',
+  85:'阵雪',86:'强阵雪',95:'雷阵雨',96:'雷阵雨伴冰雹',99:'强雷暴伴冰雹'};
+function renderWeather(){
+  var box=document.getElementById('wx');
+  WX.forEach(function(c){
+    var url='https://api.open-meteo.com/v1/forecast?latitude='+c.lat+'&longitude='+c.lon+
+           '&current=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min&timezone=Asia%2FShanghai';
+    fetch(url).then(function(r){return r.json();}).then(function(j){
+      var cur=j.current||{}, d=(j.daily||{});
+      var idx=0;
+      var tmp=Math.round(cur.temperature_2m);
+      var code=cur.weather_code; var cd=WX_CODE[code]||'未知';
+      var hi=d.temperature_2m_max?Math.round(d.temperature_2m_max[idx]):'–';
+      var lo=d.temperature_2m_min?Math.round(d.temperature_2m_min[idx]):'–';
+      var div=document.createElement('div'); div.className='city';
+      div.innerHTML='<div class="nm">'+c.nm+'</div><div class="tmp">'+tmp+'°</div><div class="cd">'+cd+'</div><div class="hl">最高 '+hi+'° / 最低 '+lo+'°</div>';
+      // 按城市顺序插入
+      var em=box.querySelector('.empty'); if(em) em.remove();
+      var holder=box.querySelector('[data-c="'+c.nm+'"]');
+      if(holder) holder.replaceWith(div); else box.appendChild(div);
+      div.setAttribute('data-c',c.nm);
+    }).catch(function(e){
+      var div=document.createElement('div'); div.className='city';
+      div.innerHTML='<div class="nm">'+c.nm+'</div><div class="tmp">–</div><div class="cd">天气暂不可用</div>';
+      if(!box.querySelector('[data-c="'+c.nm+'"]')) box.appendChild(div);
+    });
+  });
+}
+
+/* ===== 启动 ===== */
+(function(){
+  var isOrigin = location.hostname.indexOf('xiaoleijie.github.io')>=0;
+  if(!isOrigin){
+    var n=document.getElementById('note');
+    n.style.display='block';
+    n.innerHTML='⚠️ 要在 <a href="https://xiaoleijie.github.io/daily-workbench/morning.html" target="_blank">xiaoleijie.github.io 打开</a> 才能读取你的日程数据（同源限制）。';
+  }
+  renderSchedule(); renderTasks(); renderReview(); renderWeather();
+})();
+</script>
+</body>
+</html>

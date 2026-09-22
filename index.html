@@ -253,7 +253,7 @@
   .wb-add .two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px}
   .wb-add .two-col .fld{margin:0}
   .wb-add .three-col{display:grid;grid-template-columns:2fr 1fr 1fr;gap:12px}
-  .wb-add .four-col{display:grid;grid-template-columns:1.2fr 1fr .7fr .7fr;gap:12px}
+  .wb-add .four-col{display:grid;grid-template-columns:1.5fr .7fr .7fr .7fr;gap:12px}
   .wb-add .four-col .fld{margin:0}
   .wb-add .add-btns{display:flex;gap:8px}
   .wb-add .add-btns .btn{flex:1;min-height:40px;padding:0 10px;white-space:nowrap}
@@ -582,7 +582,7 @@
   /* 添加本月事项：左 2/3 日历 + 右 1/3 竖排等宽按钮 */
   .sa-flex{display:flex;gap:14px;align-items:flex-start}
   .sa-cal{flex:2 1 0;min-width:0}
-  .sa-ops{flex:1 1 0;min-width:106px;display:flex;flex-direction:column;gap:6px;padding-top:18px}
+  .sa-ops{flex:0 0 auto;min-width:178px;display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding-top:18px;align-content:start}
   .sa-ops>.btn{width:100%;min-width:0;height:30px;padding:0 6px;font-size:12.5px;justify-content:center;box-sizing:border-box}
   .smc-cnt-row{font-size:11.5px;font-weight:700;color:var(--accent);margin-top:6px;text-align:center}
   /* 修改明细：改全部日期 */
@@ -3726,7 +3726,6 @@ function schedFormHTML(){
           '<div id="s-dates-block">'+schedPickInnerHTML()+'</div>'+
         '</div></div>'+
         '<div class="sa-ops">'+
-          '<button type="button" class="btn sm" onclick="schedPickQuick(&quot;today&quot;)">今天</button>'+
           '<button type="button" class="btn sm" onclick="schedPickQuick(&quot;weekday&quot;)">工作日</button>'+
           '<button type="button" class="btn sm" onclick="schedPickQuick(&quot;weekend&quot;)">周末</button>'+
           '<button type="button" class="btn sm" onclick="schedPickQuick(&quot;clear&quot;)">清空</button>'+

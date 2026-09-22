@@ -123,7 +123,7 @@
   .badge.支出{background:#fbe6e0;color:#b5482b;border-color:#f3cabb}
   .badge.收入{background:var(--sage-soft);color:#566b45;border-color:#d7e0cb}
   .badge.想买,.badge.想看{background:#fdf3da;color:#9a7b1e;border-color:#f0e0b0}
-  /* 日程状态：待办 / 已完成 / 未完成已过期（三态，视觉区分"做过"与"没做"） */
+  /* 日程状态：完成 / 未完成（逾期由日期自动判定，划线区分"做过"与"没做"） */
   .s-acts{display:flex;gap:6px;flex:0 0 auto;align-items:center}
   .s-act-btn{font-size:12px;font-weight:600;border-radius:8px;padding:6px 9px;border:1px solid transparent;cursor:pointer;white-space:nowrap;line-height:1;transition:background .12s,border-color .12s,transform .12s}
   /* 图标态：✓ / ✗ 只显示符号，鼠标悬停出原生提示（title） */
@@ -145,9 +145,10 @@
   .s-pill{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;padding:5px 10px;border-radius:999px;white-space:nowrap;cursor:pointer}
   .s-pill.done{background:var(--sage-soft);color:#3f6b35;border:1px solid #cfe0c4}
   .s-pill.exp{background:#f2f2f2;color:#8a8a8a;border:1px solid #e2e2e2}
-  .item.s-expired{opacity:.6}
-  .item.s-expired .ttl{text-decoration:line-through;color:var(--muted)}
+  .item.s-expired{background:#fdf6f3}
+  .item.s-expired .ttl{text-decoration:line-through;color:#b5563e}
   .item.s-done{background:#f6fbf4}
+.item.s-done .ttl{text-decoration:line-through;color:var(--muted)}
   .item.s-done .ops{opacity:.85}
   .s-note-flag{display:inline-flex;align-items:center;gap:3px;font-size:11px;color:#3f6b35;background:var(--sage-soft);border:1px solid #cfe0c4;border-radius:999px;padding:1px 7px;cursor:pointer;margin-left:4px}
   .s-done-stack{display:flex;flex-direction:column;align-items:center;gap:4px;flex:0 0 auto}
@@ -1096,7 +1097,7 @@
       <div class="brand-user" id="brandUser" title="当前使用者">小蕾姐</div>
     </div>
     <nav class="nav" id="nav" data-page-node-id="GqTnVaoolNt2Dpm7Ceh5mv"></nav>
-    <div class="side-foot" data-page-node-id="ni1uJEObveDFQeotUm9EIn"><span class="side-note-link" id="sideBackupLink" onclick="openBackupFromSide()" title="点这里打开「数据备份 / 恢复」" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openBackupFromSide();}">数据只存在这台设备 · 换设备请先备份。<br data-page-node-id="che75WIKiHDES2ULwsYkmQ">@二木管家</span>
+    <div class="side-foot" data-page-node-id="ni1uJEObveDFQeotUm9EIn"><span class="side-note-link" id="sideBackupLink" onclick="openBackupFromSide()" title="点这里打开「数据备份 / 恢复」" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openBackupFromSide();}">数据只存在这台设备 · 换设备请先备份。@二木管家</span>
       <div class="side-btns" data-page-node-id="ENt73wc1P6AvEIQAut49C7">
         <button class="side-theme-btn" id="themeBtn" onclick="toggleThemeMenu()" type="button" data-page-node-id="6tJT6hUGyO6s4A8C4Pw0up">
           <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true" data-page-node-id="3HpJYGVYZvUYWrnjSVaCtv"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2" data-page-node-id="AimiPX5M3qFbDGoN7T1vM1"/><circle cx="8.5" cy="8.5" r="2.3" fill="currentColor" data-page-node-id="AsFaucw8SrC93CeCEbvshg"/><circle cx="15.5" cy="9" r="2.3" fill="currentColor" data-page-node-id="gN9f3aP8HAwEFW0kRMqCVh"/><circle cx="9" cy="15.5" r="2.3" fill="currentColor" data-page-node-id="4aVVeNciIZKzaXFhQSoGYj"/><circle cx="15.5" cy="15" r="2.3" fill="currentColor" data-page-node-id="CvFvB7zNQW6k1aCk5VGh8C"/></svg>
@@ -1981,7 +1982,7 @@ LOADERS.tasks=function(){
   var body=getBody('tasks'); body.innerHTML=statusHTML(true);
   return Promise.all([
     q(DB.tasks,{sorts:[{property:"截止日期",direction:"ascending"}]}),
-    q(DB.schedule,{filter:{property:{property:"分类",text:{equals:'工作'}}}, sorts:[{property:"日期",direction:"ascending"}]})
+    q(DB.schedule,{sorts:[{property:"日期",direction:"ascending"}]})
   ]).then(function(res){ renderTasks(res[0]||[], res[1]||[]); })
     .catch(function(e){ body.innerHTML=statusHTML(false, (e&&e.message)||'读取失败', 'tasks'); });
 };
@@ -2023,7 +2024,7 @@ function renderTasks(tasks, works){
       '<span class="pin"></span>'+
       '<button class="note-chk" title="标记完成" onclick="'+toggleFn+'">'+icon(done?'check':'circle')+'</button>'+
       '<div class="note-ttl" style="'+(done?'text-decoration:line-through;color:#8a7a3a':'')+'">'+esc(r["标题"])+'</div>'+
-      '<div class="note-meta">'+(dueStr?'<span>📅 '+dueStr+'</span>':'')+(src==='sched'?'<span class="src">📌 日程·工作</span>':'')+'</div>'+
+      '<div class="note-meta">'+(dueStr?'<span>📅 '+dueStr+'</span>':'')+(src==='sched'?'<span class="src">📌 日程</span>':'')+'</div>'+
       '<div class="note-ops">'+(editFn?'<button class="icon-btn" onclick="'+editFn+'">'+icon('edit')+'</button>':'')+
       '<button class="icon-btn" onclick="'+delFn+'">'+icon('trash')+'</button></div></div>';
   }
@@ -3290,7 +3291,7 @@ function renderSchedule(rows){
   var fCat='<div class="sched-filter-cell" data-fk="cat">'+filterGrip('cat')+
     '<select class="filt-btn" onchange="schedFilter=this.value;renderSchedule(window.__sched)"><option value="全部"'+(schedFilter==='全部'?' selected':'')+'>分类</option>'+cats.map(function(c){return '<option'+(c===schedFilter?' selected':'')+'>'+c+'</option>';}).join('')+'</select></div>';
   var fSta='<div class="sched-filter-cell" data-fk="status">'+filterGrip('status')+
-    '<select class="filt-btn" onchange="schedStatusF=this.value;renderSchedule(window.__sched)"><option value="全部状态"'+(schedStatusF==='全部状态'?' selected':'')+'>状态</option><option'+(schedStatusF==='待办'?' selected':'')+'>待办</option><option'+(schedStatusF==='已完成'?' selected':'')+'>已完成</option><option'+(schedStatusF==='未完成已过期'?' selected':'')+'>未完成已过期</option></select></div>';
+    '<select class="filt-btn" onchange="schedStatusF=this.value;renderSchedule(window.__sched)"><option value="全部状态"'+(schedStatusF==='全部状态'?' selected':'')+'>状态</option><option'+(schedStatusF==='待办'?' selected':'')+'>待办</option><option'+(schedStatusF==='已完成'?' selected':'')+'>已完成</option></select></div>';
   var fDat='<div class="sched-filter-cell" data-fk="date">'+filterGrip('date')+
     '<button class="btn sm filt-btn date-filt'+(schedSelDate?' on':'')+'" title="'+(schedSelDate?('已筛选 '+schedSelDate+'，点击清除'):'点左侧月历选日期')+'" onclick="'+(schedSelDate?'schedSelDate=null;renderSchedule(window.__sched)':'toast(\'点左侧月历里的日期即可筛选\')')+'">日期'+(schedSelDate?' · '+schedSelDate.slice(8,10)+'日':'')+'</button></div>';
   var filterCells={ cat:fCat, status:fSta, date:fDat };
@@ -3299,27 +3300,24 @@ function renderSchedule(rows){
     (schedStatusF!=='全部状态'?'<button class="btn sm filt-btn f-clear" onclick="schedStatusF=\'全部状态\';renderSchedule(window.__sched)">清除状态</button>':'')+
     '</div>';
   var sticky='<div class="sticky-note"><div class="sticky-rule"></div><textarea class="sticky-area" id="month-note" onchange="saveMonthNote(this.value)" placeholder="还没定下日期的安排，先记在这里…">'+esc(getMonthNote())+'</textarea></div>';
-  var shown=rows.filter(function(r){ var st=schedStatus(r); return (schedFilter==='全部'||r["分类"]===schedFilter) && (!schedSelDate||dateSub(r["日期"])===schedSelDate) && (schedStatusF==='全部状态'||(schedStatusF==='待办'&&st==='todo')||(schedStatusF==='已完成'&&st==='done')||(schedStatusF==='未完成已过期'&&st==='expired')); });
+  var shown=rows.filter(function(r){ var st=schedStatus(r); return (schedFilter==='全部'||r["分类"]===schedFilter) && (!schedSelDate||dateSub(r["日期"])===schedSelDate) && (schedStatusF==='全部状态'||(schedStatusF==='待办'&&(st==='todo'||st==='overdue'))||(schedStatusF==='已完成'&&st==='done')); });
   var list='<div class="panel sched-list-panel"><div class="list">';
   if(!shown.length) list+='<div class="empty">这段时间还没有安排</div>';
   shown.forEach(function(r){
     var st=schedStatus(r);
-    var isDone=st==='done', isExp=st==='expired';
+    var isDone=st==='done', isExp=st==='overdue';
     var cls='item'+(isDone?' s-done':'')+(isExp?' s-expired':'');
     var acts='<div class="s-acts">';
-    if(st==='todo'){
-      acts+='<button class="s-act-btn done ico" title="已完成" onclick="openSchedDoneModal(\''+rid(r)+'\',__schedById(\''+rid(r)+'\'))">✓</button>'+
-            '<button class="s-act-btn exp ico" title="未完成" onclick="markSchedExpired(\''+rid(r)+'\')">✗</button>';
-    } else if(isDone){
-      acts+='<span class="s-pill done ico" title="已完成（点击查看/编辑完成详情）" onclick="openSchedDoneModal(\''+rid(r)+'\',__schedById(\''+rid(r)+'\'))">✓</span>'+
-            '<button class="s-act-btn rev" title="恢复为待办" onclick="revertSched(\''+rid(r)+'\')">↺</button>';
+    if(st!=='done'){
+      acts+='<button class="s-act-btn done ico" title="已完成" onclick="openSchedDoneModal(\''+rid(r)+'\',__schedById(\''+rid(r)+'\'))">✓</button>';
+      if(isExp) acts+='<span class="s-pill exp ico" title="未完成（已逾期）">✗</span>';
     } else {
-      acts+='<span class="s-pill exp ico" title="未完成（已过期）">✗</span>'+
+      acts+='<span class="s-pill done ico" title="已完成（点击查看/编辑完成详情）" onclick="openSchedDoneModal(\''+rid(r)+'\',__schedById(\''+rid(r)+'\'))">✓</span>'+
             '<button class="s-act-btn rev" title="恢复为待办" onclick="revertSched(\''+rid(r)+'\')">↺</button>';
     }
     acts+='</div>';
     list+='<div class="'+cls+'">'+acts+
-      '<div class="main"><div class="ttl"'+(isExp?' style="text-decoration:line-through;color:var(--muted)"':'')+'>'+esc(r["标题"])+'</div>'+
+      '<div class="main"><div class="ttl"'+'>'+esc(r["标题"])+'</div>'+
       '<div class="meta"><span class="badge '+esc(r["分类"])+'">'+esc(r["分类"])+'</span>'+
       (r["开始时间"]||r["结束时间"]?'<span>'+(r["开始时间"]||'')+(r["结束时间"]?'–'+r["结束时间"]:'')+'</span>':'')+
       (r["地点"]?'<span>📍'+esc(r["地点"])+'</span>':'')+(r["备注"]?'<span>'+esc(r["备注"])+'</span>':'')+'</div></div>'+
@@ -3465,6 +3463,7 @@ function schedFormHTML(){
           '<button type="button" class="btn sm" onclick="openExportPicker()" title="导出日程（Excel / PDF / CSV）">导出</button>'+
           '<button type="button" class="btn sm" onclick="openDateFixer()" title="同组日程的日期乱了？按规律批量重排">修日期</button>'+
           '<button type="button" class="btn sm" onclick="schedUndoLast()" title="撤销上次批量修改">撤销</button>'+
+        '<button type="button" class="btn sm" onclick="claimOrphanData()" title="把旧设备/旧身份留下、现在看不到的日程认领归到自己名下">认领隐身</button>'+
         '</div>'+
       '</div>'+
     '</div>'+
@@ -3615,12 +3614,14 @@ function toggleSchedDone(id, cur){
   updRec(DB.schedule, id, {"完成":{select:nx}}).then(function(){ LOADERS.schedule(); }).catch(function(e){ toast('更新失败：'+((e&&e.message)||'错误'),true); });
 }
 
-/* ===== 日程三态：待办 / 已完成 / 未完成已过期 ===== */
-function schedStatus(r){ var s=(r&&r["完成"])||'否'; return s==='是'?'done':(s==='过期'?'expired':'todo'); }
-function __schedById(id){ return (window.__sched||[]).filter(function(r){ return rid(r)===id; })[0]; }
-function markSchedExpired(id){
-  updRec(DB.schedule, id, {"完成":{select:'过期'}}).then(function(){ LOADERS.schedule(); }).catch(function(e){ toast('更新失败：'+((e&&e.message)||'错误'),true); });
+/* ===== 日程状态：完成 / 未完成（逾期由日期自动判定） ===== */
+function schedStatus(r){
+  if((r&&r["完成"]||'')==='是') return 'done';
+  var d=dateSub(r&&r["日期"]), t=today();
+  if(d && d<t) return 'overdue';
+  return 'todo';
 }
+function __schedById(id){ return (window.__sched||[]).filter(function(r){ return rid(r)===id; })[0]; }
 function revertSched(id){
   updRec(DB.schedule, id, {"完成":{select:'否'}}).then(function(){ LOADERS.schedule(); }).catch(function(e){ toast('更新失败：'+((e&&e.message)||'错误'),true); });
 }
@@ -3728,6 +3729,42 @@ function doSchedUndo(all){
     LOADERS.schedule();
     toast('已还原 '+last.rows.length+' 条 ✅');
   }).catch(function(e){ toast('撤销失败：'+((e&&e.message)||'错误'),true); });
+}
+/* ===== 认领隐身数据：把 owner 不是本人的日程归到自己名下（按 日期+标题+分类 去重） ===== */
+function claimOrphanData(){
+  rawQuery(DB.schedule, {pageSize:500}).then(function(all){
+    all = all||[];
+    var mine = all.filter(function(r){ return (r['owner']||'')===MY_UID; });
+    var orphans = all.filter(function(r){ return (r['owner']||'')!==MY_UID; });
+    if(!orphans.length){ appDialog({msg:'没有发现隐身数据，全部日程都已经是你的了。'}); return; }
+    var normDate=function(v){ if(!v) return ''; var x=String(v).trim(); var m=x.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/); return m? (m[1]+'-'+('0'+m[2]).slice(-2)+'-'+('0'+m[3]).slice(-2)) : ''; };
+    var keyOf=function(r){ return normDate(r['日期'])+'|'+(r['标题']||'')+'|'+(r['分类']||''); };
+    var mineKeys={}; mine.forEach(function(r){ mineKeys[keyOf(r)]=1; });
+    var dup = orphans.filter(function(r){ return mineKeys[keyOf(r)]; });
+    var claim = orphans.filter(function(r){ return !mineKeys[keyOf(r)]; });
+    appDialog({
+      msg:'发现 '+orphans.length+' 条「隐身日程」（旧设备 / 旧身份留下，现在看不到）：\n\n'+
+          '• 与你现有记录重复、将丢弃：'+dup.length+' 条\n'+
+          '• 净认领、归到你名下：'+claim.length+' 条\n\n'+
+          '认领时会把其中标记为「过期」的状态改为「未完成」（你已决定不再使用「过期」状态）。',
+      buttons:[
+        {label:'取消'},
+        {label:'确认认领', cls:'primary', onClick:function(){ applyClaim(claim); }}
+      ]
+    });
+  }).catch(function(e){ toast('读取失败：'+((e&&e.message)||'错误'),true); });
+}
+function applyClaim(claim){
+  if(!claim.length){ toast('没有需要认领的条目'); return; }
+  var ops=claim.map(function(r){
+    var props={"owner":{text:MY_UID}};
+    if((r['完成']||'')==='过期'){ props["完成"]={select:'否'}; }
+    return updRec(DB.schedule, rid(r), props);
+  });
+  Promise.all(ops).then(function(){
+    LOADERS.schedule(); LOADERS.tasks();
+    toast('已认领 '+claim.length+' 条，它们在「全部 / 按分类」里都能看到了');
+  }).catch(function(e){ toast('认领失败：'+((e&&e.message)||'错误'),true); });
 }
 /* ===== 批量改内容：找出与当前记录「同标题+同开始/结束时间」的同组日程 ===== */
 function esBatchIds(rec){
@@ -5181,7 +5218,7 @@ function doImport(){
         "结束时间":{text:normTime(it.end)},
         "地点":{text:it.place||''},
         "备注":{text:it.note||''},
-        "完成":{select:(function(){ var d=(it.done||'否').trim(); return (d==='是'||d==='过期')?d:'否'; })()},
+        "完成":{select:(function(){ var d=(it.done||'否').trim(); return d==='是'?'是':'否'; })()},
         "完成详情":{text:it.detail||''},
         "象限":{select:'Q1'}
       }).then(function(){ ok++; }).catch(function(){ fail++; });
@@ -5202,7 +5239,7 @@ var IMP_FIELDS_HTML=
   '<b>必填两列</b>：<code>日期</code> <code>标题</code>　其余选填<br>'+
   '<b>选填列</b>：分类 · 开始时间 · 结束时间 · 地点 · 备注 · 完成 · 象限<br>'+
   '<b>日期</b>写法：<code>2026-09-03</code>　<code>2026/9/3</code>　<code>2026年9月3日</code>　<code>9/3</code>（自动补当年）<br>'+
-  '<b>完成</b>填 <code>是</code>/<code>否</code>/<code>过期</code>　<b>象限</b>填 <code>Q1</code>~<code>Q4</code>　<b>完成详情</b>可填备注式记录<br>'
+  '<b>完成</b>填 <code>是</code>/<code>否</code>（逾期由系统按日期自动判定，不用手填）　<b>象限</b>填 <code>Q1</code>~<code>Q4</code>　<b>完成详情</b>可填备注式记录<br>'
   '表头顺序随意、认名字不认位置；同「日期+标题」已存在的会标为「重复」并默认不勾选。';
 function openImportPicker(){
   var m=document.getElementById('imp-modal');

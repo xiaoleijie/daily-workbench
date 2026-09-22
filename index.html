@@ -253,9 +253,13 @@
   .wb-add .two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px}
   .wb-add .two-col .fld{margin:0}
   .wb-add .three-col{display:grid;grid-template-columns:2fr 1fr 1fr;gap:12px}
+  .wb-add .four-col{display:grid;grid-template-columns:1.2fr 1fr .7fr .7fr;gap:12px}
+  .wb-add .four-col .fld{margin:0}
+  .wb-add .add-btns{display:flex;gap:8px}
+  .wb-add .add-btns .btn{flex:1;min-height:40px;padding:0 10px;white-space:nowrap}
   .wb-add .three-col .fld{margin:0}
   .wb-add .hint{font-size:11px;color:var(--muted);margin:6px 2px 2px;line-height:1.5}
-  @media(max-width:640px){ .quad-grid{grid-template-columns:1fr} .wb-add .two-col,.wb-add .three-col{grid-template-columns:1fr} }
+  @media(max-width:640px){ .quad-grid{grid-template-columns:1fr} .wb-add .two-col,.wb-add .three-col,.wb-add .four-col{grid-template-columns:1fr} }
 
   .empty{padding:34px 16px;text-align:center;color:var(--muted);font-size:13px}
   .loading{padding:30px 16px;text-align:center;color:var(--muted);font-size:13px}
@@ -1126,11 +1130,11 @@
 
 .m-empty{font-size:12.5px;color:var(--muted);padding:5px 0}
 
-.m-quote{font-size:13.5px;line-height:1.7;color:#5a5147;padding-left:12px;position:relative}
+.m-quote{font-size:13px;line-height:1.5;color:#5a5147;padding-left:12px;position:relative}
 
 .m-quote:before{content:"";position:absolute;left:0;top:3px;bottom:3px;width:4px;border-radius:3px;background:var(--accent)}
 
-.m-quote .m-by{display:block;font-size:11.5px;color:var(--muted);margin-top:7px}
+.m-quote .m-by{display:block;font-size:11px;color:var(--muted);margin-top:3px}
 
 .m-wx{display:flex;gap:9px}
 .m-top{display:flex;gap:9px;align-items:stretch;margin-bottom:12px}
@@ -2153,37 +2157,17 @@ function buildMorningLeft(tasks, works){
 
     var tag='<span class="m-tag">'+esc(r['分类']||'日程')+'</span>';
 
-    var m=[]; if(r['地点']) m.push('📍'+esc(r['地点'])); if(done) m.push('已完成');
+    var m=[]; if(r['地点']) m.push('📍'+esc(r['地点']));
 
-    return '<div class="'+cls+'"><div class="m-tm">'+(r['开始时间']||'')+'</div><div class="m-bd"><div class="m-t">'+tag+esc(r['标题']||'(无标题)')+'</div>'+
+    var id=rid(r); var dl=r['_fromTask']||'';
+    var fnEd="editSchedItem('"+id+"')"; var fnDl="delWorkItem('sched','"+id+"','"+esc(dl)+"')";
+    var ops='<div class="m-ops"><button class="icon-btn" title="修改" onclick="'+fnEd+'">'+icon('edit')+'</button><button class="icon-btn" title="删除" onclick="'+fnDl+'">'+icon('trash')+'</button></div>';
+    return '<div class="'+cls+'"><div class="m-tm">'+(done?'✅ ':'')+(r['开始时间']||'')+'</div><div class="m-bd"><div class="m-t">'+tag+esc(r['标题']||'(无标题)')+'</div>'+
 
-      (m.length?'<div class="m-m">'+m.join(' · ')+'</div>':'')+'</div></div>';
+      (m.length?'<div class="m-m">'+m.join(' · ')+'</div>':'')+'</div>'+ops+'</div>';
 
   }).join('') : '<div class="m-empty">今天还没有安排，留点空白也挺好 🍃</div>';
 
-  var todo=[]; var _tIds={};
-  (tasks||[]).forEach(function(r){ if(!own(r)) return; if((r['完成']||'否')==='是') return; var dd=dateSub(r['截止日期']); if(dd===td||!dd){ _tIds[rid(r)]=1; todo.push({r:r,sched:false}); } });
-  (works||[]).forEach(function(r){ if(!own(r)) return; if((r['完成']||'否')==='是') return; if(dateSub(r['日期'])!==td) return; var ft=r['_fromTask']; var ftId=(ft&&typeof ft==='object'&&'text' in ft)?ft.text:ft; if(ftId&&_tIds[ftId]) return; todo.push({r:r,sched:true}); });
-  todo.sort(function(a,b){ var ag=function(it){ return it.sched?(it.r['开始时间']||'99:99'):(it.r['截止日期']||'9999'); }; return String(ag(a)).localeCompare(String(ag(b))); });
-
-
-
-  var todoHTML = todo.length ? todo.map(function(it){
-
-    var r=it.r;
-    var quad=r['象限']?'<span class="m-tag rose">'+esc(r['象限'])+'</span>':'';
-    var tag=it.sched?'<span class="m-tag">日程</span>':'';
-
-    var id=rid(r);
-    var delLink = it.sched ? (r['_fromTask']||'') : (r['_sched']||'');
-    var fnDel="delWorkItem('"+(it.sched?'sched':'task')+"','"+id+"','"+esc(delLink)+"')";
-    var fnEdit="editTask('"+id+"')";
-    var ops='<div class="m-ops">'+(it.sched?'':'<button class="icon-btn" title="修改" onclick="'+fnEdit+'">'+icon('edit')+'</button>')+'<button class="icon-btn" title="删除" onclick="'+fnDel+'">'+icon('trash')+'</button></div>';
-    return '<div class="m-row"><div class="m-tm">'+(it.sched?(r['开始时间']||''):'')+'</div><div class="m-bd"><div class="m-t">'+tag+quad+esc(r['标题']||'(无标题)')+'</div>'+
-
-      (it.sched?'':'<div class="m-m">截止 '+esc(dateSub(r['截止日期'])||'—')+'</div>')+'</div>'+ops+'</div>';
-
-  }).join('') : '<div class="m-empty">今日待办都清空啦 🎉</div>';
 
   var yrows=(works||[]).filter(function(r){ return own(r) && dateSub(r['日期'])===y; });
 
@@ -2227,7 +2211,6 @@ function buildMorningLeft(tasks, works){
 
     '<div class="m-card"><div class="m-ttl"><span class="m-ic">📅</span>今日日程<span class="m-sub">按开始时间</span></div><div class="m-rows">'+schedHTML+'</div></div>'+
 
-    '<div class="m-card"><div class="m-ttl"><span class="m-ic">✅</span>今日待办<span class="m-sub">未完成的</span></div><div class="m-rows">'+todoHTML+'</div></div>'+
 
     ''+
 
@@ -2333,13 +2316,13 @@ function renderTasks(tasks, works){
   grid+='</div>';
   var board='<div class="quad-wrap"><div class="quad-cap">'+td+' 今日安排 · 四象限法：上=重要，左=紧急。拖到对应格子即可，位置自动保存。<button type="button" class="btn sm ghost" style="margin-left:8px" onclick="claimOrphanData()" title="把旧设备/旧身份留下、现在看不到的日程认领归到自己名下">认领隐身</button></div>'+grid+'</div>';
   var add='<div class="wb-add"><div class="wb-add-title">➕ 添加一张便利贴</div>'+
-    '<div class="three-col">'+
+    '<div class="four-col">'+
       '<div class="fld"><label>要做什么</label><input id="t-title" placeholder="要做什么？"></div>'+
       '<div class="fld"><label>截止日期</label><input id="t-due" type="date" value="'+td+'"></div>'+
-      '<div class="fld"><label>重要/紧急</label><select id="t-quad">'+quadOptions('Q1')+'</select><div class="hint">如不选，默认归为「重要且紧急」（第一象限）</div></div>'+
+      '<div class="fld"><label>重要/紧急</label><select id="t-quad">'+quadOptions('Q1')+'</select></div>'+
+      '<div class="fld add-fld"><label>&nbsp;</label><div class="add-btns"><button class="btn primary" onclick="submitTask()">'+(taskEditId?'保存修改':'添加')+'</button>'+(taskEditId?'<button class="btn" onclick="cancelTaskEdit()">取消</button>':'')+'</div></div>'+
     '</div>'+
-    '<div class="actions"><button class="btn primary" onclick="submitTask()">'+(taskEditId?'保存修改':'添加')+'</button>'+
-    (taskEditId?'<button class="btn" onclick="cancelTaskEdit()">取消</button>':'')+'</div></div>';
+    '<div class="hint" style="margin-top:8px">如不选象限，默认归为「重要且紧急」（第一象限）</div></div>';
   var QLAB={'Q1':'重要且紧急','Q2':'重要不紧急','Q3':'紧急不重要','Q4':'不紧急不重要'};
   var HAND='<svg viewBox="0 0 24 24"><path d="M11 13V4.8a1.3 1.3 0 0 1 2.6 0V13"/><path d="M13.6 13V5.4a1.3 1.3 0 0 1 2.6 0V13"/><path d="M16.2 13.2a1.3 1.3 0 0 1 2.3 1.1v2.7a5.5 5.5 0 0 1-5.5 5.5H14a5.5 5.5 0 0 1-4-1.8l-2.8-3.1a1.3 1.3 0 0 1 1.9-1.8l2 2.1V8.5a1.3 1.3 0 0 1 2.6 0v4.5"/></svg>';
   var shownItems = items.filter(function(it){ var due = it.src==='task' ? it.r["截止日期"] : it.r["日期"]; return dateSub(due)===td; });

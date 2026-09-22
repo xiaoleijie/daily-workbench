@@ -253,7 +253,7 @@
   .wb-add .two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px}
   .wb-add .two-col .fld{margin:0}
   .wb-add .three-col{display:grid;grid-template-columns:2fr 1fr 1fr;gap:12px}
-  .wb-add .four-col{display:grid;grid-template-columns:1.5fr .7fr .7fr .7fr;gap:12px}
+  .wb-add .four-col{display:grid;grid-template-columns:1.2fr .6fr .9fr .9fr;gap:12px}
   .wb-add .four-col .fld{margin:0}
   .wb-add .add-btns{display:flex;gap:8px}
   .wb-add .add-btns .btn{flex:1;min-height:40px;padding:0 10px;white-space:nowrap}
@@ -581,9 +581,14 @@
   .chipbtn:hover{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
   /* 添加本月事项：左 2/3 日历 + 右 1/3 竖排等宽按钮 */
   .sa-flex{display:flex;gap:14px;align-items:flex-start}
-  .sa-cal{flex:2 1 0;min-width:0}
-  .sa-ops{flex:0 0 auto;min-width:178px;display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding-top:18px;align-content:start}
-  .sa-ops>.btn{width:100%;min-width:0;height:30px;padding:0 6px;font-size:12.5px;justify-content:center;box-sizing:border-box}
+  .sa-cal{flex:1 1 0;min-width:0}
+  .sa-ops{flex:1 1 0;min-width:0;display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding-top:18px;align-content:start}
+  .sa-quick{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}
+  .s-batchbar{display:flex;align-items:center;gap:10px;padding:7px 2px;font-size:12.5px;color:var(--muted);border-bottom:1px dashed var(--line)}
+  .s-batchbar .s-selall{display:flex;align-items:center;gap:5px;cursor:pointer;font-weight:700;color:var(--ink)}
+  .s-batchbar .btn[disabled]{opacity:.45;cursor:not-allowed}
+  .item .s-sel{flex:0 0 auto;width:15px;height:15px;accent-color:var(--accent);cursor:pointer}
+  .sa-ops>.btn,.sa-quick>.btn{width:100%;min-width:0;height:30px;padding:0 6px;font-size:12.5px;justify-content:center;box-sizing:border-box}
   .smc-cnt-row{font-size:11.5px;font-weight:700;color:var(--accent);margin-top:6px;text-align:center}
   /* 修改明细：改全部日期 */
   .es-batch-box{margin:10px 0 4px;padding:10px 12px;border:1px dashed var(--accent);border-radius:10px;background:var(--accent-soft)}
@@ -1135,6 +1140,7 @@
 .m-quote:before{content:"";position:absolute;left:0;top:3px;bottom:3px;width:4px;border-radius:3px;background:var(--accent)}
 
 .m-quote .m-by{display:block;font-size:11px;color:var(--muted);margin-top:3px}
+  .m-quote .m-qic{position:absolute;right:0;bottom:0;font-size:12px;opacity:.75;line-height:1}
 
 .m-wx{display:flex;gap:9px}
 .m-top{display:flex;gap:9px;align-items:stretch;margin-bottom:12px}
@@ -2207,7 +2213,7 @@ function buildMorningLeft(tasks, works){
 
   return ''+
 
-    '<div class="m-top">'+'<div class="m-card m-greet"><div class="m-hi">'+hi+'，'+esc(MY_UID||'小蕾姐')+'</div><div class="m-date">'+wd+' · '+td+'</div></div>'+'<div class="m-wx" id="m-wx"><div class="m-empty">天气加载中…</div></div>'+'</div>'+'<div class="m-card"><div class="m-ttl"><span class="m-ic">💡</span>今日金句</div><div class="m-quote">'+quoteHTML+'</div></div>'+
+    '<div class="m-top">'+'<div class="m-card m-greet"><div class="m-hi">'+hi+'，'+esc(MY_UID||'小蕾姐')+'</div><div class="m-date">'+wd+' · '+td+'</div></div>'+'<div class="m-wx" id="m-wx"><div class="m-empty">天气加载中…</div></div>'+'</div>'+'<div class="m-card"><div class="m-quote">'+quoteHTML+'<span class="m-qic">💡</span></div></div>'+
 
     '<div class="m-card"><div class="m-ttl"><span class="m-ic">📅</span>今日日程<span class="m-sub">按开始时间</span></div><div class="m-rows">'+schedHTML+'</div></div>'+
 
@@ -3573,7 +3579,7 @@ function renderSchedule(rows){
     '</div>';
   var sticky='<div class="sticky-note"><div class="sticky-rule"></div><textarea class="sticky-area" id="month-note" onchange="saveMonthNote(this.value)" placeholder="还没定下日期的安排，先记在这里…">'+esc(getMonthNote())+'</textarea></div>';
   var shown=rows.filter(function(r){ var st=schedStatus(r); return (schedFilter==='全部'||r["分类"]===schedFilter) && (!schedSelDate||dateSub(r["日期"])===schedSelDate) && (schedStatusF==='全部状态'||(schedStatusF==='待办'&&(st==='todo'||st==='overdue'))||(schedStatusF==='已完成'&&st==='done')); });
-  var list='<div class="panel sched-list-panel"><div class="list">';
+  var list='<div class="panel sched-list-panel"><div class="s-batchbar"><label class="s-selall"><input type="checkbox" id="s-sel-all" onchange="schedSelAll(this.checked)">全选</label><span id="s-sel-cnt"></span><button class="btn sm danger" id="s-batch-del" onclick="schedBatchDel()" disabled>删除选中</button></div><div class="list">';
   if(!shown.length) list+='<div class="empty">这段时间还没有安排</div>';
   shown.forEach(function(r){
     var st=schedStatus(r);
@@ -3588,7 +3594,7 @@ function renderSchedule(rows){
             '<button class="s-act-btn rev" title="恢复为待办" onclick="revertSched(\''+rid(r)+'\')">↺</button>';
     }
     acts+='</div>';
-    list+='<div class="'+cls+'">'+acts+
+    list+='<div class="'+cls+'"><input type="checkbox" class="s-sel" data-id="'+rid(r)+'" onchange="schedSelCount()" onclick="event.stopPropagation()">'+acts+
       '<div class="main"><div class="ttl"'+'>'+esc(r["标题"])+'</div>'+
       '<div class="meta"><span class="badge '+esc(r["分类"])+'">'+esc(r["分类"])+'</span>'+
       (r["开始时间"]||r["结束时间"]?'<span>'+(r["开始时间"]||'')+(r["结束时间"]?'–'+r["结束时间"]:'')+'</span>':'')+
@@ -3724,11 +3730,13 @@ function schedFormHTML(){
       '<div class="sa-flex">'+
         '<div class="sa-cal"><div class="fld sched-dates-fld"><label>日期 · 点日期可多选（一次添加到多个日程）</label>'+
           '<div id="s-dates-block">'+schedPickInnerHTML()+'</div>'+
+          '<div class="sa-quick">'+
+            '<button type="button" class="btn sm" onclick="schedPickQuick(&quot;weekday&quot;)">工作日</button>'+
+            '<button type="button" class="btn sm" onclick="schedPickQuick(&quot;weekend&quot;)">周末</button>'+
+            '<button type="button" class="btn sm" onclick="schedPickQuick(&quot;clear&quot;)">清空</button>'+
+          '</div>'+
         '</div></div>'+
         '<div class="sa-ops">'+
-          '<button type="button" class="btn sm" onclick="schedPickQuick(&quot;weekday&quot;)">工作日</button>'+
-          '<button type="button" class="btn sm" onclick="schedPickQuick(&quot;weekend&quot;)">周末</button>'+
-          '<button type="button" class="btn sm" onclick="schedPickQuick(&quot;clear&quot;)">清空</button>'+
           '<button type="button" class="btn sm primary" id="s-submit" onclick="submitSched()">添加</button>'+
           '<button type="button" class="btn sm" onclick="openPasteImport()" title="粘贴通知文本 / CSV / Excel，批量导入日程">导入</button>'+
           '<button type="button" class="btn sm" onclick="openExportPicker()" title="导出日程（Excel / PDF / CSV）">导出</button>'+
@@ -3927,6 +3935,37 @@ function delSchedItem(id, fromTask){
     }).then(function(){ LOADERS.schedule(); LOADERS.tasks(); toast('已删除'); }).catch(function(e){ toast('删除失败：'+((e&&e.message)||'错误'),true); });
   });
 }
+/* ===== 批量删除：勾选多条一起删，可撤销 ===== */
+function schedSelAll(on){
+  var boxes=document.querySelectorAll('.sched-list-panel .s-sel');
+  for(var i=0;i<boxes.length;i++){ boxes[i].checked=on; }
+  schedSelCount();
+}
+function schedSelCount(){
+  var boxes=document.querySelectorAll('.sched-list-panel .s-sel'), n=0;
+  for(var i=0;i<boxes.length;i++){ if(boxes[i].checked) n++; }
+  var b=document.getElementById('s-batch-del');
+  if(b){ b.disabled=!n; b.textContent=n?('删除选中（'+n+'）'):'删除选中'; }
+  var cnt=document.getElementById('s-sel-cnt');
+  if(cnt){ cnt.textContent=n?('已选 '+n+' 条'):''; }
+  var all=document.getElementById('s-sel-all');
+  if(all){ all.checked=boxes.length>0 && n===boxes.length; }
+}
+function schedBatchDel(){
+  var boxes=document.querySelectorAll('.sched-list-panel .s-sel:checked'), ids=[];
+  for(var i=0;i<boxes.length;i++){ ids.push(boxes[i].getAttribute('data-id')); }
+  if(!ids.length){ toast('先勾选要删除的日程',true); return; }
+  var snap=[];
+  ids.forEach(function(id){ var r=(window.__sched||[]).filter(function(x){ return rid(x)===id; })[0]; if(r) snap.push(dfSnapRow(r)); });
+  if(snap.length) pushUndo('批量删除', snap);
+  appDialog({msg:'将删除选中的 '+ids.length+' 条日程。\n删错了可用「撤销上次批量修改」一键还原。',
+    buttons:[{label:'取消'},{label:'确认删除', cls:'primary', onClick:function(){
+      Promise.all(ids.map(function(id){ return delRec(DB.schedule, id); })).then(function(){
+        LOADERS.schedule(); LOADERS.tasks(); schedSelCount();
+        toast('已删除 '+ids.length+' 条，可用「撤销上次批量修改」还原');
+      }).catch(function(e){ toast('删除失败：'+((e&&e.message)||'错误'),true); });
+    }}]});
+}
 /* ===== 日程事项修改（已完成状态也可直接修改） ===== */
 function editSchedItem(id){
   var rec=(window.__sched||[]).filter(function(r){ return rid(r)===id; })[0];
@@ -3992,6 +4031,10 @@ function doSchedUndo(all){
       "日期":{date:r.日期}, "标题":{text:r.标题}, "分类":{select:r.分类},
       "开始时间":{text:r.开始时间}, "结束时间":{text:r.结束时间}, "地点":{text:r.地点},
       "备注":{text:r.备注}, "象限":{select:r.象限}, "完成":{select:r.完成}, "完成详情":{text:r.完成详情}
+    }).catch(function(){
+      return addRec(DB.schedule, {"日期":{date:r.日期}, "标题":{text:r.标题}, "分类":{select:r.分类},
+        "开始时间":{text:r.开始时间}, "结束时间":{text:r.结束时间}, "地点":{text:r.地点},
+        "备注":{text:r.备注}, "象限":{select:r.象限}, "完成":{select:r.完成}, "完成详情":{text:r.完成详情}});
     });
   });
   Promise.all(ops).then(function(){

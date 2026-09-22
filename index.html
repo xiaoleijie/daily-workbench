@@ -1086,6 +1086,85 @@
     padding:calc(var(--pet-size,116px)*0.045) calc(var(--pet-size,116px)*0.10);cursor:pointer;white-space:nowrap;opacity:.82;
     box-shadow:0 2px 6px rgba(60,50,40,.10);transition:opacity .2s,color .2s,border-color .2s}
   .pet-home-btn:hover{opacity:1;color:var(--accent);border-color:var(--accent)}
+
+
+/* ===== 晨间左栏（今日安排页左半边） ===== */
+
+.morning-split{display:flex;gap:22px;align-items:flex-start}
+
+.m-left{flex:0 0 400px;max-width:42%;position:sticky;top:12px}
+
+.m-right{flex:1;min-width:0}
+
+@media (max-width:980px){ .morning-split{flex-direction:column} .m-left{flex:none;max-width:none;width:100%;position:static} }
+
+.m-card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 13px;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,.03)}
+
+.m-card>.m-ttl{display:flex;align-items:center;gap:7px;font-size:14.5px;font-weight:700;color:var(--ink);margin:0 0 9px}
+
+.m-card>.m-ttl .m-ic{font-size:16px}
+
+.m-card>.m-ttl .m-sub{font-size:11.5px;font-weight:400;color:var(--muted);margin-left:auto}
+
+.m-rows .m-row{display:flex;align-items:flex-start;gap:9px;padding:7px 0;border-top:1px dashed var(--line)}
+
+.m-rows .m-row:first-child{border-top:none}
+
+.m-row .m-tm{font-size:12.5px;color:var(--muted);flex:0 0 42px;padding-top:1px;font-variant-numeric:tabular-nums}
+
+.m-row .m-bd{flex:1;min-width:0}
+
+.m-row .m-t{font-size:13.5px;font-weight:600;color:var(--ink);line-height:1.4}
+
+.m-row .m-m{font-size:11.5px;color:var(--muted);margin-top:2px}
+
+.m-row.done .m-t{text-decoration:line-through;color:var(--muted)}
+
+.m-tag{display:inline-block;font-size:10.5px;padding:1px 7px;border-radius:999px;background:var(--accent-soft);color:var(--accent);margin-right:5px;font-weight:600}
+
+.m-tag.rose{background:#fbeae5;color:#c8553d}
+
+.m-empty{font-size:12.5px;color:var(--muted);padding:5px 0}
+
+.m-quote{font-size:13.5px;line-height:1.7;color:#5a5147;padding-left:12px;position:relative}
+
+.m-quote:before{content:"";position:absolute;left:0;top:3px;bottom:3px;width:4px;border-radius:3px;background:var(--accent)}
+
+.m-quote .m-by{display:block;font-size:11.5px;color:var(--muted);margin-top:7px}
+
+.m-wx{display:flex;gap:9px}
+
+.m-city{flex:1;background:#fff4e0;border-radius:11px;padding:10px 8px;text-align:center}
+
+.m-city-nm{font-size:12.5px;font-weight:700;color:#a9710a}
+
+.m-city-tmp{font-size:23px;font-weight:800;line-height:1.1;margin:2px 0;color:#7a5610}
+
+.m-city-cd{font-size:11.5px;color:#9a6c12}
+
+.m-city-hl{font-size:10.5px;color:#b0821d;margin-top:2px}
+
+.m-rev-sum{display:flex;align-items:center;gap:11px;margin-bottom:7px}
+
+.m-ring{flex:0 0 54px;height:54px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:#fff;background:conic-gradient(var(--accent) calc(var(--p)*1%),#e6dfd4 0)}
+
+.m-rev-txt{font-size:12.5px;color:var(--muted)}
+
+.m-rev-txt b{color:var(--ink);font-size:14px}
+
+.m-rev-todo{font-size:12.5px;color:#c8553d;margin-top:5px}
+
+.m-rev-todo.ok{color:var(--accent)}
+
+.m-rev-todo .m-it{display:block;padding:2px 0;border-top:1px dashed var(--line)}
+
+.m-greet{background:linear-gradient(135deg,var(--accent-soft),#fff);border:none}
+
+.m-greet .m-hi{font-size:18px;font-weight:700;color:var(--accent);letter-spacing:.3px}
+
+.m-greet .m-date{font-size:12.5px;color:var(--muted);margin-top:2px}
+
+
 </style>
 </head>
 <body data-page-node-id="jjZX3HXy56TvKKnx3zBBoa">
@@ -1986,6 +2065,198 @@ LOADERS.tasks=function(){
   ]).then(function(res){ renderTasks(res[0]||[], res[1]||[]); })
     .catch(function(e){ body.innerHTML=statusHTML(false, (e&&e.message)||'读取失败', 'tasks'); });
 };
+
+
+/* ============ 今日安排 · 晨间左栏 ============ */
+
+function addDays(iso,n){ var p=String(iso).split('-'); var d=new Date(+p[0],+p[1]-1,+p[2]); d.setDate(d.getDate()+n); return fmtDate(d); }
+
+var MORNING_QUOTES=[
+
+  {t:'行动是治愈恐惧的良药，而犹豫拖延将不断滋养恐惧。',b:'马克·吐温'},
+
+  {t:'你不需要很厉害才能开始，但你需要开始才能很厉害。',b:'佚名'},
+
+  {t:'把每一天过好，就是对未来最好的交代。',b:'佚名'},
+
+  {t:'所谓自由，不是想做什么就做什么，而是不想做什么就可以不做什么。',b:'康德'},
+
+  {t:'种一棵树最好的时间是十年前，其次是现在。',b:'谚语'},
+
+  {t:'真正的自律，是温柔地推自己一把，而不是责怪。',b:'佚名'},
+
+  {t:'我们终将成为自己持续做的事的总和。',b:'亚里士多德'},
+
+  {t:'今天的努力，是幸运的伏笔。',b:'佚名'},
+
+  {t:'慢慢来，比较快。',b:'佚名'},
+
+  {t:'把重要的事放在能量最好的时候做。',b:'佚名'},
+
+  {t:'幸福不是目的地，而是走路的方式。',b:'佚名'},
+
+  {t:'你如何过一天，就如何过一生。',b:'安妮·迪拉德'},
+
+  {t:'完成，好过完美。',b:'佚名'},
+
+  {t:'每一天都是一次新的开始，别让昨天的遗憾挡住今天的阳光。',b:'佚名'},
+
+  {t:'生活不是等待暴风雨过去，而是学会在雨中跳舞。',b:'佚名'},
+
+  {t:'哪怕只前进一小步，也胜过原地踏步一百次。',b:'佚名'},
+
+  {t:'照顾好自己，是你能做的最勇敢的事之一。',b:'佚名'},
+
+  {t:'时间花在哪里，成就就在哪里。',b:'佚名'},
+
+  {t:'把目标写下来，它就从愿望变成了计划。',b:'佚名'},
+
+  {t:'与其担心，不如行动；行动会给你答案。',b:'佚名'}
+
+];
+
+var MORNING_WX=[
+
+  {nm:'上海',lat:31.23,lon:121.47},
+
+  {nm:'成都',lat:30.57,lon:104.07}
+
+];
+
+var MORNING_WX_CODE={0:'晴',1:'晴间多云',2:'多云',3:'阴',45:'雾',48:'雾凇',51:'毛毛雨',53:'小雨',55:'中雨',56:'冻雨',57:'冻雨',
+
+  61:'小雨',63:'中雨',65:'大雨',66:'冻雨',67:'冻雨',71:'小雪',73:'中雪',75:'大雪',77:'雪粒',80:'阵雨',81:'阵雨',82:'强阵雨',
+
+  85:'阵雪',86:'强阵雪',95:'雷阵雨',96:'雷阵雨伴冰雹',99:'强雷暴伴冰雹'};
+
+function buildMorningLeft(tasks, works){
+
+  var td=today(); var y=addDays(td,-1); var uid=MY_UID;
+
+  function own(r){ return !(uid && (r['owner']||'')!==uid); }
+
+  var sched=(works||[]).filter(function(r){ return own(r) && dateSub(r['日期'])===td; })
+
+    .sort(function(a,b){ return (a['开始时间']||'99:99').localeCompare(b['开始时间']||'99:99'); });
+
+  var schedHTML = sched.length ? sched.map(function(r){
+
+    var done=(r['完成']||'否')==='是';
+
+    var cls=done?'m-row done':'m-row';
+
+    var tag='<span class="m-tag">'+esc(r['分类']||'日程')+'</span>';
+
+    var m=[]; if(r['地点']) m.push('📍'+esc(r['地点'])); if(done) m.push('已完成');
+
+    return '<div class="'+cls+'"><div class="m-tm">'+(r['开始时间']||'')+'</div><div class="m-bd"><div class="m-t">'+tag+esc(r['标题']||'(无标题)')+'</div>'+
+
+      (m.length?'<div class="m-m">'+m.join(' · ')+'</div>':'')+'</div></div>';
+
+  }).join('') : '<div class="m-empty">今天还没有安排，留点空白也挺好 🍃</div>';
+
+  var todo=(tasks||[]).filter(function(r){ return own(r) && (r['完成']||'否')!=='是' && (dateSub(r['截止日期'])===td || !dateSub(r['截止日期'])); })
+
+    .sort(function(a,b){ return (a['截止日期']||'9999').localeCompare(b['截止日期']||'9999'); });
+
+  var todoHTML = todo.length ? todo.map(function(r){
+
+    var quad=r['象限']?'<span class="m-tag rose">'+esc(r['象限'])+'</span>':'';
+
+    return '<div class="m-row"><div class="m-tm"></div><div class="m-bd"><div class="m-t">'+quad+esc(r['标题']||'(无标题)')+'</div>'+
+
+      (r['截止日期']?'<div class="m-m">截止 '+esc(dateSub(r['截止日期']))+'</div>':'')+'</div></div>';
+
+  }).join('') : '<div class="m-empty">今日待办都清空啦 🎉</div>';
+
+  var yrows=(works||[]).filter(function(r){ return own(r) && dateSub(r['日期'])===y; });
+
+  var ytotal=yrows.length, ydone=yrows.filter(function(r){return (r['完成']||'否')==='是';}).length;
+
+  var yundone=yrows.filter(function(r){return (r['完成']||'否')!=='是';});
+
+  var ypct= ytotal? Math.round(ydone/ytotal*100):0;
+
+  var revHTML;
+
+  if(!ytotal){ revHTML='<div class="m-empty">昨天没有排日程记录</div>'; }
+
+  else {
+
+    revHTML='<div class="m-rev-sum"><div class="m-ring" style="--p:'+ypct+'">'+ypct+'%</div><div class="m-rev-txt">昨天共 <b>'+ytotal+'</b> 项，完成 <b>'+ydone+'</b> 项</div></div>';
+
+    if(yundone.length){
+
+      revHTML+='<div class="m-rev-todo">未完成 '+yundone.length+' 项（今天可接着做）：'+yundone.map(function(r){return '<span class="m-it">• '+esc(r['标题']||'(无标题)')+' · '+(r['分类']||'日程')+'</span>';}).join('')+'</div>';
+
+    } else { revHTML+='<div class="m-rev-todo ok">全部完成，给自己鼓个掌 👏</div>'; }
+
+  }
+
+  var now=new Date(); var start=new Date(now.getFullYear(),0,0); var doy=Math.floor((now-start)/86400000);
+
+  var q=MORNING_QUOTES[doy % MORNING_QUOTES.length];
+
+  var quoteHTML=esc(q.t)+'<span class="m-by">—— '+esc(q.b)+'</span>';
+
+  var h=now.getHours();
+
+  var hi = h<5?'夜深了':h<11?'早安':h<14?'午安':h<18?'下午好':'晚上好';
+
+  var wd=['周日','周一','周二','周三','周四','周五','周六'][now.getDay()];
+
+  return ''+
+
+    '<div class="m-card m-greet"><div class="m-hi">'+hi+'，'+esc(MY_UID||'小蕾姐')+'</div><div class="m-date">'+wd+' · '+td+'</div></div>'+
+
+    '<div class="m-card"><div class="m-ttl"><span class="m-ic">📅</span>今日日程<span class="m-sub">按开始时间</span></div><div class="m-rows">'+schedHTML+'</div></div>'+
+
+    '<div class="m-card"><div class="m-ttl"><span class="m-ic">✅</span>今日待办<span class="m-sub">未完成的</span></div><div class="m-rows">'+todoHTML+'</div></div>'+
+
+    '<div class="m-card"><div class="m-ttl"><span class="m-ic">🌤️</span>双城天气<span class="m-sub">上海 · 成都</span></div><div class="m-wx" id="m-wx"><div class="m-empty">天气加载中…</div></div></div>'+
+
+    '<div class="m-card"><div class="m-ttl"><span class="m-ic">💡</span>今日金句</div><div class="m-quote">'+quoteHTML+'</div></div>'+
+
+    '<div class="m-card"><div class="m-ttl"><span class="m-ic">📊</span>昨日复盘<span class="m-sub">'+y+'</span></div><div class="m-rev">'+revHTML+'</div></div>';
+
+}
+
+function loadMorningWeather(){
+
+  var box=document.getElementById('m-wx'); if(!box) return;
+
+  MORNING_WX.forEach(function(c){
+
+    var url='https://api.open-meteo.com/v1/forecast?latitude='+c.lat+'&longitude='+c.lon+'&current=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min&timezone=Asia%2FShanghai';
+
+    fetch(url).then(function(r){return r.json();}).then(function(j){
+
+      var cur=j.current||{}, d=j.daily||{};
+
+      var tmp=Math.round(cur.temperature_2m); var code=cur.weather_code; var cd=MORNING_WX_CODE[code]||'未知';
+
+      var hi=d.temperature_2m_max?Math.round(d.temperature_2m_max[0]):'–'; var lo=d.temperature_2m_min?Math.round(d.temperature_2m_min[0]):'–';
+
+      var div=document.createElement('div'); div.className='m-city';
+
+      div.innerHTML='<div class="m-city-nm">'+c.nm+'</div><div class="m-city-tmp">'+tmp+'°</div><div class="m-city-cd">'+cd+'</div><div class="m-city-hl">最高 '+hi+'° / 最低 '+lo+'°</div>';
+
+      var em=box.querySelector('.m-empty'); if(em) em.remove();
+
+      var holder=box.querySelector('[data-c="'+c.nm+'"]'); if(holder) holder.replaceWith(div); else box.appendChild(div); div.setAttribute('data-c',c.nm);
+
+    }).catch(function(){
+
+      if(!box.querySelector('[data-c="'+c.nm+'"]')){ var div=document.createElement('div'); div.className='m-city'; div.innerHTML='<div class="m-city-nm">'+c.nm+'</div><div class="m-city-tmp">–</div><div class="m-city-cd">暂不可用</div>'; box.appendChild(div); }
+
+    });
+
+  });
+
+}
+
+
+
 function renderTasks(tasks, works){
   window.__lastTasks=tasks; window.__lastWorks=works||[];
   var td=today();
@@ -2081,7 +2352,9 @@ function renderTasks(tasks, works){
       '<button class="btn sm ghost" onclick="restoreAllToQuadrants()" title="把全部事项恢复回四象限（标记为未完成）">↩ 全部恢复四象限</button>'+
       '<button class="btn sm danger" onclick="deleteAllItems()" title="清空全部事项（不可撤销）">🗑 全部删除</button>'+
     '</span></div>'+(listRows||'<div class="empty">今天还没有安排</div>')+'</div>';
-  setBody('tasks', board+add+list);
+  var left = buildMorningLeft(tasks, works);
+  setBody('tasks', '<div class="morning-split"><div class="m-left">'+left+'</div><div class="m-right">'+board+add+list+'</div></div>');
+  loadMorningWeather();
   bindDraft('task', getBody('tasks'), ['t-title','t-due','t-quad']);
   if(taskEditId){ var ed=window.__taskEdit; if(ed){ document.getElementById('t-title').value=ed['标题']||''; document.getElementById('t-due').value=dateSub(ed['截止日期'])||td; document.getElementById('t-quad').value=(ed['象限']||'Q1'); } }
 }

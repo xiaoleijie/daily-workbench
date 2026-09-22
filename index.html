@@ -229,25 +229,25 @@
   .q4{background:#f3f4f6;border-color:#e2e4e9}.q4 .q-head{color:#6b7280}
   .q-body{display:flex;flex-wrap:wrap;gap:12px;align-content:flex-start;flex:1}
   .q-empty{font-size:12px;color:var(--muted);opacity:.7;padding:10px 4px;width:100%;text-align:center;border:1px dashed var(--line2);border-radius:8px}
-  .note{position:relative;width:184px;min-height:92px;background:linear-gradient(180deg,#fff7b0,#fff0a0);box-shadow:0 6px 14px rgba(120,100,40,.18);border-radius:3px;padding:20px 12px 12px;transform:rotate(-1.2deg);transition:transform .15s,box-shadow .15s;cursor:grab}
+  .note{position:relative;width:92px;min-height:46px;background:linear-gradient(180deg,#fff7b0,#fff0a0);box-shadow:0 6px 14px rgba(120,100,40,.18);border-radius:3px;padding:10px 6px 6px;transform:rotate(-1.2deg);transition:transform .15s,box-shadow .15s;cursor:grab}
   .note:nth-of-type(2n){transform:rotate(1deg)}
   .note:nth-of-type(3n){transform:rotate(-.45deg)}
-  .note:hover{transform:rotate(0) translateY(-2px);box-shadow:0 11px 22px rgba(120,100,40,.28);z-index:3}
+  .note:hover{transform:rotate(0) translateY(-1px);box-shadow:0 6px 12px rgba(120,100,40,.28);z-index:3}
   .note.dragging{opacity:.5}
   .note.done{opacity:.62}
   .note.done .note-ttl{text-decoration:line-through;color:#8a7a3a}
-  .note .pin{position:absolute;top:-8px;left:50%;transform:translateX(-50%);width:18px;height:18px;z-index:4;pointer-events:none}
-  .note .pin::before{content:'';position:absolute;top:4px;left:50%;transform:translateX(-50%);width:11px;height:11px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#ff8a7a,#cf3322);box-shadow:0 1px 2px rgba(0,0,0,.35)}
-  .note .pin::after{content:'';position:absolute;top:12px;left:50%;transform:translateX(-50%) rotate(7deg);width:2px;height:9px;background:#bcb4a2;box-shadow:0 1px 1px rgba(0,0,0,.15)}
-  .note .note-ttl{font-size:16px;font-weight:700;line-height:1.32;margin:0 0 8px;color:#4a3f1a;word-break:break-word}
-  .note .note-meta{font-size:12px;color:#7a6a2a;display:flex;flex-direction:column;gap:3px;line-height:1.4}
+  .note .pin{position:absolute;top:-4px;left:50%;transform:translateX(-50%);width:9px;height:9px;z-index:4;pointer-events:none}
+  .note .pin::before{content:'';position:absolute;top:2px;left:50%;transform:translateX(-50%);width:5.5px;height:5.5px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#ff8a7a,#cf3322);box-shadow:0 1px 2px rgba(0,0,0,.35)}
+  .note .pin::after{content:'';position:absolute;top:6px;left:50%;transform:translateX(-50%) rotate(7deg);width:1px;height:4.5px;background:#bcb4a2;box-shadow:0 1px 1px rgba(0,0,0,.15)}
+  .note .note-ttl{font-size:8px;font-weight:700;line-height:1.32;margin:0 0 4px;color:#4a3f1a;word-break:break-word}
+  .note .note-meta{font-size:6px;color:#7a6a2a;display:flex;flex-direction:column;gap:2px;line-height:1.4}
   .note .note-meta .src{color:#9a7b2e}
-  .note .note-chk{position:absolute;top:8px;right:8px;width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(120,100,40,.35);color:#9a7b2e;background:rgba(255,255,255,.5)}
+  .note .note-chk{position:absolute;top:4px;right:4px;width:12px;height:12px;border-radius:3px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(120,100,40,.35);color:#9a7b2e;background:rgba(255,255,255,.5)}
   .note .note-chk:hover{color:#cf3322;border-color:#cf3322}
-  .note .note-chk svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.9}
-  .note .note-ops{position:absolute;bottom:8px;right:8px;display:flex;gap:3px}
-  .note .note-ops .icon-btn{width:22px;height:22px}
-  .note .note-ops .icon-btn svg{width:12px;height:12px}
+  .note .note-chk svg{width:7.5px;height:7.5px;stroke:currentColor;fill:none;stroke-width:1.9}
+  .note .note-ops{position:absolute;bottom:4px;right:4px;display:flex;gap:2px}
+  .note .note-ops .icon-btn{width:11px;height:11px}
+  .note .note-ops .icon-btn svg{width:6px;height:6px}
   .wb-add{background:var(--paper);border:1px dashed var(--line2);border-radius:12px;padding:16px;margin-top:12px}
   .wb-add .wb-add-title{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:10px}
   .wb-add .two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px}
@@ -1133,12 +1133,18 @@
 .m-quote .m-by{display:block;font-size:11.5px;color:var(--muted);margin-top:7px}
 
 .m-wx{display:flex;gap:9px}
+.m-top{display:flex;gap:9px;align-items:stretch;margin-bottom:12px}
+.m-top .m-greet{flex:0 0 auto;margin-bottom:0;padding:10px 12px}
+.m-top .m-wx{flex:1;gap:7px}
+.m-ops{display:flex;gap:3px;flex:0 0 auto;align-self:center}
+.m-ops .icon-btn{width:22px;height:22px}
+.m-ops .icon-btn svg{width:12px;height:12px}
 
-.m-city{flex:1;background:#fff4e0;border-radius:11px;padding:10px 8px;text-align:center}
+.m-city{flex:1;background:#fff4e0;border-radius:11px;position:relative;padding:15px 6px 8px;text-align:center}
 
-.m-city-nm{font-size:12.5px;font-weight:700;color:#a9710a}
+.m-city-nm{position:absolute;top:5px;left:8px;font-size:10.5px;font-weight:700;color:#a9710a;opacity:.9}
 
-.m-city-tmp{font-size:23px;font-weight:800;line-height:1.1;margin:2px 0;color:#7a5610}
+.m-city-tmp{font-size:17px;font-weight:800;line-height:1.1;margin:0;color:#7a5610}
 
 .m-city-cd{font-size:11.5px;color:#9a6c12}
 
@@ -2163,9 +2169,9 @@ function buildMorningLeft(tasks, works){
 
     var quad=r['象限']?'<span class="m-tag rose">'+esc(r['象限'])+'</span>':'';
 
-    return '<div class="m-row"><div class="m-tm"></div><div class="m-bd"><div class="m-t">'+quad+esc(r['标题']||'(无标题)')+'</div>'+
+    var id=rid(r); var fnEdit="editTask('"+id+"')"; var fnDel="delWorkItem('task','"+id+"','"+esc(r["_sched"]||'')+"')"; var ops='<div class="m-ops"><button class="icon-btn" title="修改" onclick="'+fnEdit+'">'+icon('edit')+'</button><button class="icon-btn" title="删除" onclick="'+fnDel+'">'+icon('trash')+'</button></div>'; return '<div class="m-row"><div class="m-tm"></div><div class="m-bd"><div class="m-t">'+quad+esc(r['标题']||'(无标题)')+'</div>'+
 
-      (r['截止日期']?'<div class="m-m">截止 '+esc(dateSub(r['截止日期']))+'</div>':'')+'</div></div>';
+      (r['截止日期']?'<div class="m-m">截止 '+esc(dateSub(r['截止日期']))+'</div>':'')+'</div>'+ops+'</div>';
 
   }).join('') : '<div class="m-empty">今日待办都清空啦 🎉</div>';
 
@@ -2207,15 +2213,15 @@ function buildMorningLeft(tasks, works){
 
   return ''+
 
-    '<div class="m-card m-greet"><div class="m-hi">'+hi+'，'+esc(MY_UID||'小蕾姐')+'</div><div class="m-date">'+wd+' · '+td+'</div></div>'+
+    '<div class="m-top">'+'<div class="m-card m-greet"><div class="m-hi">'+hi+'，'+esc(MY_UID||'小蕾姐')+'</div><div class="m-date">'+wd+' · '+td+'</div></div>'+'<div class="m-wx" id="m-wx"><div class="m-empty">天气加载中…</div></div>'+'</div>'+'<div class="m-card"><div class="m-ttl"><span class="m-ic">💡</span>今日金句</div><div class="m-quote">'+quoteHTML+'</div></div>'+
 
     '<div class="m-card"><div class="m-ttl"><span class="m-ic">📅</span>今日日程<span class="m-sub">按开始时间</span></div><div class="m-rows">'+schedHTML+'</div></div>'+
 
     '<div class="m-card"><div class="m-ttl"><span class="m-ic">✅</span>今日待办<span class="m-sub">未完成的</span></div><div class="m-rows">'+todoHTML+'</div></div>'+
 
-    '<div class="m-card"><div class="m-ttl"><span class="m-ic">🌤️</span>双城天气<span class="m-sub">上海 · 成都</span></div><div class="m-wx" id="m-wx"><div class="m-empty">天气加载中…</div></div></div>'+
+    ''+
 
-    '<div class="m-card"><div class="m-ttl"><span class="m-ic">💡</span>今日金句</div><div class="m-quote">'+quoteHTML+'</div></div>'+
+    ''+
 
     '<div class="m-card"><div class="m-ttl"><span class="m-ic">📊</span>昨日复盘<span class="m-sub">'+y+'</span></div><div class="m-rev">'+revHTML+'</div></div>';
 
@@ -2239,7 +2245,7 @@ function loadMorningWeather(){
 
       var div=document.createElement('div'); div.className='m-city';
 
-      div.innerHTML='<div class="m-city-nm">'+c.nm+'</div><div class="m-city-tmp">'+tmp+'°</div><div class="m-city-cd">'+cd+'</div><div class="m-city-hl">最高 '+hi+'° / 最低 '+lo+'°</div>';
+      div.innerHTML='<span class="m-city-nm">'+c.nm+'</span><div class="m-city-tmp">'+tmp+'°</div><div class="m-city-cd">'+cd+'</div><div class="m-city-hl">最高 '+hi+'° / 最低 '+lo+'°</div>';
 
       var em=box.querySelector('.m-empty'); if(em) em.remove();
 
@@ -2247,7 +2253,7 @@ function loadMorningWeather(){
 
     }).catch(function(){
 
-      if(!box.querySelector('[data-c="'+c.nm+'"]')){ var div=document.createElement('div'); div.className='m-city'; div.innerHTML='<div class="m-city-nm">'+c.nm+'</div><div class="m-city-tmp">–</div><div class="m-city-cd">暂不可用</div>'; box.appendChild(div); }
+      if(!box.querySelector('[data-c="'+c.nm+'"]')){ var div=document.createElement('div'); div.className='m-city'; div.innerHTML='<span class="m-city-nm">'+c.nm+'</span><div class="m-city-tmp">–</div><div class="m-city-cd">暂不可用</div>'; box.appendChild(div); }
 
     });
 
@@ -2315,7 +2321,7 @@ function renderTasks(tasks, works){
       '<div class="q-body">'+body+'</div></div>';
   });
   grid+='</div>';
-  var board='<div class="quad-wrap"><div class="quad-cap">'+td+' 今日安排 · 四象限法：上=重要，左=紧急。拖到对应格子即可，位置自动保存。</div>'+grid+'</div>';
+  var board='<div class="quad-wrap"><div class="quad-cap">'+td+' 今日安排 · 四象限法：上=重要，左=紧急。拖到对应格子即可，位置自动保存。<button type="button" class="btn sm ghost" style="margin-left:8px" onclick="claimOrphanData()" title="把旧设备/旧身份留下、现在看不到的日程认领归到自己名下">认领隐身</button></div>'+grid+'</div>';
   var add='<div class="wb-add"><div class="wb-add-title">➕ 添加一张便利贴</div>'+
     '<div class="three-col">'+
       '<div class="fld"><label>要做什么</label><input id="t-title" placeholder="要做什么？"></div>'+
@@ -2353,7 +2359,7 @@ function renderTasks(tasks, works){
       '<button class="btn sm danger" onclick="deleteAllItems()" title="清空全部事项（不可撤销）">🗑 全部删除</button>'+
     '</span></div>'+(listRows||'<div class="empty">今天还没有安排</div>')+'</div>';
   var left = buildMorningLeft(tasks, works);
-  setBody('tasks', '<div class="morning-split"><div class="m-left">'+left+'</div><div class="m-right">'+board+add+list+'</div></div>');
+  setBody('tasks', '<div class="morning-split"><div class="m-left">'+left+'</div><div class="m-right">'+board+add+'</div></div>');
   loadMorningWeather();
   bindDraft('task', getBody('tasks'), ['t-title','t-due','t-quad']);
   if(taskEditId){ var ed=window.__taskEdit; if(ed){ document.getElementById('t-title').value=ed['标题']||''; document.getElementById('t-due').value=dateSub(ed['截止日期'])||td; document.getElementById('t-quad').value=(ed['象限']||'Q1'); } }

@@ -229,25 +229,25 @@
   .q4{background:#f3f4f6;border-color:#e2e4e9}.q4 .q-head{color:#6b7280}
   .q-body{display:flex;flex-wrap:wrap;gap:12px;align-content:flex-start;flex:1}
   .q-empty{font-size:12px;color:var(--muted);opacity:.7;padding:10px 4px;width:100%;text-align:center;border:1px dashed var(--line2);border-radius:8px}
-  .note{position:relative;width:92px;min-height:46px;background:linear-gradient(180deg,#fff7b0,#fff0a0);box-shadow:0 6px 14px rgba(120,100,40,.18);border-radius:3px;padding:10px 6px 6px;transform:rotate(-1.2deg);transition:transform .15s,box-shadow .15s;cursor:grab}
+  .note{position:relative;width:140px;min-height:72px;background:linear-gradient(180deg,#fff7b0,#fff0a0);box-shadow:0 6px 14px rgba(120,100,40,.18);border-radius:3px;padding:12px 8px 8px;transform:rotate(-1.2deg);transition:transform .15s,box-shadow .15s;cursor:grab}
   .note:nth-of-type(2n){transform:rotate(1deg)}
   .note:nth-of-type(3n){transform:rotate(-.45deg)}
   .note:hover{transform:rotate(0) translateY(-1px);box-shadow:0 6px 12px rgba(120,100,40,.28);z-index:3}
   .note.dragging{opacity:.5}
   .note.done{opacity:.62}
   .note.done .note-ttl{text-decoration:line-through;color:#8a7a3a}
-  .note .pin{position:absolute;top:-4px;left:50%;transform:translateX(-50%);width:9px;height:9px;z-index:4;pointer-events:none}
-  .note .pin::before{content:'';position:absolute;top:2px;left:50%;transform:translateX(-50%);width:5.5px;height:5.5px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#ff8a7a,#cf3322);box-shadow:0 1px 2px rgba(0,0,0,.35)}
-  .note .pin::after{content:'';position:absolute;top:6px;left:50%;transform:translateX(-50%) rotate(7deg);width:1px;height:4.5px;background:#bcb4a2;box-shadow:0 1px 1px rgba(0,0,0,.15)}
-  .note .note-ttl{font-size:8px;font-weight:700;line-height:1.32;margin:0 0 4px;color:#4a3f1a;word-break:break-word}
-  .note .note-meta{font-size:6px;color:#7a6a2a;display:flex;flex-direction:column;gap:2px;line-height:1.4}
+  .note .pin{position:absolute;top:-5px;left:50%;transform:translateX(-50%);width:12px;height:12px;z-index:4;pointer-events:none}
+  .note .pin::before{content:'';position:absolute;top:2px;left:50%;transform:translateX(-50%);width:7.5px;height:7.5px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#ff8a7a,#cf3322);box-shadow:0 1px 2px rgba(0,0,0,.35)}
+  .note .pin::after{content:'';position:absolute;top:6px;left:50%;transform:translateX(-50%) rotate(7deg);width:1.2px;height:6px;background:#bcb4a2;box-shadow:0 1px 1px rgba(0,0,0,.15)}
+  .note .note-ttl{font-size:12px;font-weight:700;line-height:1.32;margin:0 0 5px;color:#4a3f1a;word-break:break-word}
+  .note .note-meta{font-size:9px;color:#7a6a2a;display:flex;flex-direction:column;gap:2px;line-height:1.4}
   .note .note-meta .src{color:#9a7b2e}
-  .note .note-chk{position:absolute;top:4px;right:4px;width:12px;height:12px;border-radius:3px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(120,100,40,.35);color:#9a7b2e;background:rgba(255,255,255,.5)}
+  .note .note-chk{position:absolute;top:6px;right:6px;width:16px;height:16px;border-radius:3px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(120,100,40,.35);color:#9a7b2e;background:rgba(255,255,255,.5)}
   .note .note-chk:hover{color:#cf3322;border-color:#cf3322}
-  .note .note-chk svg{width:7.5px;height:7.5px;stroke:currentColor;fill:none;stroke-width:1.9}
-  .note .note-ops{position:absolute;bottom:4px;right:4px;display:flex;gap:2px}
-  .note .note-ops .icon-btn{width:11px;height:11px}
-  .note .note-ops .icon-btn svg{width:6px;height:6px}
+  .note .note-chk svg{width:10px;height:10px;stroke:currentColor;fill:none;stroke-width:1.9}
+  .note .note-ops{position:absolute;bottom:6px;right:6px;display:flex;gap:3px}
+  .note .note-ops .icon-btn{width:16px;height:16px}
+  .note .note-ops .icon-btn svg{width:9px;height:9px}
   .wb-add{background:var(--paper);border:1px dashed var(--line2);border-radius:12px;padding:16px;margin-top:12px}
   .wb-add .wb-add-title{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:10px}
   .wb-add .two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px}
@@ -2161,17 +2161,27 @@ function buildMorningLeft(tasks, works){
 
   }).join('') : '<div class="m-empty">今天还没有安排，留点空白也挺好 🍃</div>';
 
-  var todo=(tasks||[]).filter(function(r){ return own(r) && (r['完成']||'否')!=='是' && (dateSub(r['截止日期'])===td || !dateSub(r['截止日期'])); })
+  var todo=[]; var _tIds={};
+  (tasks||[]).forEach(function(r){ if(!own(r)) return; if((r['完成']||'否')==='是') return; var dd=dateSub(r['截止日期']); if(dd===td||!dd){ _tIds[rid(r)]=1; todo.push({r:r,sched:false}); } });
+  (works||[]).forEach(function(r){ if(!own(r)) return; if((r['完成']||'否')==='是') return; if(dateSub(r['日期'])!==td) return; var ft=r['_fromTask']; var ftId=(ft&&typeof ft==='object'&&'text' in ft)?ft.text:ft; if(ftId&&_tIds[ftId]) return; todo.push({r:r,sched:true}); });
+  todo.sort(function(a,b){ var ag=function(it){ return it.sched?(it.r['开始时间']||'99:99'):(it.r['截止日期']||'9999'); }; return String(ag(a)).localeCompare(String(ag(b))); });
 
-    .sort(function(a,b){ return (a['截止日期']||'9999').localeCompare(b['截止日期']||'9999'); });
 
-  var todoHTML = todo.length ? todo.map(function(r){
 
+  var todoHTML = todo.length ? todo.map(function(it){
+
+    var r=it.r;
     var quad=r['象限']?'<span class="m-tag rose">'+esc(r['象限'])+'</span>':'';
+    var tag=it.sched?'<span class="m-tag">日程</span>':'';
 
-    var id=rid(r); var fnEdit="editTask('"+id+"')"; var fnDel="delWorkItem('task','"+id+"','"+esc(r["_sched"]||'')+"')"; var ops='<div class="m-ops"><button class="icon-btn" title="修改" onclick="'+fnEdit+'">'+icon('edit')+'</button><button class="icon-btn" title="删除" onclick="'+fnDel+'">'+icon('trash')+'</button></div>'; return '<div class="m-row"><div class="m-tm"></div><div class="m-bd"><div class="m-t">'+quad+esc(r['标题']||'(无标题)')+'</div>'+
+    var id=rid(r);
+    var delLink = it.sched ? (r['_fromTask']||'') : (r['_sched']||'');
+    var fnDel="delWorkItem('"+(it.sched?'sched':'task')+"','"+id+"','"+esc(delLink)+"')";
+    var fnEdit="editTask('"+id+"')";
+    var ops='<div class="m-ops">'+(it.sched?'':'<button class="icon-btn" title="修改" onclick="'+fnEdit+'">'+icon('edit')+'</button>')+'<button class="icon-btn" title="删除" onclick="'+fnDel+'">'+icon('trash')+'</button></div>';
+    return '<div class="m-row"><div class="m-tm">'+(it.sched?(r['开始时间']||''):'')+'</div><div class="m-bd"><div class="m-t">'+tag+quad+esc(r['标题']||'(无标题)')+'</div>'+
 
-      (r['截止日期']?'<div class="m-m">截止 '+esc(dateSub(r['截止日期']))+'</div>':'')+'</div>'+ops+'</div>';
+      (it.sched?'':'<div class="m-m">截止 '+esc(dateSub(r['截止日期'])||'—')+'</div>')+'</div>'+ops+'</div>';
 
   }).join('') : '<div class="m-empty">今日待办都清空啦 🎉</div>';
 
@@ -4011,8 +4021,8 @@ function doSchedUndo(all){
 }
 /* ===== 认领隐身数据：把 owner 不是本人的日程归到自己名下（按 日期+标题+分类 去重） ===== */
 function claimOrphanData(){
-  rawQuery(DB.schedule, {pageSize:500}).then(function(all){
-    all = all||[];
+  rawQuery(DB.schedule, {pageSize:500}).then(function(res){ var all=Array.isArray(res)?res:((res&&res.results)||[]);
+
     var mine = all.filter(function(r){ return (r['owner']||'')===MY_UID; });
     var orphans = all.filter(function(r){ return (r['owner']||'')!==MY_UID; });
     if(!orphans.length){ appDialog({msg:'没有发现隐身数据，全部日程都已经是你的了。'}); return; }

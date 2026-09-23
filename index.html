@@ -215,12 +215,15 @@
   .tl-quad{font-size:12px;color:var(--muted)}
   .tl-ops{display:flex;gap:6px;justify-content:flex-end}
   /* 今日安排·四象限白板 + 传统便利贴 */
-  .quad-wrap{margin:4px 0 10px}
-  .quad-cap{font-size:12px;color:var(--muted);margin:0 2px 8px}
+  .quad-wrap{margin:4px 0 10px;background:#eef0f2;border:1px solid #e2e5ea;border-radius:14px;padding:12px}
+  .quad-cap{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin:0 0 8px}
+.qc-date{font-size:15px;font-weight:700;color:#2b2620;white-space:nowrap}
+.qc-hint{font-size:12px;color:var(--muted);text-align:right;line-height:1.4}
   .quad-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
   .q{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 10px 12px;min-height:160px;display:flex;flex-direction:column;transition:background .15s,border-color .15s}
   .q.drag-over{border-color:var(--accent);background:var(--accent-soft);box-shadow:0 0 0 2px var(--accent-soft) inset}
-  .q-head{font-size:13px;font-weight:700;display:flex;align-items:center;gap:6px;margin-bottom:9px}
+  .q-head{font-size:13px;font-weight:700;display:flex;align-items:center;gap:6px;margin-bottom:9px;flex-wrap:wrap}
+.q-default{font-size:10.5px;font-weight:600;color:#c0392b;background:#fdecea;border:1px solid #f5c6c0;border-radius:999px;padding:1px 7px;margin-left:4px;white-space:nowrap}
   .q-head .q-sub{font-size:11px;font-weight:600;color:var(--muted)}
   .q-head .q-cnt{margin-left:auto;font-size:11px;font-weight:700;color:#fff;background:rgba(0,0,0,.2);border-radius:999px;min-width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center;padding:0 5px}
   .q1{background:#fdf1ef;border-color:#f0d3cd}.q1 .q-head{color:#c0392b}
@@ -1135,11 +1138,11 @@
 
 .m-empty{font-size:12.5px;color:var(--muted);padding:5px 0}
 
-.m-quote{font-size:13px;line-height:1.5;color:#5a5147;padding-left:12px;position:relative}
+.m-quote{font-size:15px;line-height:1.65;color:#3a342c;padding-left:12px;position:relative;font-family:"楷体","KaiTi","STKaiti","华文楷体","Kaiti SC","KaiTi_GB2312",cursive}
 
 .m-quote:before{content:"";position:absolute;left:0;top:3px;bottom:3px;width:4px;border-radius:3px;background:var(--accent)}
 
-.m-quote .m-by{display:block;font-size:11px;color:var(--muted);margin-top:3px}
+.m-quote .m-by{display:block;font-size:12px;color:#7a6f63;margin-top:5px;font-family:"楷体","KaiTi","STKaiti","华文楷体",cursive}
   .m-quote .m-qic{position:absolute;right:0;bottom:0;font-size:12px;opacity:.75;line-height:1}
 
 .m-wx{display:flex;gap:9px}
@@ -1168,9 +1171,14 @@
 
 .m-rev-txt b{color:var(--ink);font-size:14px}
 
+.confetti{position:fixed;top:-24px;width:9px;height:14px;z-index:99999;pointer-events:none;border-radius:2px;animation-name:confetti-fall;animation-timing-function:linear;animation-fill-mode:forwards}
+@keyframes confetti-fall{0%{transform:translateY(-24px) rotate(0)}100%{transform:translateY(110vh) rotate(720deg);opacity:.85}}
+.clap-pop{position:fixed;left:50%;top:40%;transform:translate(-50%,-50%);font-size:120px;z-index:99999;pointer-events:none;animation:clap-pop 1.6s ease-out forwards}
+@keyframes clap-pop{0%{transform:translate(-50%,-50%) scale(.2);opacity:0}20%{transform:translate(-50%,-50%) scale(1.35);opacity:1}40%{transform:translate(-50%,-50%) scale(1) rotate(-10deg)}55%{transform:translate(-50%,-50%) scale(1.12) rotate(10deg)}100%{transform:translate(-50%,-50%) scale(1.05) rotate(0);opacity:0}}
 .m-rev-todo{font-size:12.5px;color:#c8553d;margin-top:5px}
 
-.m-rev-todo.ok{color:var(--accent)}
+.m-rev-todo.ok{color:var(--accent);cursor:pointer}
+.m-rev-todo.ok:hover{text-decoration:underline}
 
 .m-rev-todo .m-it{display:block;padding:2px 0;border-top:1px dashed var(--line)}
 
@@ -2197,7 +2205,7 @@ function buildMorningLeft(tasks, works){
 
       revHTML+='<div class="m-rev-todo">未完成 '+yundone.length+' 项（今天可接着做）：'+yundone.map(function(r){return '<span class="m-it">• '+esc(r['标题']||'(无标题)')+' · '+(r['分类']||'日程')+'</span>';}).join('')+'</div>';
 
-    } else { revHTML+='<div class="m-rev-todo ok">全部完成，给自己鼓个掌 👏</div>'; }
+    } else { revHTML+='<div class="m-rev-todo ok" onclick="celebrate()" title="点我鼓个掌 🎉">全部完成，给自己鼓个掌 👏</div>'; }
 
   }
 
@@ -2265,6 +2273,22 @@ function loadMorningWeather(){
 
 
 
+function celebrate(){
+  var colors=['#ff6b6b','#ffd93d','#6bcb77','#4d96ff','#ff8fab','#a66cff','#ff924c'];
+  for(var i=0;i<90;i++){
+    var c=document.createElement('div'); c.className='confetti';
+    c.style.left=(Math.random()*100)+'vw';
+    c.style.background=colors[i%colors.length];
+    var dur=2+Math.random()*1.8;
+    c.style.animationDuration=dur+'s';
+    c.style.animationDelay=(Math.random()*0.6)+'s';
+    document.body.appendChild(c);
+    (function(el){ setTimeout(function(){ if(el&&el.parentNode) el.parentNode.removeChild(el); }, (dur+1.2)*1000); })(c);
+  }
+  var pop=document.createElement('div'); pop.className='clap-pop'; pop.textContent='👏';
+  document.body.appendChild(pop);
+  setTimeout(function(){ if(pop.parentNode) pop.parentNode.removeChild(pop); }, 1600);
+}
 function renderTasks(tasks, works){
   window.__lastTasks=tasks; window.__lastWorks=works||[];
   var td=today();
@@ -2319,11 +2343,11 @@ function renderTasks(tasks, works){
     var body = list.length ? list.map(noteHTML).join('') : '<div class="q-empty">把便利贴拖到这里</div>';
     grid+='<div class="q '+qd.k.toLowerCase()+'" data-q="'+qd.k+'" '+
       'ondragover="event.preventDefault();this.classList.add(\'drag-over\')" ondragleave="this.classList.remove(\'drag-over\')" ondrop="dropNote(event,this)">'+
-      '<div class="q-head">'+qd.t+'<span class="q-sub">'+qd.s+'</span><span class="q-cnt">'+(list.length||'')+'</span></div>'+
+      '<div class="q-head">'+qd.t+((qd.k==='Q1')?'<span class="q-default">如不选，默认第一象限「重要且紧急」</span>':'')+'<span class="q-sub">'+qd.s+'</span><span class="q-cnt">'+(list.length||'')+'</span></div>'+
       '<div class="q-body">'+body+'</div></div>';
   });
   grid+='</div>';
-  var board='<div class="quad-wrap"><div class="quad-cap">'+td+' 今日安排 · 四象限法：上=重要，左=紧急。拖到对应格子即可，位置自动保存。<button type="button" class="btn sm ghost" style="margin-left:8px" onclick="claimOrphanData()" title="把旧设备/旧身份留下、现在看不到的日程认领归到自己名下">认领隐身</button></div>'+grid+'</div>';
+  var board='<div class="quad-wrap"><div class="quad-cap"><span class="qc-date">'+td+' 今日安排</span><span class="qc-hint">四象限法：上=重要，左=紧急。拖到对应格子即可，位置自动保存。</span></div>'+grid+'</div>';
   var add='<div class="wb-add"><div class="wb-add-title">➕ 添加一张便利贴</div>'+
     '<div class="four-col">'+
       '<div class="fld"><label>要做什么</label><input id="t-title" placeholder="要做什么？"></div>'+
@@ -2331,7 +2355,7 @@ function renderTasks(tasks, works){
       '<div class="fld"><label>重要/紧急</label><select id="t-quad">'+quadOptions('Q1')+'</select></div>'+
       '<div class="fld add-fld"><label>&nbsp;</label><div class="add-btns"><button class="btn primary" onclick="submitTask()">'+(taskEditId?'保存修改':'添加')+'</button>'+(taskEditId?'<button class="btn" onclick="cancelTaskEdit()">取消</button>':'')+'</div></div>'+
     '</div>'+
-    '<div class="hint" style="margin-top:8px">如不选象限，默认归为「重要且紧急」（第一象限）</div></div>';
+    '</div>';
   var QLAB={'Q1':'重要且紧急','Q2':'重要不紧急','Q3':'紧急不重要','Q4':'不紧急不重要'};
   var HAND='<svg viewBox="0 0 24 24"><path d="M11 13V4.8a1.3 1.3 0 0 1 2.6 0V13"/><path d="M13.6 13V5.4a1.3 1.3 0 0 1 2.6 0V13"/><path d="M16.2 13.2a1.3 1.3 0 0 1 2.3 1.1v2.7a5.5 5.5 0 0 1-5.5 5.5H14a5.5 5.5 0 0 1-4-1.8l-2.8-3.1a1.3 1.3 0 0 1 1.9-1.8l2 2.1V8.5a1.3 1.3 0 0 1 2.6 0v4.5"/></svg>';
   var shownItems = items.filter(function(it){ var due = it.src==='task' ? it.r["截止日期"] : it.r["日期"]; return dateSub(due)===td; });
@@ -3746,7 +3770,7 @@ function schedFormHTML(){
           '<button type="button" class="btn sm" onclick="openExportPicker()" title="导出日程（Excel / PDF / CSV）">导出</button>'+
           '<button type="button" class="btn sm" onclick="openDateFixer()" title="同组日程的日期乱了？按规律批量重排">修日期</button>'+
           '<button type="button" class="btn sm" onclick="schedUndoLast()" title="撤销上次批量修改">撤销</button>'+
-        '<button type="button" class="btn sm" onclick="claimOrphanData()" title="把旧设备/旧身份留下、现在看不到的日程认领归到自己名下">认领隐身</button>'+
+        
         '</div>'+
       '</div>'+
     '</div>'+
@@ -4051,42 +4075,6 @@ function doSchedUndo(all){
     LOADERS.schedule();
     toast('已还原 '+last.rows.length+' 条 ✅');
   }).catch(function(e){ toast('撤销失败：'+((e&&e.message)||'错误'),true); });
-}
-/* ===== 认领隐身数据：把 owner 不是本人的日程归到自己名下（按 日期+标题+分类 去重） ===== */
-function claimOrphanData(){
-  rawQuery(DB.schedule, {pageSize:500}).then(function(res){ var all=Array.isArray(res)?res:((res&&res.results)||[]);
-
-    var mine = all.filter(function(r){ return (r['owner']||'')===MY_UID; });
-    var orphans = all.filter(function(r){ return (r['owner']||'')!==MY_UID; });
-    if(!orphans.length){ appDialog({msg:'没有发现隐身数据，全部日程都已经是你的了。'}); return; }
-    var normDate=function(v){ if(!v) return ''; var x=String(v).trim(); var m=x.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/); return m? (m[1]+'-'+('0'+m[2]).slice(-2)+'-'+('0'+m[3]).slice(-2)) : ''; };
-    var keyOf=function(r){ return normDate(r['日期'])+'|'+(r['标题']||'')+'|'+(r['分类']||''); };
-    var mineKeys={}; mine.forEach(function(r){ mineKeys[keyOf(r)]=1; });
-    var dup = orphans.filter(function(r){ return mineKeys[keyOf(r)]; });
-    var claim = orphans.filter(function(r){ return !mineKeys[keyOf(r)]; });
-    appDialog({
-      msg:'发现 '+orphans.length+' 条「隐身日程」（旧设备 / 旧身份留下，现在看不到）：\n\n'+
-          '• 与你现有记录重复、将丢弃：'+dup.length+' 条\n'+
-          '• 净认领、归到你名下：'+claim.length+' 条\n\n'+
-          '认领时会把其中标记为「过期」的状态改为「未完成」（你已决定不再使用「过期」状态）。',
-      buttons:[
-        {label:'取消'},
-        {label:'确认认领', cls:'primary', onClick:function(){ applyClaim(claim); }}
-      ]
-    });
-  }).catch(function(e){ toast('读取失败：'+((e&&e.message)||'错误'),true); });
-}
-function applyClaim(claim){
-  if(!claim.length){ toast('没有需要认领的条目'); return; }
-  var ops=claim.map(function(r){
-    var props={"owner":{text:MY_UID}};
-    if((r['完成']||'')==='过期'){ props["完成"]={select:'否'}; }
-    return updRec(DB.schedule, rid(r), props);
-  });
-  Promise.all(ops).then(function(){
-    LOADERS.schedule(); LOADERS.tasks();
-    toast('已认领 '+claim.length+' 条，它们在「全部 / 按分类」里都能看到了');
-  }).catch(function(e){ toast('认领失败：'+((e&&e.message)||'错误'),true); });
 }
 /* ===== 批量改内容：找出与当前记录「同标题+同开始/结束时间」的同组日程 ===== */
 function esBatchIds(rec){

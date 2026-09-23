@@ -256,7 +256,7 @@
   .wb-add .two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px}
   .wb-add .two-col .fld{margin:0}
   .wb-add .three-col{display:grid;grid-template-columns:2fr 1fr 1fr;gap:12px}
-  .wb-add .four-col{display:grid;grid-template-columns:1.2fr .45fr .6fr 1.35fr;gap:12px}
+  .wb-add .four-col{display:grid;grid-template-columns:1.2fr .35fr .8fr 1.35fr;gap:12px}
   .wb-add .four-col .fld{margin:0}
   .wb-add .add-btns{display:flex;gap:8px}
   .wb-add .add-btns .btn{flex:1;min-height:40px;padding:0 10px;white-space:nowrap}
@@ -1138,11 +1138,11 @@
 
 .m-empty{font-size:12.5px;color:var(--muted);padding:5px 0}
 
-.m-quote{font-size:15px;line-height:1.65;color:#3a342c;padding-left:12px;position:relative;font-family:"楷体","KaiTi","STKaiti","华文楷体","Kaiti SC","KaiTi_GB2312",cursive}
+.m-quote{font-size:20px;line-height:1.6;color:#3a342c;padding-left:12px;position:relative;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei","Segoe UI",sans-serif}
 
 .m-quote:before{content:"";position:absolute;left:0;top:3px;bottom:3px;width:4px;border-radius:3px;background:var(--accent)}
 
-.m-quote .m-by{display:block;font-size:12px;color:#7a6f63;margin-top:5px;font-family:"楷体","KaiTi","STKaiti","华文楷体",cursive}
+.m-quote .m-by{display:block;font-size:14px;color:#7a6f63;margin-top:5px;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei","Segoe UI",sans-serif}
   .m-quote .m-qic{position:absolute;right:0;bottom:0;font-size:12px;opacity:.75;line-height:1}
 
 .m-wx{display:flex;gap:9px}
@@ -2343,7 +2343,7 @@ function renderTasks(tasks, works){
     var body = list.length ? list.map(noteHTML).join('') : '<div class="q-empty">把便利贴拖到这里</div>';
     grid+='<div class="q '+qd.k.toLowerCase()+'" data-q="'+qd.k+'" '+
       'ondragover="event.preventDefault();this.classList.add(\'drag-over\')" ondragleave="this.classList.remove(\'drag-over\')" ondrop="dropNote(event,this)">'+
-      '<div class="q-head">'+qd.t+((qd.k==='Q1')?'<span class="q-default">如不选，默认第一象限「重要且紧急」</span>':'')+'<span class="q-sub">'+qd.s+'</span><span class="q-cnt">'+(list.length||'')+'</span></div>'+
+      '<div class="q-head">'+qd.t+'<span class="q-sub">'+qd.s+'</span><span class="q-cnt">'+(list.length||'')+'</span></div>'+
       '<div class="q-body">'+body+'</div></div>';
   });
   grid+='</div>';
@@ -2352,7 +2352,7 @@ function renderTasks(tasks, works){
     '<div class="four-col">'+
       '<div class="fld"><label>要做什么</label><input id="t-title" placeholder="要做什么？"></div>'+
       '<div class="fld"><label>截止日期</label><input id="t-due" type="date" value="'+td+'"></div>'+
-      '<div class="fld"><label>重要/紧急</label><select id="t-quad">'+quadOptions('Q1')+'</select></div>'+
+      '<div class="fld"><label>重要/紧急</label><span class="q-default" style="display:block;margin-left:0;margin-top:3px">如不选，默认第一象限「重要且紧急」</span><select id="t-quad">'+quadOptions('Q1')+'</select></div>'+
       '<div class="fld add-fld"><label>&nbsp;</label><div class="add-btns"><button class="btn primary" onclick="submitTask()">'+(taskEditId?'保存修改':'添加')+'</button>'+(taskEditId?'<button class="btn" onclick="cancelTaskEdit()">取消</button>':'')+'</div></div>'+
     '</div>'+
     '</div>';

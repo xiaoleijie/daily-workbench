@@ -396,15 +396,14 @@
   .actcal-sub2{color:var(--ac-muted);font-size:12px;line-height:1.65;margin-bottom:10px}
   .actcal-cell.doodle-cell{background:transparent;border:none;cursor:default;display:flex;align-items:center;justify-content:center;min-height:92px}
   .actcal-cell.doodle-cell:hover{transform:none;box-shadow:none}
-  .actcal-tag{display:inline-block;background:var(--ac-card);border:1px solid var(--ac-line);border-radius:20px;padding:4px 12px;font-size:11.5px;color:var(--ac-muted);margin-top:9px}
+  .actcal-tag{display:inline-block;background:var(--ac-card);border:1px solid var(--ac-line);border-radius:20px;padding:4px 12px;font-size:11.5px;color:var(--ac-muted);margin-top:9px;cursor:pointer}
   .actcal-stats{display:flex;gap:10px;margin:6px 0 2px;flex-wrap:wrap}
   .actcal-chip{background:var(--ac-card);border:1px solid var(--ac-line);border-radius:16px;padding:10px 16px;text-align:center;min-width:92px}
   .actcal-chip .n{font-size:22px;font-weight:800;line-height:1;display:inline-block;color:var(--ac-ink)}
   .actcal-chip .n.pop{animation:actpop .45s}
   .actcal-chip .l{font-size:11px;color:var(--ac-muted);margin-top:4px;display:block}
   @keyframes actpop{0%{transform:scale(1)}40%{transform:scale(1.45);color:var(--ac-accent)}100%{transform:scale(1)}}
-  .actcal-prog{height:10px;background:var(--ac-line);border-radius:7px;overflow:hidden;margin:12px 0 16px}
-  .actcal-prog>i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--ac-grad),var(--ac-accent));border-radius:7px;transition:width .55s cubic-bezier(.2,.8,.2,1)}
+
   .actcal-layout{display:flex;gap:20px;align-items:flex-start}
   .actcal-left{flex:1;min-width:0}
   .actcal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:10px}
@@ -585,7 +584,7 @@
   /* 添加本月事项：左 2/3 日历 + 右 1/3 竖排等宽按钮 */
   .sa-flex{display:flex;gap:14px;align-items:flex-start}
   .sa-cal{flex:1 1 0;min-width:0}
-  .sa-ops{flex:1 1 0;min-width:0;display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding-top:18px;align-content:start}
+  .sa-ops{flex:1 1 0;min-width:0;display:grid;grid-template-columns:1fr;gap:6px;padding-top:18px;align-content:start}
   .sa-quick{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}
   .s-batchbar{display:flex;align-items:center;gap:10px;padding:7px 2px;font-size:12.5px;color:var(--muted);border-bottom:1px dashed var(--line)}
   .s-batchbar .s-selall{display:flex;flex-direction:row;align-items:center;gap:5px;cursor:pointer;font-weight:700;color:var(--ink);white-space:nowrap}
@@ -622,7 +621,7 @@
   .df-tip b{color:var(--ink)}
   @media(max-width:620px){ .df-opts{grid-template-columns:1fr 1fr} .df-opts .fld:first-child{grid-column:1/-1} }
   @media(max-width:560px){ .sched-add-card{width:96vw} .smc-grid .d{font-size:12px} }
-  @media(max-width:560px){ .sa-flex{flex-direction:column;gap:10px} .sa-cal,.sa-ops{flex:none;width:100%} .sa-ops{padding-top:0;display:grid;grid-template-columns:repeat(3,1fr);gap:8px} }
+  @media(max-width:560px){ .sa-flex{flex-direction:column;gap:10px} .sa-cal,.sa-ops{flex:none;width:100%} .sa-ops{padding-top:0;display:grid;grid-template-columns:1fr;gap:8px} }
   .sticky-note{background:#FFF7C2;border:1px solid #EADF8E;box-shadow:0 8px 18px rgba(0,0,0,.12);border-radius:6px;padding:12px 14px;transform:none;margin:0;height:100%;display:flex;flex-direction:column}
   .sticky-note .sticky-rule{height:0;border-top:1.5px dashed rgba(122,106,42,.45);margin:2px 0 10px}
   /* 记事本横格：line-height(30px) 与横线周期(30px) 一致，文字正好落在横线上 */
@@ -2352,7 +2351,7 @@ function renderTasks(tasks, works){
     '<div class="four-col">'+
       '<div class="fld"><label>要做什么</label><input id="t-title" placeholder="要做什么？"></div>'+
       '<div class="fld"><label>截止日期</label><input id="t-due" type="date" value="'+td+'"></div>'+
-      '<div class="fld"><span class="q-default" style="display:block;margin-left:0;margin-bottom:3px">如不选，默认第一象限「重要且紧急」</span><label>重要/紧急</label><select id="t-quad">'+quadOptions('Q1')+'</select></div>'+
+      '<div class="fld"><label>重要/紧急</label><select id="t-quad">'+quadOptions('Q1')+'</select><span class="q-default" style="display:block;margin-left:0;margin-top:3px">如不选，默认第一象限「重要且紧急」</span></div>'+
       '<div class="fld add-fld"><label>&nbsp;</label><div class="add-btns"><button class="btn primary" onclick="submitTask()">'+(taskEditId?'保存修改':'添加')+'</button>'+(taskEditId?'<button class="btn" onclick="cancelTaskEdit()">取消</button>':'')+'</div></div>'+
     '</div>'+
     '</div>';
@@ -3639,9 +3638,8 @@ function renderSchedule(rows){
   var cal='<div class="actcal-wrap" style="margin-bottom:0">'+
     '<div class="actcal-head actcal-head2"><div class="actcal-title">先知先觉幸福行动历<span class="en">Do Good '+ACTION_MONTH_NAMES[mo]+'</span></div>'+
     '<button class="actcal-reset" onclick="resetActionCal()">重置（一键清空）</button></div>'+
-    '<div class="actcal-subrow"><div class="actcal-tag">每天点一点，就是对自己的小鼓励，不惩罚不考核不清零，只要愿意，随时回来</div>'+
+    '<div class="actcal-subrow"><div class="actcal-tag" id="act-tag" onclick="advanceActionFromTag()" title="点一点，记录今天也好好照顾了自己">每天点一点，就是对自己的小鼓励，不惩罚不考核不清零，只要愿意，随时回来</div>'+
     '<div class="actcal-cnt">本月已践行 <b id="act-cnt">0</b> 天</div></div>'+
-    '<div class="actcal-prog"><i id="act-bar"></i></div>'+
     '<div class="actcal-layout"><div class="actcal-left"><div class="actcal-grid" id="act-grid"></div></div></div>'+
     '<aside class="actcal-right">'+
       '<div class="hk">Happier<br>&amp; Kinder</div><div class="hkdiv"></div>'+
@@ -5039,10 +5037,11 @@ function renderActionCal(haveDates){
   if(grid) grid.innerHTML=html;
   updateActionStats(checked,false);
   paintRightBox(checked);
+  paintTagProgress(checked);
 }
 function toggleAction(d,el){
   var checked=loadActionChecked();
-  if(checked.has(d)){ checked.delete(d); saveActionChecked(checked); if(el) el.classList.remove('done'); updateActionStats(checked,false); paintRightBox(checked); return; }
+  if(checked.has(d)){ checked.delete(d); saveActionChecked(checked); if(el) el.classList.remove('done'); updateActionStats(checked,false); paintRightBox(checked); paintTagProgress(checked); return; }
   checked.add(d); saveActionChecked(checked); if(el) el.classList.add('done'); paintRightBox(checked, el);
   if(el){ el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop'); }
   actionConfettiAt(el); actionChime(); actionFloatHeart(el);
@@ -5050,6 +5049,7 @@ function toggleAction(d,el){
   updateActionStats(chk,true);
   actionMaybeSurprise(chk);
   actionMilestone(chk);
+  paintTagProgress(chk);
 }
 function updateActionStats(checked,animate){
   var n=checked.size, total=ACT_TOTAL||ACTION_ACTIONS.length;
@@ -5057,7 +5057,7 @@ function updateActionStats(checked,animate){
   if(cnt){ cnt.textContent=n; if(animate){ cnt.classList.remove('pop'); void cnt.offsetWidth; cnt.classList.add('pop'); } }
   if(str) str.textContent=actionStreak(checked);
   if(tot) tot.textContent=total;
-  var bar=document.getElementById('act-bar'); if(bar) bar.style.width=Math.round(n/total*100)+'%';
+
 }
 var ACTION_AFF=['今天你又来照顾自己了 ✓','这一格，是你对生活的善意','小小的行动，也是好好爱自己','你正在一点点把自己照顾好','坚持来，本身就是一种温柔','今天也没辜负自己，真好'];
 function actionMaybeSurprise(checked){
@@ -5769,6 +5769,27 @@ function paintRightBox(checked, el){
   if(!color){ var d=actionTodayDate(); if(!checked.has(d)) d=Math.max.apply(null,[].slice.call(checked)); color=ACTION_PALETTE[(d-1)%7]; }
   box.style.setProperty('--rc', color); box.classList.add('tinted');
 }
+/* 点击\u300c每天点一点\u300d白框：按天顺序点亮一格（与日历格子同色），直到整月点满 */
+function advanceActionFromTag(){
+  var checked=loadActionChecked();
+  var N=ACT_TOTAL||30, d=null;
+  for(var i=1;i<=N;i++){ if(!checked.has(i)){ d=i; break; } }
+  if(d===null){ actToast('\u672c\u6708\u5df2\u70b9\u6ee1 \u2713 \u4f60\u628a\u81ea\u5df1\u7167\u987e\u5f97\u5f88\u597d',true); return; }
+  var cell=document.querySelector('.actcal-cell[data-d="'+d+'"]');
+  toggleAction(d, cell);
+  paintTagProgress(loadActionChecked());
+}
+function paintTagProgress(checked){
+  var tag=document.getElementById('act-tag'); if(!tag) return;
+  var N=ACT_TOTAL||30, segs=[];
+  for(var d=1; d<=N; d++){
+    var col = checked.has(d) ? ACTION_PALETTE[(d-1)%7] : '#FFFFFF';
+    var a=((d-1)/N*100).toFixed(3)+'%', b=(d/N*100).toFixed(3)+'%';
+    segs.push(col+' '+a+' '+b);
+  }
+  tag.style.background='linear-gradient(90deg,'+segs.join(',')+')';
+}
+
 
 /* ============ 右上角宠物 ============ */
 var PET_TIMER=null, PET_HOVER_TIMER=null, PET_BLINK=null, PET_STATE='open', PET_HOVER=false;

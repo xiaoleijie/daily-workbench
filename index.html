@@ -256,7 +256,7 @@
   .wb-add .two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px}
   .wb-add .two-col .fld{margin:0}
   .wb-add .three-col{display:grid;grid-template-columns:2fr 1fr 1fr;gap:12px}
-  .wb-add .four-col{display:grid;grid-template-columns:1.2fr .35fr .8fr 1.35fr;gap:12px}
+  .wb-add .four-col{display:grid;grid-template-columns:1.3fr .35fr .8fr 1.25fr;gap:12px}
   .wb-add .four-col .fld{margin:0}
   .wb-add .add-btns{display:flex;gap:8px}
   .wb-add .add-btns .btn{flex:1;min-height:40px;padding:0 10px;white-space:nowrap}
@@ -2352,7 +2352,7 @@ function renderTasks(tasks, works){
     '<div class="four-col">'+
       '<div class="fld"><label>要做什么</label><input id="t-title" placeholder="要做什么？"></div>'+
       '<div class="fld"><label>截止日期</label><input id="t-due" type="date" value="'+td+'"></div>'+
-      '<div class="fld"><label>重要/紧急</label><span class="q-default" style="display:block;margin-left:0;margin-top:3px">如不选，默认第一象限「重要且紧急」</span><select id="t-quad">'+quadOptions('Q1')+'</select></div>'+
+      '<div class="fld"><span class="q-default" style="display:block;margin-left:0;margin-bottom:3px">如不选，默认第一象限「重要且紧急」</span><label>重要/紧急</label><select id="t-quad">'+quadOptions('Q1')+'</select></div>'+
       '<div class="fld add-fld"><label>&nbsp;</label><div class="add-btns"><button class="btn primary" onclick="submitTask()">'+(taskEditId?'保存修改':'添加')+'</button>'+(taskEditId?'<button class="btn" onclick="cancelTaskEdit()">取消</button>':'')+'</div></div>'+
     '</div>'+
     '</div>';

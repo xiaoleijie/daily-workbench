@@ -640,7 +640,7 @@ setTimeout(()=>{
   T('R16-认领隐身已移除: claimOrphanData 未定义且文案消失',()=> !/function claimOrphanData\(\)/.test(html) && html.indexOf('认领隐身')<0);
   T('R16-四象限板头: 拆为 qc-date(左) + qc-hint(右) 且隐藏认领按钮',()=> html.indexOf('<span class="qc-date">')>=0 && html.indexOf('<span class="qc-hint">')>=0 && !/claimOrphanData/.test(html));
   T('R16-今日安排板: quad-wrap 灰色底纹(background:#eef0f2)',()=> html.indexOf('.quad-wrap{margin:4px 0 10px;background:#eef0f2')>=0);
-  T('R19-默认象限提示: q-default 置于 重要/紧急 下拉之后(筛选栏目下方)',()=> html.indexOf('.q-default{font-size:10.5px')>=0 && html.indexOf('</select><span class="q-default" style="display:block;margin-left:0;margin-top:3px">如不选，默认第一象限「重要且紧急」')>=0 && html.indexOf('如不选，默认第一象限「重要且紧急」')>=0 && html.indexOf("((qd.k==='Q1')?")<0);
+  T('R21-默认象限提示: q-default 胶囊文案已删除, 改由 q-sub2（不选默认为1象限）',()=> html.indexOf('如不选，默认第一象限「重要且紧急」')<0 && html.indexOf('q-sub2')>=0 && html.indexOf('（不选默认为1象限）')>=0 && html.indexOf('q-sub2{')>=0);
 
   // ===== 晨间左栏集成（今日安排页左半边 = 晨间工作台） =====
   T('晨间-今日安排主体已包 morning-split 左右分栏',()=> html.indexOf("morning-split")>=0 && /setBody\('tasks', '<div class="morning-split">/.test(html));
@@ -667,10 +667,10 @@ setTimeout(()=>{
 
   T('R16-鼓励动画: celebrate 函数 + confetti/clap-pop 样式已定义',()=> /function celebrate\(\)/.test(html) && html.indexOf('.confetti{position:fixed')>=0 && html.indexOf('.clap-pop{position:fixed')>=0 && html.indexOf('@keyframes confetti-fall')>=0);
   T('R16-鼓励入口: 昨日复盘「全部完成」带 onclick=celebrate()',()=> html.indexOf('m-rev-todo ok" onclick="celebrate()"')>=0);
-  T('R18-添加便利贴: four-col 新比例(要做什么1.3更宽/截止.35/重要紧急.8/添加1.25)',()=> html.indexOf('.wb-add .four-col{display:grid;grid-template-columns:1.3fr .35fr .8fr 1.25fr')>=0 && html.indexOf('add-btns')>=0 && html.indexOf('class="four-col"')>=0);
+  T('R18+R21-添加便利贴: four-col 新比例(要做什么1.4更宽/截止.9/时间.8/分类.9) 含时间+分类字段',()=> html.indexOf('grid-template-columns:1.4fr .9fr .8fr .9fr')>=0 && html.indexOf('id="t-time"')>=0 && html.indexOf('id="t-cat"')>=0 && html.indexOf('wb-add-row3')>=0);
   T('R17-金句: 字号20px 系统无衬线(与今日日程同字体) + 署名14px + 已去除楷体',()=> html.indexOf('.m-quote{font-size:20px;line-height:1.6;color:#3a342c')>=0 && html.indexOf('font-family:-apple-system,BlinkMacSystemFont,"PingFang SC"')>=0 && html.indexOf('.m-quote .m-by{display:block;font-size:14px;color:#7a6f63;margin-top:5px')>=0 && html.indexOf('font-family:"楷体"')<0);
 
-  T('R18-CSS: four-col 新比例(要做什么1.3/截止.35/重要紧急.8/添加1.25)',()=> html.indexOf('grid-template-columns:1.3fr .35fr .8fr 1.25fr')>=0);
+  T('R18+R21-CSS: four-col 新比例(要做什么1.4/截止.9/时间.8/分类.9)',()=> html.indexOf('grid-template-columns:1.4fr .9fr .8fr .9fr')>=0);
 
   T('R15-多选工具栏: 全选/计数(无删除选中按钮) + 行内勾选框 + getSchedSelIds/schedSelAll/schedSelCount',()=> html.indexOf('s-batchbar')>=0 && html.indexOf('s-sel-all')>=0 && html.indexOf('s-batch-del')<0 && html.indexOf('s-sel')>=0 && html.indexOf('data-id=')>=0 && /function getSchedSelIds/.test(html) && /function schedSelAll/.test(html) && /function schedSelCount/.test(html));
   T('R15-多选删除: delSchedItem 读取 getSchedSelIds，选中多条时批量删并询问',()=> /function delSchedItem\(id, fromTask\)\{/.test(html) && html.indexOf('var ids=getSchedSelIds()')>=0 && html.indexOf('将删除选中的 ')>=0);
@@ -684,6 +684,19 @@ setTimeout(()=>{
   w.toast=_toast0;
 
 
+  console.log('--- R21 行动历 R21 全套 ---');
+  T('R21-A: 过去天统一浅色(不分有安排/选中)',()=> html.indexOf('var tint=(isPast)?ACTION_PALETTE_TINT[(d-1)%7]:')>=0 && html.indexOf('var tint=(isPast&&!isHave&&!isSel)')<0);
+  T('R21-1: 日程明细全选方块在日期后、修改(ops)前',()=> /dateSub\(r\["日期"\]\)\+'<\/div>'\+\s*'<input type="checkbox" class="s-sel"/.test(html) && /onclick="event\.stopPropagation\(\)">'\+\s*'<div class="ops">/.test(html));
+  T('R21-2: 四象限便利贴修改/删除按钮放大(34px)',()=> html.indexOf('.note .note-ops .icon-btn{width:34px;height:34px}')>=0 && html.indexOf('.note .note-ops .icon-btn svg{width:18px;height:18px}')>=0);
+  T('R21-3: 添加表单含 时间(t-time) 与 分类(t-cat)',()=> html.indexOf('id="t-time"')>=0 && html.indexOf('id="t-cat"')>=0);
+  T('R21-3: 重要/紧急 抬头 q-sub2（不选默认为1象限）字号变小',()=> /q-sub2\{font-size:11px/.test(html) && html.indexOf('（不选默认为1象限）')>=0);
+  T('R21-3: 添加按钮独立成行(wb-add-row3)',()=> html.indexOf('wb-add-row3')>=0 && html.indexOf('.wb-add-row3{')>=0);
+  T('R21-5: Happier&Kinder 可 DIY(contenteditable data-diy=hk)',()=> html.indexOf('contenteditable="true" data-diy="hk"')>=0);
+  T('R21-5: 信条 m1/m2 可 DIY',()=> html.indexOf('data-diy="m1"')>=0 && html.indexOf('data-diy="m2"')>=0 && html.indexOf("getDIY('m1'")>=0 && html.indexOf("getDIY('m2'")>=0);
+  T('R21-5: saveDIY/getDIY 函数存在',()=> /function getDIY/.test(html) && /function saveDIY/.test(html));
+  T('R21-6a: 幸福日历空白格 diy-cell(contenteditable + data-e)',()=> html.indexOf('doodle-cell diy-cell" data-e="')>=0 && /function saveDoodle/.test(html) && /function loadDoodle/.test(html));
+  T('R21-6b: 今日日程笔记按钮(openNote) 在修改前',()=> html.indexOf('onclick="openNote(\'+id+\')"')>=0 && /function openNote/.test(html) && html.indexOf("icon('note')")>=0);
+  T('R21-6b: 笔记面板三模板(信纸/白板/方线格)+setNoteTpl',()=> html.indexOf('.np-letter{')>=0 && html.indexOf('.np-board{')>=0 && html.indexOf('.np-grid{')>=0 && /function setNoteTpl/.test(html) && /function closeNote/.test(html));
   console.log('--- 回归 ---');
   T('日期工具 dateSub',()=>w.dateSub('2026-09-07T00:00:00')==='2026-09-07');
   T('exOptions 可用',()=>{try{const o=w.exOptions();return Array.isArray(o)&&o.length>0?o.length+' 项':false;}catch(e){return 'skip';}});

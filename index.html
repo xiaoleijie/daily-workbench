@@ -105,9 +105,10 @@
   .item:last-child{border-bottom:none}
   .item:hover{background:#fcfaf7}
   .item .main{flex:1;min-width:0}
-  .item .ttl{font-weight:600;word-break:break-word}
+  .item .ttl{font-weight:600;word-break:break-word;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;cursor:pointer}
   .item .meta{font-size:12px;color:var(--muted);margin-top:2px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
   .item .ops{display:flex;gap:6px;flex:0 0 auto}
+  .item .meta .s-note-clamp{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;max-width:100%}
   .icon-btn{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--muted);border:1px solid transparent}
   .icon-btn:hover{background:var(--paper);color:var(--ink);border-color:var(--line2)}
   .icon-btn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.7}
@@ -266,7 +267,7 @@
   .wb-add .wb-add-row2{display:flex;justify-content:flex-end;margin-top:10px}
   .wb-add .wb-add-row2 .fld{margin:0;min-width:240px}
   .wb-add .wb-add-row3{display:flex;gap:8px;margin-top:12px}
-  .wb-add .wb-add-row3 .btn{height:42px;padding:0 24px;white-space:nowrap}
+  .wb-add .wb-add-row3 .btn{height:42px;padding:0 24px;white-space:nowrap;flex:1 1 0}
   .wb-add .q-sub2{font-size:11px;font-weight:600;color:var(--muted)}
   .wb-add .three-col .fld{margin:0}
   .wb-add .hint{font-size:11px;color:var(--muted);margin:6px 2px 2px;line-height:1.5}
@@ -603,6 +604,7 @@
   .sa-quick{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}
   .s-batchbar{display:flex;align-items:center;gap:10px;padding:7px 2px;font-size:12.5px;color:var(--muted);border-bottom:1px dashed var(--line)}
   .s-batchbar .s-selall{display:flex;flex-direction:row;align-items:center;gap:5px;cursor:pointer;font-weight:700;color:var(--ink);white-space:nowrap}
+  .s-batchbar .s-sel-all-cb{flex:0 0 auto;width:16px;height:16px;accent-color:var(--accent);cursor:pointer;margin:0}
   .s-batchbar .btn[disabled]{opacity:.45;cursor:not-allowed}
   .item .s-sel{flex:0 0 auto;width:15px;height:15px;accent-color:var(--accent);cursor:pointer}
   .sa-ops>.btn,.sa-quick>.btn{width:100%;min-width:0;height:30px;padding:0 6px;font-size:12.5px;justify-content:center;box-sizing:border-box}
@@ -656,6 +658,8 @@
   option{text-align:left}
   .filt-btn{height:auto;min-height:32px;flex:1;min-width:120px;white-space:nowrap;font-size:12px;box-sizing:border-box;line-height:normal;padding:7px 10px;vertical-align:middle}
   .sched-mid-col .filter-row.sched-filters input.filt-btn{width:100%;min-width:0}
+  .sched-filter-cell.s-rng{display:flex;gap:4px;align-items:center}
+  .sched-filters .filt-btn.on{background:var(--accent);color:#fff;border-color:var(--accent)}
   .cat-modal-mask{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:95;display:none;align-items:center;justify-content:center}
   .cat-modal-card{background:#fff;border-radius:16px;padding:20px;width:340px;max-width:90vw;box-shadow:0 20px 60px rgba(0,0,0,.25)}
   .cat-modal-card h3{margin:0 0 12px}
@@ -1137,7 +1141,7 @@
 
 .m-rows .m-row:first-child{border-top:none}
 
-.m-row .m-tm{font-size:12.5px;color:var(--muted);flex:0 0 42px;padding-top:1px;font-variant-numeric:tabular-nums}
+.m-row .m-tm{font-size:12.5px;color:var(--muted);flex:0 0 auto;padding-top:1px;font-variant-numeric:tabular-nums}
 
 .m-row .m-bd{flex:1;min-width:0}
 
@@ -1165,8 +1169,8 @@
 .m-top .m-greet{flex:0 0 auto;margin-bottom:0;padding:10px 12px}
 .m-top .m-wx{flex:1;gap:7px}
 .m-ops{display:flex;gap:3px;flex:0 0 auto;align-self:center}
-.m-ops .icon-btn{width:22px;height:22px}
-.m-ops .icon-btn svg{width:12px;height:12px}
+.m-ops .icon-btn{width:30px;height:30px;border:1px solid var(--line2);background:var(--paper)}
+.m-ops .icon-btn svg{width:17px;height:17px}
 
 .m-city{flex:1;background:#fff4e0;border-radius:11px;position:relative;padding:15px 6px 8px;text-align:center}
 
@@ -2221,12 +2225,13 @@ function buildMorningLeft(tasks, works){
 
     var tag='<span class="m-tag">'+esc(r['分类']||'日程')+'</span>';
 
-    var m=[]; if(r['地点']) m.push('📍'+esc(r['地点'])); if(r['时间']) m.push('🕐'+esc(r['时间']));
+    var tm=r['开始时间']||''; if(tm && r['结束时间']) tm+='–'+r['结束时间']; else if(!tm && r['时间']) tm=r['时间'];
+    var m=[]; if(r['地点']) m.push('📍'+esc(r['地点']));
 
     var id=rid(r); var dl=r['_fromTask']||'';
     var fnEd="editSchedItem('"+id+"')"; var fnDl="delWorkItem('sched','"+id+"','"+esc(dl)+"')";
     var ops='<div class="m-ops"><button class="icon-btn" title="笔记" onclick="openNote(\'+id+\')">'+icon('note')+'</button><button class="icon-btn" title="修改" onclick="'+fnEd+'">'+icon('edit')+'</button><button class="icon-btn" title="删除" onclick="'+fnDl+'">'+icon('trash')+'</button></div>';
-    return '<div class="'+cls+'"><div class="m-tm">'+(done?'✅ ':'')+(r['开始时间']||'')+'</div><div class="m-bd"><div class="m-t">'+tag+esc(r['标题']||'(无标题)')+'</div>'+
+    return '<div class="'+cls+'"><div class="m-tm">'+(done?'✅ ':'')+tm+'</div><div class="m-bd"><div class="m-t">'+tag+esc(r['标题']||'(无标题)')+'</div>'+
 
       (m.length?'<div class="m-m">'+m.join(' · ')+'</div>':'')+'</div>'+ops+'</div>';
 
@@ -3466,7 +3471,7 @@ function saveBodySettings(){
 }
 
 /* ============ 5. 日程统筹 ============ */
-var schedFilter='全部', schedSelDate=null, schedStatusF='全部状态';
+var schedFilter='全部', schedSelDate=null, schedStatusF='全部状态', schedRange=null;
 LOADERS.schedule=function(){
   var body=getBody('schedule'); body.innerHTML=statusHTML(true);
   return q(DB.schedule,{sorts:[{property:"日期",direction:"ascending"}]}).then(function(rows){ renderSchedule(rows); })
@@ -3641,6 +3646,7 @@ function bindSchedFilterDnD(){
   });
 }
 
+function setSchedRange(v){ schedRange=(schedRange===v)?null:v; schedSelDate=null; renderSchedule(window.__sched); }
 function renderSchedule(rows){
   window.__sched = rows;
   var td=today();
@@ -3667,17 +3673,22 @@ function renderSchedule(rows){
   var fSta='<div class="sched-filter-cell" data-fk="status">'+filterGrip('status')+
     '<select class="filt-btn" onchange="schedStatusF=this.value;renderSchedule(window.__sched)"><option value="全部状态"'+(schedStatusF==='全部状态'?' selected':'')+'>全部</option><option'+(schedStatusF==='待办'?' selected':'')+'>待办</option><option'+(schedStatusF==='已完成'?' selected':'')+'>已完成</option></select></div>';
   var fDat='<div class="sched-filter-cell" data-fk="date">'+filterGrip('date')+
-    '<input class="filt-btn date-filt" type="date" value="'+(schedSelDate||'')+'" onchange="schedSelDate=this.value||null;renderSchedule(window.__sched)" title="按日期筛选（清空=全部）"></div>';
+    '<input class="filt-btn date-filt" type="date" value="'+(schedSelDate||'')+'" onchange="schedSelDate=this.value||null;schedRange=null;renderSchedule(window.__sched)" title="按日期筛选（清空=全部）"></div>';
   var filterCells={ cat:fCat, status:fSta, date:fDat };
+  var rngButtons='<span class="sched-filter-cell s-rng" data-fk="range">'+
+    '<button class="btn sm filt-btn'+(schedRange==='today'?' on':'')+'" onclick="setSchedRange(\'today\)">今天</button>'+
+    '<button class="btn sm filt-btn'+(schedRange==='month'?' on':'')+'" onclick="setSchedRange(\'month\)">全月</button>'+
+    '<button class="btn sm filt-btn'+(schedRange==='year'?' on':'')+'" onclick="setSchedRange(\'year\)">全年</button>'+
+  '</span>';
   var filterBar='<div class="filter-row sched-filters" id="schedFilters">'+
     loadFilterOrder().map(function(k){ return filterCells[k]||''; }).join('')+
-    (schedStatusF!=='全部状态'?'<button class="btn sm filt-btn f-clear" onclick="schedStatusF=\'全部状态\';renderSchedule(window.__sched)">清除状态</button>':'')+
-    (schedSelDate?'<button class="btn sm filt-btn f-clear" onclick="schedSelDate=null;renderSchedule(window.__sched)">清除日期</button>':'')+
+        ''+
+    rngButtons+
     '</div>';
   var sticky='<div class="sticky-note"><div class="sticky-rule"></div><textarea class="sticky-area" id="month-note" onchange="saveMonthNote(this.value)" placeholder="还没定下日期的安排，先记在这里…">'+esc(getMonthNote())+'</textarea></div>';
-  var shown=rows.filter(function(r){ var st=schedStatus(r); return (schedFilter==='全部'||r["分类"]===schedFilter) && (!schedSelDate||dateSub(r["日期"])===schedSelDate) && (schedStatusF==='全部状态'||(schedStatusF==='待办'&&(st==='todo'||st==='overdue'))||(schedStatusF==='已完成'&&st==='done')); });
+  var shown=rows.filter(function(r){ var st=schedStatus(r); return (schedFilter==='全部'||r["分类"]===schedFilter) && (schedRange===null?(!schedSelDate||dateSub(r["日期"])===schedSelDate):(schedRange==='today'?dateSub(r["日期"])===td:(schedRange==='month'?dateSub(r["日期"]).indexOf(td.substring(0,7))===0:dateSub(r["日期"]).indexOf(td.substring(0,4))===0))) && (schedStatusF==='全部状态'||(schedStatusF==='待办'&&(st==='todo'||st==='overdue'))||(schedStatusF==='已完成'&&st==='done')); });
   shown.sort(function(a,b){ var da=dateSub(a["日期"])||'',db=dateSub(b["日期"])||''; if(da!==db) return da<db?-1:1; var ta=a["开始时间"]||'',tb=b["开始时间"]||''; return ta<tb?-1:(ta>tb?1:0); });
-  var list='<div class="panel sched-list-panel"><div class="s-batchbar"><span id="s-sel-cnt"></span><label class="s-selall" style="margin-left:auto">全选</label></div><div class="list">';
+  var list='<div class="panel sched-list-panel"><div class="s-batchbar"><input type="checkbox" id="s-sel-all" class="s-sel-all-cb" onclick="toggleSelAll(this.checked)"><label class="s-selall" for="s-sel-all">全选</label><span id="s-sel-cnt" style="margin-left:auto"></span></div><div class="list">';
   if(!shown.length) list+='<div class="empty">这段时间还没有安排</div>';
   shown.forEach(function(r){
     var st=schedStatus(r);
@@ -3693,11 +3704,11 @@ function renderSchedule(rows){
     }
     acts+='</div>';
     list+='<div class="'+cls+'">'+acts+
-      '<div class="main"><div class="ttl"'+'>'+esc(r["标题"])+'</div>'+
+      '<div class="main"><div class="ttl s-ttl-click" onclick="editSchedItem(\'+rid(r)+\')" title="点击可修改">'+esc(r["标题"])+'</div>'+
       '<div class="meta"><span class="badge '+esc(r["分类"])+'">'+esc(r["分类"])+'</span>'+
       (r["开始时间"]||r["结束时间"]?'<span>'+(r["开始时间"]||'')+(r["结束时间"]?'–'+r["结束时间"]:'')+'</span>':'')+
-      (r["地点"]?'<span>📍'+esc(r["地点"])+'</span>':'')+(r["备注"]?'<span>'+esc(r["备注"])+'</span>':'')+'</div></div>'+
-      '<div style="font-family:Georgia,serif;color:var(--muted);font-size:11px;flex:0 0 auto">'+dateSub(r["日期"])+'</div>'+'<input type="checkbox" class="s-sel" data-id="'+rid(r)+'" onchange="schedSelCount()" onclick="event.stopPropagation()">'+
+      (r["地点"]?'<span>📍'+esc(r["地点"])+'</span>':'')+(r["备注"]?'<span class="s-note-clamp">'+esc(r["备注"])+'</span>':'')+'</div></div>'+
+      '<input type="checkbox" class="s-sel" data-id="'+rid(r)+'" onchange="schedSelCount()" onclick="event.stopPropagation()">'+
       '<div class="ops">'+
         '<button class="icon-btn" title="修改" onclick="editSchedItem(\''+rid(r)+'\')">'+icon('edit')+'</button>'+
         '<button class="icon-btn" onclick="delSchedItem(\''+rid(r)+'\',\''+esc(r["_fromTask"]||'')+'\')">'+icon('trash')+'</button>'+
@@ -4050,6 +4061,7 @@ function schedSelAll(on){
   for(var i=0;i<boxes.length;i++){ boxes[i].checked=on; }
   schedSelCount();
 }
+function toggleSelAll(v){ var bs=document.querySelectorAll('.sched-list-panel .s-sel'); for(var i=0;i<bs.length;i++){ bs[i].checked=!!v; } schedSelCount(); }
 function schedSelCount(){
   var boxes=document.querySelectorAll('.sched-list-panel .s-sel'), n=0;
   for(var i=0;i<boxes.length;i++){ if(boxes[i].checked) n++; }
@@ -4094,7 +4106,7 @@ function openEditSchedModal(rec){
       '<div class="fld"><label>备注</label><input id="es-note" value="'+esc(rec['备注']||'')+'" placeholder="选填"></div>'+
       '<div class="fld"><label>地点</label><input id="es-place" value="'+esc(rec['地点']||'')+'" placeholder="选填"></div>'+
     '</div>'+
-    _esBatchPanelHTML(rec)+
+    '<div class="es-row es-row-1"><div class="fld" style="flex:1 1 auto"><label>笔记（与今日安排「笔记」联动）</label><textarea id="es-letter" rows="3" onchange="lwSaveJSON(\'lw_note_\'+rid(rec),{tpl:\'letter\',text:this.value})" placeholder="和今日安排里的笔记是同一份，自动关联">'+esc(((lwLoadJSON('lw_note_'+rid(rec))||{}).text||''))+'</textarea></div></div>'+_esBatchPanelHTML(rec)+
     '<div class="imp-foot"><button class="btn" onclick="closeEditSchedModal()">取消</button>'+
       '<button class="btn primary" onclick="saveEditSchedItem(\''+rid(rec)+'\')">保存修改</button></div>'+
   '</div>';

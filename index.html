@@ -270,6 +270,13 @@
   .wb-add .q-sub2{font-size:11px;font-weight:600;color:var(--muted)}
   .wb-add .three-col .fld{margin:0}
   .wb-add .hint{font-size:11px;color:var(--muted);margin:6px 2px 2px;line-height:1.5}
+  .wb-add .wb-add-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start}
+  .wb-add .wa-col{display:flex;flex-direction:column;gap:12px;min-width:0}
+  .wb-add .wa-row{display:flex;gap:10px;align-items:flex-start}
+  .wb-add .wa-row .fld{margin:0;flex:1 1 0;min-width:0}
+  .wb-add .wa-due{flex:0 0 44%}
+  .wb-add .wa-col .fld{margin:0}
+  @media(max-width:640px){ .wb-add .wb-add-grid{grid-template-columns:1fr} }
   @media(max-width:640px){ .quad-grid{grid-template-columns:1fr} .wb-add .two-col,.wb-add .three-col,.wb-add .four-col{grid-template-columns:1fr} }
 
   .empty{padding:34px 16px;text-align:center;color:var(--muted);font-size:13px}
@@ -382,8 +389,8 @@
   /* mini calendar */
   .monthcal{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;max-width:340px}
   .monthcal .d{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:12px;border-radius:7px;color:var(--muted);border:1px solid transparent}
-  .monthcal .d.have{background:var(--accent-soft);color:var(--accent);font-weight:600}
-  .monthcal .d.sel{background:var(--accent);color:var(--on-accent)}
+  .monthcal .d.have{color:var(--accent);font-weight:600}
+  .monthcal .d.sel{outline:2px solid var(--accent);outline-offset:-2px;color:var(--accent);font-weight:700}
   .monthcal .wd{color:var(--muted);font-size:11px;text-align:center}
 
   /* ===== 先知先觉幸福行动历 ===== */
@@ -648,6 +655,7 @@
   .sched-filters select.filt-btn,.sched-mid-col .sched-filters select.filt-btn,select{text-align:left}
   option{text-align:left}
   .filt-btn{height:auto;min-height:32px;flex:1;min-width:120px;white-space:nowrap;font-size:12px;box-sizing:border-box;line-height:normal;padding:7px 10px;vertical-align:middle}
+  .sched-mid-col .filter-row.sched-filters input.filt-btn{width:100%;min-width:0}
   .cat-modal-mask{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:95;display:none;align-items:center;justify-content:center}
   .cat-modal-card{background:#fff;border-radius:16px;padding:20px;width:340px;max-width:90vw;box-shadow:0 20px 60px rgba(0,0,0,.25)}
   .cat-modal-card h3{margin:0 0 12px}
@@ -2217,7 +2225,7 @@ function buildMorningLeft(tasks, works){
 
     var id=rid(r); var dl=r['_fromTask']||'';
     var fnEd="editSchedItem('"+id+"')"; var fnDl="delWorkItem('sched','"+id+"','"+esc(dl)+"')";
-    var ops='<div class="m-ops"><button class="icon-btn" title="笔记" onclick="openNote('+id+')">'+icon('note')+'</button><button class="icon-btn" title="修改" onclick="'+fnEd+'">'+icon('edit')+'</button><button class="icon-btn" title="删除" onclick="'+fnDl+'">'+icon('trash')+'</button></div>';
+    var ops='<div class="m-ops"><button class="icon-btn" title="笔记" onclick="openNote(\'+id+\')">'+icon('note')+'</button><button class="icon-btn" title="修改" onclick="'+fnEd+'">'+icon('edit')+'</button><button class="icon-btn" title="删除" onclick="'+fnDl+'">'+icon('trash')+'</button></div>';
     return '<div class="'+cls+'"><div class="m-tm">'+(done?'✅ ':'')+(r['开始时间']||'')+'</div><div class="m-bd"><div class="m-t">'+tag+esc(r['标题']||'(无标题)')+'</div>'+
 
       (m.length?'<div class="m-m">'+m.join(' · ')+'</div>':'')+'</div>'+ops+'</div>';
@@ -2405,10 +2413,16 @@ function renderTasks(tasks, works){
   grid+='</div>';
   var board='<div class="quad-wrap"><div class="quad-cap"><span class="qc-date">'+td+' 今日安排</span><span class="qc-hint">四象限法：上=重要，左=紧急。拖到对应格子即可，位置自动保存。</span></div>'+grid+'</div>';
   var add='<div class="wb-add"><div class="wb-add-title">➕ 添加一张便利贴</div>'+
-    '<div class="four-col">'+
-      '<div class="fld"><label>要做什么</label><input id="t-title" placeholder="要做什么？"></div>'+
-      '<div class="fld"><label>截止日期</label><input id="t-due" type="date" value="'+td+'"></div>'+'<div class="fld"><label>时间</label><input id="t-time" type="time"></div>'+'<div class="fld"><label>分类</label><input id="t-cat" placeholder="如：工作/生活"></div>'+
-      '</div><div class="wb-add-row2"><div class="fld"><label>重要/紧急<span class="q-sub2">（不选默认为1象限）</span></label><select id="t-quad">'+quadOptions('Q1')+'</select></div></div>'+
+    '<div class="wb-add-grid">'+
+      '<div class="wa-col wa-col-left">'+
+        '<div class="fld"><label>要做什么</label><input id="t-title" placeholder="要做什么？"></div>'+
+        '<div class="fld"><label>分类</label><select id="t-cat">'+optHTML(getSchedCats(),'工作')+'</select></div>'+
+      '</div>'+
+      '<div class="wa-col wa-col-right">'+
+        '<div class="wa-row"><div class="fld wa-due"><label>截止日期</label><input id="t-due" type="date" value="'+td+'"></div><div class="fld"><label>时间</label><input id="t-time" type="time"></div></div>'+
+        '<div class="fld"><label>重要/紧急<span class="q-sub2">（不选默认为1象限）</span></label><select id="t-quad">'+quadOptions('Q1')+'</select></div>'+
+      '</div>'+
+    '</div>'+
     '<div class="wb-add-row3"><button class="btn primary" onclick="submitTask()">'+(taskEditId?'保存修改':'添加')+'</button>'+(taskEditId?'<button class="btn" onclick="cancelTaskEdit()">取消</button>':'')+'</div>'+
     '</div>';
   var QLAB={'Q1':'重要且紧急','Q2':'重要不紧急','Q3':'紧急不重要','Q4':'不紧急不重要'};
@@ -2442,8 +2456,8 @@ function renderTasks(tasks, works){
   var left = buildMorningLeft(tasks, works);
   setBody('tasks', '<div class="morning-split"><div class="m-left">'+left+'</div><div class="m-right">'+board+add+'</div></div>');
   loadMorningWeather();
-  bindDraft('task', getBody('tasks'), ['t-title','t-due','t-quad']);
-  if(taskEditId){ var ed=window.__taskEdit; if(ed){ document.getElementById('t-title').value=ed['标题']||''; document.getElementById('t-due').value=dateSub(ed['截止日期'])||td; document.getElementById('t-quad').value=(ed['象限']||'Q1'); var tt=document.getElementById('t-time'); if(tt) tt.value=ed['时间']||''; var tc=document.getElementById('t-cat'); if(tc) tc.value=ed['分类']||''; } }
+  bindDraft('task', getBody('tasks'), ['t-title','t-due','t-time','t-cat','t-quad']);
+  if(taskEditId){ var ed=window.__taskEdit; if(ed){ document.getElementById('t-title').value=ed['标题']||''; document.getElementById('t-due').value=dateSub(ed['截止日期'])||td; document.getElementById('t-quad').value=(ed['象限']||'Q1'); var tt=document.getElementById('t-time'); if(tt) tt.value=ed['时间']||''; var tc=document.getElementById('t-cat'); if(tc){ var cv=ed['分类']||''; if(cv && !Array.prototype.some.call(tc.options,function(o){return o.value===cv;})){ var op=document.createElement('option'); op.value=cv; op.textContent=cv; tc.appendChild(op); } tc.value=cv; } } }
 }
 function optHTML(arr, sel){ return arr.map(function(o){ return '<option'+(o===sel?' selected':'')+'>'+o+'</option>'; }).join(''); }
 function quadOptions(sel){ var map=[['Q1','重要且紧急'],['Q2','重要不紧急'],['Q3','紧急不重要'],['Q4','不紧急不重要']]; return map.map(function(o){ return '<option value="'+o[0]+'"'+(o[0]===(sel||'Q1')?' selected':'')+'>'+o[1]+'</option>'; }).join(''); }
@@ -3649,20 +3663,21 @@ function renderSchedule(rows){
   var cats=getSchedCats();
   /* 三个控件：分类 / 状态 / 日期 —— 宽度还原为原尺寸，仅三者之间可左右互换（不可跨模块拖出） */
   var fCat='<div class="sched-filter-cell" data-fk="cat">'+filterGrip('cat')+
-    '<select class="filt-btn" onchange="schedFilter=this.value;renderSchedule(window.__sched)"><option value="全部"'+(schedFilter==='全部'?' selected':'')+'>分类</option>'+cats.map(function(c){return '<option'+(c===schedFilter?' selected':'')+'>'+c+'</option>';}).join('')+'</select></div>';
+    '<select class="filt-btn" onchange="schedFilter=this.value;renderSchedule(window.__sched)"><option value="全部"'+(schedFilter==='全部'?' selected':'')+'>全部</option>'+cats.map(function(c){return '<option'+(c===schedFilter?' selected':'')+'>'+c+'</option>';}).join('')+'</select></div>';
   var fSta='<div class="sched-filter-cell" data-fk="status">'+filterGrip('status')+
-    '<select class="filt-btn" onchange="schedStatusF=this.value;renderSchedule(window.__sched)"><option value="全部状态"'+(schedStatusF==='全部状态'?' selected':'')+'>状态</option><option'+(schedStatusF==='待办'?' selected':'')+'>待办</option><option'+(schedStatusF==='已完成'?' selected':'')+'>已完成</option></select></div>';
+    '<select class="filt-btn" onchange="schedStatusF=this.value;renderSchedule(window.__sched)"><option value="全部状态"'+(schedStatusF==='全部状态'?' selected':'')+'>全部</option><option'+(schedStatusF==='待办'?' selected':'')+'>待办</option><option'+(schedStatusF==='已完成'?' selected':'')+'>已完成</option></select></div>';
   var fDat='<div class="sched-filter-cell" data-fk="date">'+filterGrip('date')+
-    '<button class="btn sm filt-btn date-filt'+(schedSelDate?' on':'')+'" title="'+(schedSelDate?('已筛选 '+schedSelDate+'，点击清除'):'点左侧月历选日期')+'" onclick="'+(schedSelDate?'schedSelDate=null;renderSchedule(window.__sched)':'toast(\'点左侧月历里的日期即可筛选\')')+'">日期'+(schedSelDate?' · '+schedSelDate.slice(8,10)+'日':'')+'</button></div>';
+    '<input class="filt-btn date-filt" type="date" value="'+(schedSelDate||'')+'" onchange="schedSelDate=this.value||null;renderSchedule(window.__sched)" title="按日期筛选（清空=全部）"></div>';
   var filterCells={ cat:fCat, status:fSta, date:fDat };
   var filterBar='<div class="filter-row sched-filters" id="schedFilters">'+
     loadFilterOrder().map(function(k){ return filterCells[k]||''; }).join('')+
     (schedStatusF!=='全部状态'?'<button class="btn sm filt-btn f-clear" onclick="schedStatusF=\'全部状态\';renderSchedule(window.__sched)">清除状态</button>':'')+
+    (schedSelDate?'<button class="btn sm filt-btn f-clear" onclick="schedSelDate=null;renderSchedule(window.__sched)">清除日期</button>':'')+
     '</div>';
   var sticky='<div class="sticky-note"><div class="sticky-rule"></div><textarea class="sticky-area" id="month-note" onchange="saveMonthNote(this.value)" placeholder="还没定下日期的安排，先记在这里…">'+esc(getMonthNote())+'</textarea></div>';
   var shown=rows.filter(function(r){ var st=schedStatus(r); return (schedFilter==='全部'||r["分类"]===schedFilter) && (!schedSelDate||dateSub(r["日期"])===schedSelDate) && (schedStatusF==='全部状态'||(schedStatusF==='待办'&&(st==='todo'||st==='overdue'))||(schedStatusF==='已完成'&&st==='done')); });
   shown.sort(function(a,b){ var da=dateSub(a["日期"])||'',db=dateSub(b["日期"])||''; if(da!==db) return da<db?-1:1; var ta=a["开始时间"]||'',tb=b["开始时间"]||''; return ta<tb?-1:(ta>tb?1:0); });
-  var list='<div class="panel sched-list-panel"><div class="s-batchbar"><label class="s-selall"><input type="checkbox" id="s-sel-all" onchange="schedSelAll(this.checked)">全选</label><span id="s-sel-cnt"></span></div><div class="list">';
+  var list='<div class="panel sched-list-panel"><div class="s-batchbar"><span id="s-sel-cnt"></span><label class="s-selall" style="margin-left:auto">全选</label></div><div class="list">';
   if(!shown.length) list+='<div class="empty">这段时间还没有安排</div>';
   shown.forEach(function(r){
     var st=schedStatus(r);
@@ -3727,7 +3742,7 @@ function renderSchedule(rows){
 function submitSched(){
   var ti=val('s-title'); if(!ti){ toast('请填写事项',true); return; }
   var quad=val('s-quad')||'Q1';
-  var st=timeVal('s-st-h','s-st-m'), en=timeVal('s-en-h','s-en-m');
+  var st=val('s-st')||'', en=val('s-en')||'';
   if(st && en && en<=st){ toast('结束时间不能早于开始时间',true); return; }
   var dates=(schedPickDates||[]).slice().sort();
   if(!dates.length){ toast('请至少选择一个日期',true); return; }
@@ -3801,8 +3816,8 @@ function schedFormHTML(){
         '</div>'+
       '</div>'+
       '<div class="sched-grid">'+
-        '<div class="fld c-3"><label>开始</label><div class="time-sel"><select id="s-st-h">'+hourOpts()+'</select><span>:</span><select id="s-st-m">'+minOpts()+'</select></div></div>'+
-        '<div class="fld c-3"><label>结束</label><div class="time-sel"><select id="s-en-h">'+hourOpts()+'</select><span>:</span><select id="s-en-m">'+minOpts()+'</select></div></div>'+
+        '<div class="fld c-3"><label>开始</label><input id="s-st" type="time" class="time-input"></div>'+
+        '<div class="fld c-3"><label>结束</label><input id="s-en" type="time" class="time-input"></div>'+
         '<div class="fld c-6"><label>重要/紧急</label><select id="s-quad">'+quadOptions('Q1')+'</select></div>'+
       '</div>'+
       '<div class="sched-grid">'+
@@ -5212,7 +5227,7 @@ function doodleKey(e){ return 'lw_doodle_'+today().substring(0,7)+'_'+e; }
 function loadDoodle(e){ try{ var o=lwLoadJSON(doodleKey(e)); return (o&&typeof o==='object')?o:{h:'',c:'',s:''}; }catch(e2){ return {h:'',c:'',s:''}; } }
 function saveDoodle(e,html){ var el=document.querySelector('.doodle-cell[data-e="'+e+'"]'); var c=el?el.style.color:''; var s=el?el.style.fontSize:''; lwSaveJSON(doodleKey(e),{h:html,c:c,s:s}); }
 function ensureDoodleBar(){ var b=document.getElementById('doodle-bar'); if(b) return b; b=document.createElement('div'); b.id='doodle-bar'; b.className='doodle-bar'; b.innerHTML='<span class="db-lbl">颜色</span>'+['#333333','#c0392b','#d77a8a','#e0a23c','#7fb069','#5b8bc9','#9b6cc9','#888'].map(function(c){return '<button class="db-sw" style="background:'+c+'" data-c="'+c+'"></button>';}).join('')+'<span class="db-lbl">字号</span><button class="db-sz" data-s="13">小</button><button class="db-sz" data-s="18">中</button><button class="db-sz" data-s="26">大</button>'; b.addEventListener('mousedown',function(e){e.preventDefault();}); b.addEventListener('click',function(e2){ var t=e2.target.closest('button'); if(!t) return; var cell=b._cell; if(!cell) return; if(t.hasAttribute('data-c')){ cell.style.color=t.getAttribute('data-c'); saveDoodle(cell.getAttribute('data-e'), cell.innerHTML); } else if(t.hasAttribute('data-s')){ cell.style.fontSize=t.getAttribute('data-s')+'px'; saveDoodle(cell.getAttribute('data-e'), cell.innerHTML); } }); document.body.appendChild(b); return b; }
-function doodleFocus(el){ var b=ensureDoodleBar(); b._cell=el; var r=el.getBoundingClientRect(); b.style.display='flex'; b.style.left=Math.max(4,r.left)+'px'; b.style.top=(r.top-46)+'px'; }
+function doodleFocus(el){ var b=ensureDoodleBar(); b._cell=el; var r=el.getBoundingClientRect(); b.style.display='flex'; b.style.top=Math.max(4,r.top-46)+'px'; var bw=b.offsetWidth||240; var maxLeft=window.innerWidth-bw-8; b.style.left=Math.min(Math.max(4,r.left),maxLeft)+'px'; }
 function doodleBlur(el){ setTimeout(function(){ var b=document.getElementById('doodle-bar'); if(b&&b._cell===el){ b.style.display='none'; b._cell=null; } },160); }
 function openNote(id){ var key='lw_note_'+id; var data=lwLoadJSON(key)||{tpl:'letter',text:''}; var box=document.getElementById('note-modal'); if(!box){ box=document.createElement('div'); box.id='note-modal'; box.className='modal-mask'; box.innerHTML='<div class="note-card"><div class="note-head"><span>笔记</span><div class="note-tpls"><button data-tpl="letter">信纸</button><button data-tpl="board">白板</button><button data-tpl="grid">方线格</button></div><button class="note-close" onclick="closeNote()">×</button></div><div class="note-body" id="note-body" contenteditable="true" oninput="saveNote()"></div><div class="note-foot"><span id="note-saved">自动保存</span></div></div>'; document.body.appendChild(box); box.addEventListener('click',function(e){ if(e.target===box) closeNote(); }); box.querySelector('.note-tpls').addEventListener('click',function(e){ var b=e.target.closest('button'); if(!b) return; setNoteTpl(b.getAttribute('data-tpl')); }); } box._id=id; box._key=key; box._tpl=data.tpl; var body=box.querySelector('#note-body'); body.innerHTML=data.text||''; body.className='note-body np-'+data.tpl; box.querySelectorAll('.note-tpls button').forEach(function(b){ b.classList.toggle('on', b.getAttribute('data-tpl')===data.tpl); }); box.style.display='flex'; }
 function setNoteTpl(tpl){ var box=document.getElementById('note-modal'); if(!box) return; box._tpl=tpl; var body=box.querySelector('#note-body'); body.className='note-body np-'+tpl; box.querySelectorAll('.note-tpls button').forEach(function(b){ b.classList.toggle('on', b.getAttribute('data-tpl')===tpl); }); saveNote(); }

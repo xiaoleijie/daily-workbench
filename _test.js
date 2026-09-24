@@ -137,7 +137,7 @@ setTimeout(()=>{
   T('CSS: 弹窗卡片 width 720px',()=>/\.sched-add-card\{width:720px/.test(html));
   T('CSS: 弹窗内表单去重卡片背景',()=>/\.sched-add-card \.form\{[^}]*background:none/.test(html));
   T('pad2 补零',()=>w.pad2(3)==='03' && w.pad2(12)==='12');
-  T('openSchedAddModal 弹出且含全部字段',()=>{ w.openSchedAddModal(); const m=d.getElementById('sched-add-modal'); return !!m && m.style.display==='flex' && ['s-title','s-cat','s-place','s-note','s-st-h','s-en-h','s-dates-block','s-submit'].every(E); });
+  T('openSchedAddModal 弹出且含全部字段',()=>{ w.openSchedAddModal(); const m=d.getElementById('sched-add-modal'); return !!m && m.style.display==='flex' && ['s-title','s-cat','s-place','s-note','s-st','s-en','s-dates-block','s-submit'].every(E); });
   T('弹窗默认选中今天 1 天',()=>{ return w.schedPickDates.length===1 && w.schedPickDates[0]===w.today(); });
   T('多选：再加一天 → 2 天且按钮显示「2 天」',()=>{ const t=w.today(); const dd=Number(t.slice(8,10))===1?2:1; const ds=t.slice(0,8)+(dd<10?'0'+dd:''+dd); w.schedPickToggle(ds); const b=d.getElementById('s-submit'); return w.schedPickDates.length===2 && b.textContent.includes('2 天') && b.textContent.includes('添加'); });
   T('多选：点已选日期 → 取消（回到 1 天）',()=>{ const t=w.today(); const dd=Number(t.slice(8,10))===1?2:1; const ds=t.slice(0,8)+(dd<10?'0'+dd:''+dd); w.schedPickToggle(ds); return w.schedPickDates.length===1; });
@@ -260,7 +260,7 @@ setTimeout(()=>{
 
   console.log('--- 11) 日程统筹改版布局 ---');
   T('筛选条为三列并排（分类/状态/日期）',()=>{ w.renderSchedule([]); const f=d.querySelector('.sched-filters'); return !!f && /sched-filters/.test(f.className); });
-  T('三控件文案：分类 / 状态 / 日期',()=>{ const f=d.querySelector('.sched-filters'); const sel=f.querySelectorAll('select.filt-btn'); const btn=f.querySelector('button.filt-btn'); return sel.length===2 && sel[0].options[0].textContent==='分类' && sel[1].options[0].textContent==='状态' && btn.textContent.indexOf('日期')===0; });
+  T('三控件文案：分类/状态默认"全部" + 日期可选',()=>{ const f=d.querySelector('.sched-filters'); const catSel=f.querySelector('.sched-filter-cell[data-fk="cat"] select.filt-btn'); const staSel=f.querySelector('.sched-filter-cell[data-fk="status"] select.filt-btn'); const dateInput=f.querySelector('input.filt-btn.date-filt[type="date"]'); return !!catSel && !!staSel && !!dateInput && catSel.options[0].textContent==='全部' && staSel.options[0].textContent==='全部'; });
   T('无「清除日期筛选」旧文案残留',()=>{ const f=d.querySelector('.sched-filters'); return !/清除日期筛选/.test(f.innerHTML); });
   T('模块栈含本月日程与便签（.sched-mods）',()=>{ const c=d.querySelector('.sched-left-col .sched-mods'); return !!c && !!c.querySelector('.mini-cal-panel') && !!c.querySelector('.sticky-note'); });
   /* ===== R20：本月日程过去天浅底色 + 删提示 + 默认选中今天 ===== */
@@ -695,9 +695,25 @@ setTimeout(()=>{
   T('R21-5: 信条 m1/m2 可 DIY',()=> html.indexOf('data-diy="m1"')>=0 && html.indexOf('data-diy="m2"')>=0 && html.indexOf("getDIY('m1'")>=0 && html.indexOf("getDIY('m2'")>=0);
   T('R21-5: saveDIY/getDIY 函数存在',()=> /function getDIY/.test(html) && /function saveDIY/.test(html));
   T('R21-6a: 幸福日历空白格 diy-cell(contenteditable + data-e)',()=> html.indexOf('doodle-cell diy-cell" data-e="')>=0 && /function saveDoodle/.test(html) && /function loadDoodle/.test(html));
-  T('R21-6b: 今日日程笔记按钮(openNote) 在修改前',()=> html.indexOf('onclick="openNote(\'+id+\')"')>=0 && /function openNote/.test(html) && html.indexOf("icon('note')")>=0);
+  T('R21-6b: 今日日程笔记按钮(openNote 引号修复 + 在修改前)',()=> /onclick="openNote\(/.test(html) && /function openNote/.test(html) && /icon\('note'\)/.test(html));
   T('R21-6b: 笔记面板三模板(信纸/白板/方线格)+setNoteTpl',()=> html.indexOf('.np-letter{')>=0 && html.indexOf('.np-board{')>=0 && html.indexOf('.np-grid{')>=0 && /function setNoteTpl/.test(html) && /function closeNote/.test(html));
-  console.log('--- 回归 ---');
+    console.log('--- R22 行动历 R22 全套 ---');
+  T('R22-A: 今日安排笔记按钮引号修复(openNote 参数加引号)',()=> html.indexOf("onclick=\"openNote(\\'+id+\\')\"")>=0 && html.indexOf("onclick=\"openNote('+id+')\"")<0);
+  T('R22-B: 过去天之外(非past)保持白色-have不再上底色',()=> html.indexOf('.monthcal .d.have{color:var(--accent);font-weight:600}')>=0 && html.indexOf('.monthcal .d.have{background')<0);
+  T('R22-B: 非past选中日改用描边而非底色(sel outline)',()=> html.indexOf('.monthcal .d.sel{outline:2px solid var(--accent)')>=0);
+  T('R22-C: 幸福日历DIY工具栏靠右不超出视口',()=> html.indexOf('var maxLeft=window.innerWidth-bw-8')>=0);
+  T('R22-D: 筛选-分类/状态 默认文案改为"全部"',()=> html.indexOf('>全部</option>')>=0 && html.indexOf('>分类</option>')<0 && html.indexOf('>状态</option>')<0);
+  T('R22-E: 筛选日期改为可直接选的 date 输入',()=> html.indexOf('schedSelDate=this.value||null;renderSchedule')>=0 && html.indexOf('点左侧月历里的日期即可筛选')<0);
+  T('R22-N: 筛选区有"清除日期"按钮',()=> html.indexOf('>清除日期</button>')>=0);
+  T('R22-F: 事项明细表头"全选"右对齐',()=> html.indexOf('label class="s-selall" style="margin-left:auto"')>=0);
+  T('R22-G: 本月事项开始/结束改原生 time 输入(与今日安排一致)',()=> html.indexOf('id="s-st" type="time"')>=0 && html.indexOf('id="s-st-h"')<0);
+  T('R22-H: submitSched 读取原生时间(s-st/s-en)',()=> html.indexOf("var st=val('s-st')")>=0 && html.indexOf("timeVal('s-st-h'")<0);
+  T('R22-I: 今日安排添加表单两栏重排(wb-add-grid)',()=> html.indexOf('wb-add-grid')>=0 && html.indexOf('class="wb-add-row2"')<0);
+  T('R22-J: 今日安排分类改为与日程统筹联动的 select',()=> html.indexOf('select id="t-cat"')>=0 && html.indexOf('input id="t-cat"')<0);
+  T('R22-K: 今日安排草稿绑定含 t-time/t-cat',()=> html.indexOf("['t-title','t-due','t-time','t-cat','t-quad']")>=0);
+  T('R22-L: 新增 wb-add-grid 两栏 CSS',()=> html.indexOf('.wb-add .wb-add-grid{display:grid')>=0);
+  T('R22-M: 筛选 date 输入宽度 CSS',()=> html.indexOf('input.filt-btn{width:100%')>=0);
+console.log('--- 回归 ---');
   T('日期工具 dateSub',()=>w.dateSub('2026-09-07T00:00:00')==='2026-09-07');
   T('exOptions 可用',()=>{try{const o=w.exOptions();return Array.isArray(o)&&o.length>0?o.length+' 项':false;}catch(e){return 'skip';}});
   T('无 JS 运行时错误',()=>errs.length===0? 'clean' : (console.log(errs.join('\n')), false));

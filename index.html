@@ -2067,6 +2067,7 @@ function makeNavBtn(m){
 }
 function showModule(key){
   curModule=key;
+  if(key==='schedule' && !schedSelDate && window.__sched){ schedSelDate=today(); renderSchedule(window.__sched); }
   var m=MODULES.filter(function(x){return x.key===key;})[0];
   document.getElementById('pageTitle').textContent=m.name;
   document.getElementById('pageSub').textContent=m.sub;
@@ -3586,8 +3587,8 @@ function renderSchedule(rows){
     '<button class="btn sm primary sched-add-btn" onclick="openSchedAddModal()" title="添加事项，可一次选中多个日期">＋ 本月事项</button></div>'+
     '<div class="monthcal"><div class="wd">一</div><div class="wd">二</div><div class="wd">三</div><div class="wd">四</div><div class="wd">五</div><div class="wd">六</div><div class="wd">日</div>';
   for(var i=0;i<startDay;i++) mini+='<div class="d"></div>';
-  for(var d=1;d<=days;d++){ var ds=y+'-'+('0'+(mo+1)).slice(-2)+'-'+('0'+d).slice(-2); var cls='d'+(haveDates[ds]?' have':'')+(schedSelDate===ds?' sel':''); var dc=dayCount[ds]||0; mini+='<div class="'+cls+'" onclick="schedSelDate=\''+ds+'\';renderSchedule(window.__sched)">'+d+(dc?'<span class="d-cnt">'+dc+'</span>':'')+'</div>'; }
-  mini+='</div><div class="mc-tip">点击日期可筛选右侧日程｜<span class="mc-dot"></span>当天有安排</div></div>';
+  for(var d=1;d<=days;d++){ var ds=y+'-'+('0'+(mo+1)).slice(-2)+'-'+('0'+d).slice(-2); var isPast=ds<td, isHave=!!haveDates[ds], isSel=schedSelDate===ds; var cls='d'+(isHave?' have':'')+(isSel?' sel':'')+(isPast?' past':''); var tint=(isPast&&!isHave&&!isSel)?ACTION_PALETTE_TINT[(d-1)%7]:''; var dc=dayCount[ds]||0; mini+='<div class="'+cls+'"'+(tint?' style="background:'+tint+'"':'')+' onclick="schedSelDate=\''+ds+'\';renderSchedule(window.__sched)">'+d+(dc?'<span class="d-cnt">'+dc+'</span>':'')+'</div>'; }
+  mini+='</div></div>';
 
   // 下方：筛选条 + 日程列表（直接写在月历下面空白）
   var cats=getSchedCats();
@@ -4950,6 +4951,8 @@ LOADERS.pomodoro=function(){ loadPomoCfg(); loadPomoSfx(); loadPomoVol(); buildP
 /* ============ 先知先觉幸福行动历 ============ */
 var ACTION_MONTH_NAMES=['January','February','March','April','May','June','July','August','September','October','November','December'];
 var ACTION_PALETTE=['#F6C9C9','#F8D9A6','#F2E6A0','#BFE3B0','#A9D8DE','#C3C2EA','#E5BDD9'];
+function _mixWhite(hex,amt){var n=parseInt(hex.slice(1),16),r=(n>>16)&255,g=(n>>8)&255,b=n&255;r=Math.round(r*(1-amt)+255*amt);g=Math.round(g*(1-amt)+255*amt);b=Math.round(b*(1-amt)+255*amt);return '#'+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1);}
+var ACTION_PALETTE_TINT=ACTION_PALETTE.map(function(c){return _mixWhite(c,0.5);});
 var ACT_TOTAL=30;
 var ACTION_ACTIONS=[
  "留点时间照顾自己。这不是自私，是必需。",

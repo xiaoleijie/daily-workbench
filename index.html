@@ -1994,6 +1994,23 @@ function today(){ return fmtDate(new Date()); }
 function dateSub(iso){ return (iso||'').substring(0,10); }
 /* 记录主键：浏览器 SDK 返回 _id，服务端脚本返回 record_id，这里两头兜底 */
 function rid(r){ return r ? (r._id || r.record_id || r.id || null) : null; }
+/* 便利贴 ↔ 日程 镜像互查：优先用记录自带的链接，再回退到 __lastTasks / __lastWorks 双向反查
+   —— 防 _sched / _fromTask 异步补写造成的「刚建完就改」竞态 */
+function _mid(v){ return (v&&typeof v==='object'&&'text' in v)?v.text:v; }
+function mirrorSchedOfTask(taskId, taskRec){
+  if(taskRec && _mid(taskRec['_sched'])) return _mid(taskRec['_sched']);
+  var t=(window.__lastTasks||[]).filter(function(r){ return rid(r)===taskId; })[0];
+  if(t && _mid(t['_sched'])) return _mid(t['_sched']);
+  var w=(window.__lastWorks||[]).filter(function(r){ return _mid(r['_fromTask'])===taskId; })[0];
+  return w?rid(w):'';
+}
+function mirrorTaskOfSched(schedId, schedRec){
+  if(schedRec && _mid(schedRec['_fromTask'])) return _mid(schedRec['_fromTask']);
+  var s2=(window.__lastWorks||[]).filter(function(r){ return rid(r)===schedId; })[0];
+  if(s2 && _mid(s2['_fromTask'])) return _mid(s2['_fromTask']);
+  var t2=(window.__lastTasks||[]).filter(function(r){ return _mid(r['_sched'])===schedId; })[0];
+  return t2?rid(t2):'';
+}
 function num(v,dec){ if(v==null||v===''||isNaN(v)) return dec!=null?'0':''; var n=Number(v); return dec!=null?n.toFixed(dec):String(n); }
 function money(v){ if(v==null||isNaN(v)) return '¥0'; return '¥'+Number(v).toLocaleString('zh-CN',{minimumFractionDigits:0,maximumFractionDigits:2}); }
 function monthOf(iso){ return dateSub(iso).substring(0,7); }
@@ -2429,15 +2446,15 @@ function renderTasks(tasks, works){
     var toggleFn = "completeItem('"+src+"','"+id+"','"+esc(cur)+"')";
     var delLink = src==='task' ? (r["_sched"]||'') : (r["_fromTask"]||'');
     var delFn = "delWorkItem('"+src+"','"+id+"','"+esc(delLink)+"')";
-    var editFn = src==='task' ? "editTask('"+id+"')" : '';
+    var editFn = src==='task' ? "editWorkItem('task','"+id+"')" : "editSchedItem('"+id+"')";
     return '<div class="note'+(done?' done':'')+'" draggable="true" data-id="'+id+'" data-src="'+src+'" '+
       'ondragstart="dragNoteStart(event,this)" ondragend="this.classList.remove(\'dragging\')">'+
       '<span class="pin"></span>'+
       '<button class="note-chk" title="标记完成" onclick="'+toggleFn+'">'+icon(done?'check':'circle')+'</button>'+
       '<div class="note-ttl" style="'+(done?'text-decoration:line-through;color:#8a7a3a':'')+'">'+esc(r["标题"])+'</div>'+
       '<div class="note-meta">'+(dueStr?'<span>📅 '+dueStr+'</span>':'')+(r["时间"]?'<span>🕐 '+esc(r["时间"])+'</span>':'')+(r["分类"]?'<span class="src">'+esc(r["分类"])+'</span>':'')+(src==='sched'?'<span class="src">📌 日程</span>':'')+'</div>'+
-      '<div class="note-ops">'+(editFn?'<button class="icon-btn" onclick="'+editFn+'">'+icon('edit')+'</button>':'')+
-      '<button class="icon-btn" onclick="'+delFn+'">'+icon('trash')+'</button></div></div>';
+      '<div class="note-ops">'+(editFn?'<button class="icon-btn" title="修改" onclick="'+editFn+'">'+icon('edit')+'</button>':'')+
+      '<button class="icon-btn" title="删除" onclick="'+delFn+'">'+icon('trash')+'</button></div></div>';
   }
   var QDEF=[
     {k:'Q1', t:'① 重要且紧急', s:'立即做'},
@@ -2513,7 +2530,7 @@ function submitTask(){
   var p={ "标题":{text:title}, "截止日期":{date:due}, "时间":{text:val('t-time')||''}, "分类":{text:val('t-cat')||'工作'}, "象限":{select:quad} };
   var fn = isEdit ? updRec(DB.tasks, taskEditId, p) : addRec(DB.tasks, {"标题":{text:title}, "截止日期":{date:due}, "时间":{text:val('t-time')||''}, "分类":{text:val('t-cat')||'工作'}, "象限":{select:quad}, "完成":{select:'否'}});
   fn.then(function(rec){
-    var sl = window.__taskEdit && window.__taskEdit["_sched"];
+    var _eid=taskEditId; var sl = mirrorSchedOfTask(_eid, window.__taskEdit);
     clearDraft('task'); taskEditId=null; window.__taskEdit=null;
     if(isEdit){
       if(sl){ updRec(DB.schedule, sl, {"标题":p["标题"], "日期":p["截止日期"], "开始时间":p["时间"], "时间":p["时间"], "分类":p["分类"], "象限":p["象限"]}); }
@@ -2606,8 +2623,11 @@ function saveEditWorkItem(src, id){
   var db=isTask?DB.tasks:DB.schedule;
   updRec(db, id, p).then(function(){
     if(isTask){
-      var sl=rec['_sched'];
+      var sl=mirrorSchedOfTask(id, rec);
       if(sl){ updRec(DB.schedule, sl, {'标题':{text:title},'日期':{date:date},'象限':{select:quad},'完成':{select:'否'}}); }
+    } else {
+      var _mt=mirrorTaskOfSched(id, rec);
+      if(_mt){ updRec(DB.tasks, _mt, {'标题':{text:title},'截止日期':{date:date},'象限':{select:quad}}); }
     }
     closeEditWorkModal(); LOADERS.tasks(); LOADERS.schedule(); toast('已保存，并贴回四象限');
   }).catch(function(e){ toast('保存失败：'+((e&&e.message)||'错误'),true); });
@@ -4300,14 +4320,14 @@ function saveEditSchedItem(id){
       var pp={}; for(var k in common) pp[k]=common[k];
       ops.push(updRec(DB.schedule, xid, pp));
       var _rr=(window.__sched||[]).filter(function(_q){ return rid(_q)===xid; })[0]||{};
-      var _fid=_lkid(_rr['_fromTask']);
+      var _fid=mirrorTaskOfSched(xid, _rr);
       if(_fid) ops.push(_taskSync(_fid, _rr['日期']||newDate));
     });
   } else {
     var p={}; for(var k2 in common) p[k2]=common[k2];
     p["日期"]={date:newDate};
     ops.push(updRec(DB.schedule, id, p));
-    var _fid2=_lkid((rec||{})['_fromTask']);
+    var _fid2=mirrorTaskOfSched(rid(rec), rec);
     if(_fid2) ops.push(_taskSync(_fid2, newDate));
   }
   var finish=function(){

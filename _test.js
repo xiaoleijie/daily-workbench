@@ -2953,6 +2953,43 @@ console.log('--- 回归 ---');
   T('R26-11: 完成四象限便利贴→mirror日程同步标记完成',()=>{ const calls=[]; const oU=w.updRec, oT=w.LOADERS.tasks, oS=w.LOADERS.schedule; w.updRec=(db,id,p)=>{ calls.push([db,id,p]); return Promise.resolve({}); }; w.LOADERS.tasks=()=>{}; w.LOADERS.schedule=()=>{}; w.__lastTasks=[{id:'T1','_sched':null,'完成':'否'}]; w.__lastWorks=[{id:'S1','_fromTask':'T1','完成':'否'}]; let ok=false; try{ w.completeItem('task','T1','否'); ok=!!(calls.filter(c=>c[0]===w.DB.tasks&&c[1]==='T1'&&c[2]['完成'].select==='是')[0] && calls.filter(c=>c[0]===w.DB.schedule&&c[1]==='S1'&&c[2]['完成'].select==='是')[0]); }catch(e){} w.updRec=oU; w.LOADERS.tasks=oT; w.LOADERS.schedule=oS; return ok; });
   T('R26-12: 完成日程→反向同步 task 完成',()=>{ const calls=[]; const oU=w.updRec, oT=w.LOADERS.tasks, oS=w.LOADERS.schedule; w.updRec=(db,id,p)=>{ calls.push([db,id,p]); return Promise.resolve({}); }; w.LOADERS.tasks=()=>{}; w.LOADERS.schedule=()=>{}; w.__lastTasks=[{id:'T9','_sched':'S9','完成':'否'}]; w.__lastWorks=[{id:'S9','_fromTask':'T9','完成':'否'}]; let ok=false; try{ w.completeItem('sched','S9','否'); ok=!!(calls.filter(c=>c[0]===w.DB.schedule&&c[1]==='S9')[0] && calls.filter(c=>c[0]===w.DB.tasks&&c[1]==='T9'&&c[2]['完成'].select==='是')[0]); }catch(e){} w.updRec=oU; w.LOADERS.tasks=oT; w.LOADERS.schedule=oS; return ok; });
   T('R26-13: 修改日程保存→回写 task 全字段(截止日期/时间/分类/象限)',()=>{ const calls=[]; const oU=w.updRec, oT=w.LOADERS.tasks, oS=w.LOADERS.schedule; w.updRec=(db,id,p)=>{ calls.push([db,id,p]); return Promise.resolve({}); }; w.LOADERS.tasks=()=>{}; w.LOADERS.schedule=()=>{}; w.__sched=[{id:'S1','标题':'X','日期':'2026-09-25','_fromTask':'T1','完成':'否'}]; let ok=false, dbg=''; try{ w.openEditSchedModal({'标题':'X','日期':'2026-09-25','开始时间':'08:00','结束时间':'09:00','分类':'工作','象限':'Q1','_fromTask':'T1'}); d.getElementById('es-st').value='08:30'; d.getElementById('es-en').value='09:30'; d.getElementById('es-date').value='2026-09-27'; w.saveEditSchedItem('S1'); const t=calls.filter(c=>c[0]===w.DB.tasks&&c[1]==='T1')[0]; ok=!!(t && t[2]['截止日期'] && t[2]['截止日期'].date==='2026-09-27' && t[2]['时间'] && t[2]['时间'].text==='08:30' && t[2]['分类'] && t[2]['象限']); dbg=t?('task:'+t[2]['截止日期'].date+' '+t[2]['时间'].text):'no-task-call'; }catch(e){ dbg='ERR:'+e.message; } w.updRec=oU; w.LOADERS.tasks=oT; w.LOADERS.schedule=oS; w.closeEditSchedModal(); w.__sched=[]; return ok?dbg:false; });
+  /* ===== R27：便利贴「修改」弹窗化 + 镜像回写「反向兜底」 ===== */
+  T('R27-1: 便利贴卡片「修改」改为弹窗 editWorkItem(task)',()=> html.indexOf('? "editWorkItem(\'task\',\'"+id+"\')"')>=0 && html.indexOf('? "editTask(\'"')<0);
+  T('R27-2: 非便利贴卡片「修改」用 editSchedItem',()=> html.indexOf('"editSchedItem(\'"+id+"\')"')>=0);
+  T('R27-3: 卡片 修改/删除 按钮带 title',()=> html.indexOf('title="修改" onclick="\'+editFn+\'"')>=0 && html.indexOf('title="删除" onclick="\'+delFn+\'"')>=0);
+  T('R27-4: 镜像互查 helper 存在(_mid/mirrorSchedOfTask/mirrorTaskOfSched)',()=> html.indexOf('function _mid(v)')>=0 && html.indexOf('function mirrorSchedOfTask')>=0 && html.indexOf('function mirrorTaskOfSched')>=0);
+  T('R27-5: submitTask 编辑分支改用 mirrorSchedOfTask 反向兜底',()=> html.indexOf('var _eid=taskEditId; var sl = mirrorSchedOfTask(_eid, window.__taskEdit);')>=0);
+  T('R27-6: saveEditWorkItem 双向回写(mirrorSchedOfTask + mirrorTaskOfSched)',()=> html.indexOf('var sl=mirrorSchedOfTask(id, rec);')>=0 && html.indexOf('var _mt=mirrorTaskOfSched(id, rec);')>=0);
+  T('R27-7: saveEditSchedItem 回写 task 走 mirrorTaskOfSched',()=> html.indexOf('var _fid=mirrorTaskOfSched(xid, _rr);')>=0 && html.indexOf('var _fid2=mirrorTaskOfSched(rid(rec), rec);')>=0);
+  T('R27-8: 旧的无兜底直取已退役',()=> html.indexOf("var sl=rec['_sched'];")<0 && html.indexOf("var _fid2=_lkid((rec||{})['_fromTask']);")<0);
+  T('R27-9: mirrorSchedOfTask 反向兜底(_sched 空→按 _fromTask 反查)',()=>{ w.__lastTasks=[{id:'T1','_sched':null}]; w.__lastWorks=[{id:'S1','_fromTask':'T1'}]; return w.mirrorSchedOfTask('T1', {})==='S1'?'T1→S1':false; });
+  T('R27-10: mirrorTaskOfSched 反向兜底(_fromTask 空→按 _sched 反查)',()=>{ w.__lastTasks=[{id:'T1','_sched':'S1'}]; w.__lastWorks=[{id:'S1','_fromTask':null}]; return w.mirrorTaskOfSched('S1', {})==='T1'?'S1→T1':false; });
+  T('R27-11: 记录自带链接优先',()=>{ const a=w.mirrorSchedOfTask('T1',{'_sched':'S9'}); const b=w.mirrorTaskOfSched('S1',{'_fromTask':'T9'}); return (a==='S9'&&b==='T9')?'ok':false; });
+  T('R27-12: 修改事项弹窗渲染并带出标题',()=>{ w.openEditWorkModal('task',{'id':'T1','标题':'甲','截止日期':'2026-09-25','象限':'Q2','完成':'否'}); const m=d.getElementById('editwork-modal'); const t=d.getElementById('ew-title'); const ok=!!(m && t && t.value==='甲' && m.style.display==='flex'); const hasNoCat=(m?m.innerHTML:'').indexOf('ew-cat')<0; w.closeEditWorkModal(); return (ok&&hasNoCat)?'标题=甲':false; });
+  T('R27-13: 改便利贴(弹窗)保存→mirror 日程同步(反向兜底)',()=>{
+    const calls=[]; const oU=w.updRec, oT=w.LOADERS.tasks, oS=w.LOADERS.schedule;
+    function sq(){ var o={ then:function(cb){ try{cb({});}catch(e){} return o; }, catch:function(){ return o; } }; return o; }
+    w.updRec=(db,id,p)=>{ calls.push([db,id,p]); return sq(); };
+    w.LOADERS.tasks=()=>{}; w.LOADERS.schedule=()=>{};
+    w.__lastTasks=[{'id':'T1','标题':'甲','截止日期':'2026-09-25','象限':'Q1','完成':'否','_sched':null}];
+    w.__lastWorks=[{'id':'S1','标题':'甲','_fromTask':'T1'}];
+    let ok=false,dbg='';
+    try{ w.openEditWorkModal('task', w.__lastTasks[0]); d.getElementById('ew-title').value='乙'; w.saveEditWorkItem('task','T1');
+      const s=calls.filter(c=>c[0]===w.DB.schedule&&c[1]==='S1')[0]; const t=calls.filter(c=>c[0]===w.DB.tasks&&c[1]==='T1')[0];
+      ok=!!(t&&s&&s[2]['标题'].text==='乙'); dbg=s?('mirror='+s[2]['标题'].text):'no-mirror'; }catch(e){ dbg='ERR:'+e.message; }
+    w.updRec=oU; w.LOADERS.tasks=oT; w.LOADERS.schedule=oS; w.closeEditWorkModal(); return ok?dbg:false; });
+  T('R27-14: 改日程(弹窗)保存→反查便利贴同步标题',()=>{
+    const calls=[]; const oU=w.updRec, oT=w.LOADERS.tasks, oS=w.LOADERS.schedule;
+    function sq(){ var o={ then:function(cb){ try{cb({});}catch(e){} return o; }, catch:function(){ return o; } }; return o; }
+    w.updRec=(db,id,p)=>{ calls.push([db,id,p]); return sq(); };
+    w.LOADERS.tasks=()=>{}; w.LOADERS.schedule=()=>{};
+    w.__lastWorks=[{'id':'S2','标题':'甲','日期':'2026-09-25','象限':'Q1','完成':'否','_fromTask':null}];
+    w.__lastTasks=[{'id':'T2','标题':'甲','_sched':'S2'}];
+    let ok=false,dbg='';
+    try{ w.openEditWorkModal('sched', w.__lastWorks[0]); d.getElementById('ew-title').value='丙'; w.saveEditWorkItem('sched','S2');
+      const t=calls.filter(c=>c[0]===w.DB.tasks&&c[1]==='T2')[0];
+      ok=!!(t&&t[2]['标题'].text==='丙'); dbg=t?('task='+t[2]['标题'].text):'no-task'; }catch(e){ dbg='ERR:'+e.message; }
+    w.updRec=oU; w.LOADERS.tasks=oT; w.LOADERS.schedule=oS; w.closeEditWorkModal(); return ok?dbg:false; });
   /* 复位筛选态，避免影响后续 */
   w.schedSelDate=null; w.schedRange=null; w.schedFilter='全部'; w.schedStatusF='全部状态';
 

@@ -2990,6 +2990,52 @@ console.log('--- 回归 ---');
       const t=calls.filter(c=>c[0]===w.DB.tasks&&c[1]==='T2')[0];
       ok=!!(t&&t[2]['标题'].text==='丙'); dbg=t?('task='+t[2]['标题'].text):'no-task'; }catch(e){ dbg='ERR:'+e.message; }
     w.updRec=oU; w.LOADERS.tasks=oT; w.LOADERS.schedule=oS; w.closeEditWorkModal(); return ok?dbg:false; });
+  /* ===== R28：日程统筹「↺恢复待办 / ✓标记完成」联动镜像便利贴 + 刷新今日日程 ===== */
+  T('R28-1: revertSched 走 mirrorTaskOfSched 反查镜像便利贴',()=>{ const i=html.indexOf('function revertSched(id)'); const blk=html.slice(i,i+660); return blk.indexOf('mirrorTaskOfSched(id, _rec)')>=0 && blk.indexOf('updRec(DB.tasks, _tid')>=0; });
+  T('R28-2: revertSched 同步刷新今日安排与日程统筹',()=>{ const i=html.indexOf('function revertSched(id)'); const blk=html.slice(i,i+660); return blk.indexOf('LOADERS.tasks(); LOADERS.schedule();')>=0; });
+  T('R28-3: 恢复待办→便利贴+日程同时改回未完成',()=>{
+    const calls=[]; const oU=w.updRec, oT=w.LOADERS.tasks, oS=w.LOADERS.schedule;
+    w.updRec=(db,id,p)=>{ calls.push([db,id,p]); return Promise.resolve({}); };
+    w.LOADERS.tasks=()=>{}; w.LOADERS.schedule=()=>{};
+    w.__sched=[{'id':'S1','标题':'甲','_fromTask':'T1','完成':'是'}];
+    w.__lastTasks=[{'id':'T1','标题':'甲','_sched':'S1','完成':'是'}];
+    let ok=false,dbg='';
+    try{ w.revertSched('S1');
+      const sw=calls.filter(c=>c[0]===w.DB.schedule&&c[1]==='S1')[0];
+      const tk=calls.filter(c=>c[0]===w.DB.tasks&&c[1]==='T1')[0];
+      ok=!!(sw&&sw[2]['完成'].select==='否'&&tk&&tk[2]['完成'].select==='否');
+      dbg=(sw?'sched=否':'no-sched')+'/'+(tk?'task=否':'no-task');
+    }catch(e){ dbg='ERR:'+e.message; }
+    w.updRec=oU; w.LOADERS.tasks=oT; w.LOADERS.schedule=oS; w.__sched=[];
+    return ok?dbg:false; });
+  T('R28-4: saveSchedDone 走 mirrorTaskOfSched 同步标记完成',()=>{ const i=html.indexOf('function saveSchedDone(id)'); const blk=html.slice(i,i+700); return blk.indexOf('mirrorTaskOfSched(id, __schedById(id))')>=0 && blk.indexOf("updRec(DB.tasks, _tid, {\"完成\":{select:'是'}})")>=0; });
+  T('R28-5: 标记完成→便利贴同步完成(真实调用)',()=>{
+    const calls=[]; const oU=w.updRec, oT=w.LOADERS.tasks, oS=w.LOADERS.schedule;
+    w.updRec=(db,id,p)=>{ calls.push([db,id,p]); return Promise.resolve({}); };
+    w.LOADERS.tasks=()=>{}; w.LOADERS.schedule=()=>{};
+    d.body.insertAdjacentHTML('beforeend','<div id="sched-done-modal" style="display:flex"><textarea id="sd-note"></textarea></div>');
+    w.__sched=[{'id':'S2','标题':'乙','_fromTask':'T2','完成':'否'}];
+    w.__lastTasks=[{'id':'T2','标题':'乙','_sched':'S2','完成':'否'}];
+    let ok=false,dbg='';
+    try{ w.saveSchedDone('S2');
+      const sw=calls.filter(c=>c[0]===w.DB.schedule&&c[1]==='S2')[0];
+      const tk=calls.filter(c=>c[0]===w.DB.tasks&&c[1]==='T2')[0];
+      ok=!!(sw&&sw[2]['完成'].select==='是'&&tk&&tk[2]['完成'].select==='是');
+      dbg=(sw?'sched=是':'no-sched')+'/'+(tk?'task=是':'no-task');
+    }catch(e){ dbg='ERR:'+e.message; }
+    const mm=d.getElementById('sched-done-modal'); if(mm) mm.remove();
+    w.updRec=oU; w.LOADERS.tasks=oT; w.LOADERS.schedule=oS; w.__sched=[];
+    return ok?dbg:false; });
+  T('R28-6: 恢复待办反向兜底(_fromTask 空→按 _sched 反查)',()=>{
+    const calls=[]; const oU=w.updRec, oT=w.LOADERS.tasks, oS=w.LOADERS.schedule;
+    w.updRec=(db,id,p)=>{ calls.push([db,id,p]); return Promise.resolve({}); };
+    w.LOADERS.tasks=()=>{}; w.LOADERS.schedule=()=>{};
+    w.__sched=[{'id':'S3','标题':'丙','_fromTask':null,'完成':'是'}];
+    w.__lastTasks=[{'id':'T3','标题':'丙','_sched':'S3','完成':'是'}];
+    let ok=false;
+    try{ w.revertSched('S3'); const tk=calls.filter(c=>c[0]===w.DB.tasks&&c[1]==='T3')[0]; ok=!!(tk&&tk[2]['完成'].select==='否'); }catch(e){}
+    w.updRec=oU; w.LOADERS.tasks=oT; w.LOADERS.schedule=oS; w.__sched=[];
+    return ok?'T3 synced':false; });
   /* 复位筛选态，避免影响后续 */
   w.schedSelDate=null; w.schedRange=null; w.schedFilter='全部'; w.schedStatusF='全部状态';
 

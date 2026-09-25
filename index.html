@@ -4133,7 +4133,12 @@ function schedStatus(r){
 }
 function __schedById(id){ return (window.__sched||[]).filter(function(r){ return rid(r)===id; })[0]; }
 function revertSched(id){
-  updRec(DB.schedule, id, {"完成":{select:'否'}}).then(function(){ LOADERS.schedule(); }).catch(function(e){ toast('更新失败：'+((e&&e.message)||'错误'),true); });
+  /* R28: 恢复为待办 → 镜像便利贴一并回到「未完成」，重新出现在四象限对应格；同时刷新今日安排(今日日程) */
+  var _rec=__schedById(id);
+  var _tid=mirrorTaskOfSched(id, _rec);
+  var _ops=[ updRec(DB.schedule, id, {"完成":{select:'否'}}) ];
+  if(_tid) _ops.push(updRec(DB.tasks, _tid, {"完成":{select:'否'}}));
+  Promise.all(_ops).then(function(){ LOADERS.tasks(); LOADERS.schedule(); toast('已恢复为待办 ↩'); }).catch(function(e){ toast('更新失败：'+((e&&e.message)||'错误'),true); });
 }
 function openSchedDoneModal(id, rec){
   var m=document.getElementById('sched-done-modal');
@@ -4155,8 +4160,12 @@ function openSchedDoneModal(id, rec){
 function closeSchedDoneModal(){ var m=document.getElementById('sched-done-modal'); if(m) m.style.display='none'; }
 function saveSchedDone(id){
   var note=val('sd-note')||'';
-  updRec(DB.schedule, id, {"完成":{select:'是'}, "完成详情":{text:note}}).then(function(){
-    closeSchedDoneModal(); LOADERS.schedule(); toast('已记录完成 ✅');
+  /* R28: 标记完成 → 镜像便利贴一并标记完成(从四象限白板移出)；同时刷新今日安排 */
+  var _tid=mirrorTaskOfSched(id, __schedById(id));
+  var _ops=[ updRec(DB.schedule, id, {"完成":{select:'是'}, "完成详情":{text:note}}) ];
+  if(_tid) _ops.push(updRec(DB.tasks, _tid, {"完成":{select:'是'}}));
+  Promise.all(_ops).then(function(){
+    closeSchedDoneModal(); LOADERS.tasks(); LOADERS.schedule(); toast('已记录完成 ✅');
   }).catch(function(e){ toast('保存失败：'+((e&&e.message)||'错误'),true); });
 }
 function delSchedItem(id, fromTask){

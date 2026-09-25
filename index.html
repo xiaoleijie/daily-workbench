@@ -2516,10 +2516,10 @@ function submitTask(){
     var sl = window.__taskEdit && window.__taskEdit["_sched"];
     clearDraft('task'); taskEditId=null; window.__taskEdit=null;
     if(isEdit){
-      if(sl){ updRec(DB.schedule, sl, {"标题":p["标题"], "日期":p["截止日期"], "时间":p["时间"], "分类":p["分类"], "象限":p["象限"]}); }
+      if(sl){ updRec(DB.schedule, sl, {"标题":p["标题"], "日期":p["截止日期"], "开始时间":p["时间"], "时间":p["时间"], "分类":p["分类"], "象限":p["象限"]}); }
     } else {
       var tid=rid(rec);
-      if(tid){ addRec(DB.schedule, {"标题":{text:title}, "时间":{text:val('t-time')||''}, "分类":{text:val('t-cat')||'工作'}, "日期":{date:due}, "备注":{text:''}, "象限":{select:quad}, "_fromTask":{text:tid}})
+      if(tid){ addRec(DB.schedule, {"标题":{text:title}, "开始时间":{text:val('t-time')||''}, "时间":{text:val('t-time')||''}, "分类":{text:val('t-cat')||'工作'}, "日期":{date:due}, "备注":{text:''}, "象限":{select:quad}, "_fromTask":{text:tid}})
         .then(function(srec){ var sid=rid(srec); if(sid) updRec(DB.tasks, tid, {"_sched":{text:sid}}); }); }
     }
     LOADERS.tasks(); LOADERS.schedule(); toast(isEdit?'已保存':'已添加');
@@ -2529,7 +2529,23 @@ function toggleTaskDone(id, cur){ var nx=cur==='是'?'否':'是'; updRec(DB.task
 function completeItem(src,id,cur){
   var nx=cur==='是'?'否':'是';
   var el=document.querySelector('.note[data-id="'+id+'"]');
-  function go(){ if(src==='task') updRec(DB.tasks,id,{"完成":{select:nx}}); else updRec(DB.schedule,id,{"完成":{select:nx}}); LOADERS.tasks(); LOADERS.schedule(); }
+  function _cl(v){ return (v&&typeof v==='object'&&'text' in v)?v.text:v; }
+  function go(){
+    if(src==='task'){
+      updRec(DB.tasks,id,{"完成":{select:nx}});
+      var _t=(window.__lastTasks||[]).filter(function(r){ return rid(r)===id; })[0];
+      var _sl=_t?_cl(_t['_sched']):'';
+      if(!_sl){ var _w=(window.__lastWorks||[]).filter(function(r){ return _cl(r['_fromTask'])===id; })[0]; if(_w) _sl=rid(_w); }
+      if(_sl) updRec(DB.schedule,_sl,{"完成":{select:nx}});
+    } else {
+      updRec(DB.schedule,id,{"完成":{select:nx}});
+      var _s=(window.__lastWorks||[]).filter(function(r){ return rid(r)===id; })[0];
+      var _ft=_s?_cl(_s['_fromTask']):'';
+      if(!_ft){ var _t2=(window.__lastTasks||[]).filter(function(r){ return _cl(r['_sched'])===id; })[0]; if(_t2) _ft=rid(_t2); }
+      if(_ft) updRec(DB.tasks,_ft,{"完成":{select:nx}});
+    }
+    LOADERS.tasks(); LOADERS.schedule();
+  }
   if(nx==='是' && el){ el.classList.add('tearing'); setTimeout(go,340); } else { go(); }
 }
 function dragNoteStart(e, el){
@@ -4182,7 +4198,7 @@ function openEditSchedModal(rec){
     '<div class="fld"><label>事项</label><input id="es-title" value="'+esc(rec['标题']||'')+'"></div>'+
     '<div class="es-row es-row-3">'+
       '<div class="fld"><label>日期</label><input id="es-date" type="date" value="'+esc(d)+'"></div>'+
-      '<div class="fld"><label>开始</label><input id="es-st" type="time" class="time-input" value="'+esc(hm24(rec['开始时间']))+'"></div>'+
+      '<div class="fld"><label>开始</label><input id="es-st" type="time" class="time-input" value="'+esc(hm24(rec['开始时间']||rec['时间']))+'"></div>'+
       '<div class="fld"><label>结束</label><input id="es-en" type="time" class="time-input" value="'+esc(hm24(rec['结束时间']))+'"></div>'+
     '</div>'+
     '<div class="es-row es-row-2">'+
@@ -4246,7 +4262,7 @@ function doSchedUndo(all){
 }
 /* ===== 批量改内容：找出与当前记录「同标题+同开始/结束时间」的同组日程 ===== */
 function esBatchIds(rec){
-  var key=function(r){ return [r['标题']||'', r['开始时间']||'', r['结束时间']||''].join('|'); };
+  var key=function(r){ return [r['标题']||'', r['开始时间']||r['时间']||'', r['结束时间']||''].join('|'); };
   var k=key(rec), out=[];
   (window.__sched||[]).forEach(function(r){ if(key(r)===k) out.push(rid(r)); });
   if(out.indexOf(rid(rec))<0) out.push(rid(rec));
@@ -4268,12 +4284,14 @@ function saveEditSchedItem(id){
   if(st && en && en<=st){ toast('结束时间不能早于开始时间',true); return; }
   /* 公共字段（不含日期）——所有同组日程都套用 */
   var common={ "标题":{text:ti}, "分类":{select:val('es-cat')||'其他'},
-    "开始时间":{text:st}, "结束时间":{text:en},
+    "开始时间":{text:st}, "结束时间":{text:en}, "时间":{text:st},
     "象限":{select:val('es-quad')||'Q1'},
     "地点":{text:val('es-place')}, "备注":{text:val('es-note')} };
   var newDate=val('es-date');
   var batch=document.getElementById('es-batch') && document.getElementById('es-batch').checked;
   var ops=[];
+  var _lkid=function(v){ return (v&&typeof v==='object'&&'text' in v)?v.text:v; };
+  var _taskSync=function(_tid,_dstr){ return updRec(DB.tasks,_tid,{"标题":{text:ti},"截止日期":{date:_dstr},"时间":{text:st},"分类":{select:val('es-cat')||'其他'},"象限":{select:val('es-quad')||'Q1'}}); };
   if(batch){
     /* ⚠️ 批量改「内容」，日期各归各位 —— 绝不把当前那一个日期套给全部 */
     var ids=esBatchIds(rec);
@@ -4281,13 +4299,17 @@ function saveEditSchedItem(id){
     ids.forEach(function(xid){
       var pp={}; for(var k in common) pp[k]=common[k];
       ops.push(updRec(DB.schedule, xid, pp));
+      var _rr=(window.__sched||[]).filter(function(_q){ return rid(_q)===xid; })[0]||{};
+      var _fid=_lkid(_rr['_fromTask']);
+      if(_fid) ops.push(_taskSync(_fid, _rr['日期']||newDate));
     });
   } else {
     var p={}; for(var k2 in common) p[k2]=common[k2];
     p["日期"]={date:newDate};
     ops.push(updRec(DB.schedule, id, p));
+    var _fid2=_lkid((rec||{})['_fromTask']);
+    if(_fid2) ops.push(_taskSync(_fid2, newDate));
   }
-  if(rec['_fromTask']){ ops.push(updRec(DB.tasks, rec['_fromTask'], {"标题":{text:ti},"日期":{date:newDate}})); }
   var finish=function(){
     Promise.all(ops).then(function(){
       closeEditSchedModal(); LOADERS.schedule(); LOADERS.tasks();
@@ -4337,17 +4359,21 @@ function saveBatchEdit(ids){
   var st=val('be-st'), en=val('be-en');
   if(st && en && en<=st){ toast('结束时间不能早于开始时间',true); return; }
   var common={ "标题":{text:ti}, "分类":{select:val('be-cat')||'其他'},
-    "开始时间":{text:st}, "结束时间":{text:en},
+    "开始时间":{text:st}, "结束时间":{text:en}, "时间":{text:st},
     "象限":{select:val('be-quad')||'Q1'},
     "地点":{text:val('be-place')}, "备注":{text:val('be-note')} };
   var syncDate=document.getElementById('be-date-sync') && document.getElementById('be-date-sync').checked;
   var snap=[];
   ids.forEach(function(xid){ var r=(window.__sched||[]).filter(function(x){ return rid(x)===xid; })[0]; if(r) snap.push(dfSnapRow(r)); });
   if(snap.length) pushUndo('批量改内容', snap);
-  var ops=ids.map(function(xid){
+  var ops=[]; var _blkid=function(v){ return (v&&typeof v==='object'&&'text' in v)?v.text:v; };
+  ids.forEach(function(xid){
+    var _rr=(window.__sched||[]).filter(function(_q){ return rid(_q)===xid; })[0]||{};
     var pp={}; for(var k in common) pp[k]=common[k];
     if(syncDate) pp["日期"]={date:today()};
-    return updRec(DB.schedule, xid, pp);
+    ops.push(updRec(DB.schedule, xid, pp));
+    var _fid=_blkid(_rr['_fromTask']);
+    if(_fid) ops.push(updRec(DB.tasks, _fid, {"标题":{text:ti},"截止日期":{date:syncDate?today():(_rr['日期']||'')},"时间":{text:st},"分类":{select:val('be-cat')||'其他'},"象限":{select:val('be-quad')||'Q1'}}));
   });
   Promise.all(ops).then(function(){
     closeBatchEditModal(); LOADERS.schedule(); LOADERS.tasks();

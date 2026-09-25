@@ -260,7 +260,7 @@ setTimeout(()=>{
 
   console.log('--- 11) 日程统筹改版布局 ---');
   T('筛选条为三列并排（分类/状态/日期）',()=>{ w.renderSchedule([]); const f=d.querySelector('.sched-filters'); return !!f && /sched-filters/.test(f.className); });
-  T('三控件文案：分类/状态默认"全部" + 日期可选',()=>{ const f=d.querySelector('.sched-filters'); const catSel=f.querySelector('.sched-filter-cell[data-fk="cat"] select.filt-btn'); const staSel=f.querySelector('.sched-filter-cell[data-fk="status"] select.filt-btn'); const dateInput=f.querySelector('input.filt-btn.date-filt[type="date"]'); return !!catSel && !!staSel && !!dateInput && catSel.options[0].textContent==='全部' && staSel.options[0].textContent==='全部'; });
+  T('三控件文案：分类/状态默认"全部" + 日期可选',()=>{ const f=d.querySelector('.sched-filters'); const catSel=f.querySelector('.sched-filter-cell[data-fk="cat"] select.filt-btn'); const staSel=f.querySelector('.sched-filter-cell[data-fk="status"] select.filt-btn'); const dateBtn=f.querySelector('.sched-filter-cell[data-fk="date"] button.filt-btn.date-filt'); return !!catSel && !!staSel && !!dateBtn && catSel.options[0].textContent==='全部' && staSel.options[0].textContent==='全部'; });
   T('无「清除日期筛选」旧文案残留',()=>{ const f=d.querySelector('.sched-filters'); return !/清除日期筛选/.test(f.innerHTML); });
   T('模块栈含本月日程与便签（.sched-mods）',()=>{ const c=d.querySelector('.sched-left-col .sched-mods'); return !!c && !!c.querySelector('.mini-cal-panel') && !!c.querySelector('.sticky-note'); });
   /* ===== R20：本月日程过去天浅底色 + 删提示 + 默认选中今天 ===== */
@@ -610,7 +610,7 @@ setTimeout(()=>{
   T('② 抓手绑 pointerdown 才置 draggable（只抓手能拖）',()=>/grip\.addEventListener\('pointerdown', function\(\)\{ c\.setAttribute\('draggable','true'\); \}\)/.test(html));
   T('② 互换后顺序存 lw_filter_order',()=>/localStorage\.setItem\('lw_filter_order'/.test(html) && /function loadFilterOrder\(\)/.test(html));
   T('② FILTER_ORDER_DEFAULT = cat/status/date',()=>{ return w.FILTER_ORDER_DEFAULT.join(',')==='cat,status,date'; });
-  T('② 拖拽只在 .sched-filter-cell 之间（含 range 共4格）',()=>{ const row=d.getElementById('schedFilters'); const cells=[].map.call(row.querySelectorAll('.sched-filter-cell'),c=>c.getAttribute('data-fk')); return cells.join(',')==='cat,status,date,range'; });
+  T('② 拖拽只在 .sched-filter-cell 之间（R24 退役 range，共3格）',()=>{ const row=d.getElementById('schedFilters'); const cells=[].map.call(row.querySelectorAll('.sched-filter-cell'),c=>c.getAttribute('data-fk')); return cells.join(',')==='cat,status,date'; });
   T('② 无跨行拖出出口（未接入模块栈 DnD）',()=>/filterCells|_filterDragKey/.test(html) && !/schedMods.*f-grip/.test(html));
   T('② 交换后提示「已交换「X」与「Y」」',()=>/已交换「'\+FILTER_META\[from\]\+'」与「'\+FILTER_META\[to\]/.test(html));
   T('② CSS: 抓手可拖动光标 grab',()=>/\.sched-filter-cell \.f-grip\{[^}]*cursor:grab/.test(html));
@@ -703,7 +703,7 @@ setTimeout(()=>{
   T('R22-B: 非past选中日改用描边而非底色(sel outline)',()=> html.indexOf('.monthcal .d.sel{outline:2px solid var(--accent)')>=0);
   T('R22-C: 幸福日历DIY工具栏靠右不超出视口',()=> html.indexOf('var maxLeft=window.innerWidth-bw-8')>=0);
   T('R22-D: 筛选-分类/状态 默认文案改为"全部"',()=> html.indexOf('>全部</option>')>=0 && html.indexOf('>分类</option>')<0 && html.indexOf('>状态</option>')<0);
-  T('R22-E: 筛选日期改为可直接选的 date 输入（R23 二.4 加 schedRange=null）',()=> html.indexOf('schedSelDate=this.value||null;schedRange=null;renderSchedule')>=0 && html.indexOf('点左侧月历里的日期即可筛选')<0);
+  T('R22-E→R24: 筛选日期改为点开自定义日历弹层直接选',()=> html.indexOf('onclick="dpOpen()"')>=0 && html.indexOf('id="datePop"')>=0 && html.indexOf('点左侧月历里的日期即可筛选')<0);
   T('R22-N: 筛选区"清除日期"按钮已删除（R23 二.4）',()=> html.indexOf('>清除日期</button>')<0 && html.indexOf('onclick="schedSelDate=null')<0);
   T('R22-F: 事项明细表头"全选"勾选框+计数右对齐（R23 二.6）',()=> html.indexOf('id="s-sel-all" class="s-sel-all-cb"')>=0 && html.indexOf('id="s-sel-cnt" style="margin-left:auto"')>=0);
   T('R22-G: 本月事项开始/结束改原生 time 输入(与今日安排一致)',()=> html.indexOf('id="s-st" type="time"')>=0 && html.indexOf('id="s-st-h"')<0);
@@ -725,11 +725,35 @@ console.log('--- 回归 ---');
   T('R23-二.2: 修改弹窗含笔记方框(id=es-letter)并与今日安排联动',()=> html.indexOf('id="es-letter"')>=0 && html.indexOf('lwSaveJSON(')>=0 && html.indexOf('lwLoadJSON(')>=0 && html.indexOf('lw_note_')>=0 && html.indexOf('rid(rec)')>=0);
   T('R23-二.3: 事项明细日期字段(Georgia div)已删除',()=> html.indexOf('font-family:Georgia,serif;color:var(--muted);font-size:11px;flex:0 0 auto')<0);
   T('R23-二.4: 清除日期/清除状态按钮已删除',()=> html.indexOf('>清除日期</button>')<0 && html.indexOf('onclick="schedSelDate=null')<0 && html.indexOf('onclick="schedStatusF=')<0);
-  T('R23-二.4/二.5: 选日期后 range 自动清空(schedRange=null)',()=> html.indexOf('schedSelDate=this.value||null;schedRange=null;renderSchedule')>=0);
+  T('R23-二.4/二.5→R24: 选日期后 range 自动清空(dpPick/dpClear 内 schedRange=null)',()=> html.indexOf('function dpPick(el)')>=0 && html.indexOf('function dpClear()')>=0 && html.indexOf('schedRange=null; renderSchedule(window.__sched); }')>=0);
   T('R23-二.5: 范围快捷按钮今天/全月/全年 + setSchedRange',()=> html.indexOf('setSchedRange')>=0 && html.indexOf('今天</button>')>=0 && html.indexOf('全月</button>')>=0 && html.indexOf('全年</button>')>=0);
   T('R23-二.5: 筛选谓词支持 range(today/month/year)',()=> html.indexOf('schedRange===null')>=0 && html.indexOf("schedRange==='today'?dateSub")>=0 && html.indexOf("schedRange==='month'?dateSub")>=0 && html.indexOf("td.substring(0,4))===0")>=0);
   T('R23-二.6: 全选勾选框(s-sel-all-cb)+计数右对齐+toggleSelAll',()=> html.indexOf('id="s-sel-all" class="s-sel-all-cb"')>=0 && html.indexOf('id="s-sel-cnt" style="margin-left:auto"')>=0 && html.indexOf('function toggleSelAll')>=0);
 
+  /* ===== R24：日期筛选自定义日历弹层（底栏：清除 / 全月 / 全年 / 今天） ===== */
+  T('R24-1: 日期控件改为自定义弹层(dp-host + dpOpen + 相对定位)',()=> html.indexOf('class="sched-filter-cell dp-host" data-fk="date"')>=0 && html.indexOf('onclick="dpOpen()"')>=0 && html.indexOf('.sched-filter-cell.dp-host{position:relative')>=0);
+  T('R24-2: 弹层底栏四按钮顺序 = 清除→全月→全年→今天',()=>{ const i=html.indexOf('<div class="dp-foot">'); if(i<0) return false; const seg=html.slice(i,i+560); const a=seg.indexOf('>清除</button>'), b1=seg.indexOf('data-r="month">全月</button>'), c=seg.indexOf('data-r="year">全年</button>'), e=seg.indexOf('data-r="today">今天</button>'); return a>=0 && b1>a && c>b1 && e>c; });
+  T('R24-3: 弹层月历结构(dp-title/dp-wd 七日/dp-grid/上下月)',()=> html.indexOf('id="dp-title"')>=0 && html.indexOf('class="dp-wd"')>=0 && html.indexOf('id="dp-grid"')>=0 && html.indexOf('onclick="dpShift(-1)"')>=0 && html.indexOf('onclick="dpShift(1)"')>=0);
+  T('R24-4: 弹层 CSS 齐备(position/网格/选中态/今天态/底栏)',()=> ['.date-pop{position:absolute','.date-pop .dp-grid{display:grid','.date-pop .dp-grid .d.sel{background:var(--accent)','.date-pop .dp-grid .d.today{','.date-pop .dp-foot{display:flex'].every(k=>html.indexOf(k)>=0));
+  T('R24-5: 旧竖排快捷按钮已退役(统一收进弹层底栏)',()=> html.indexOf('sched-filter-cell s-rng')<0 && html.indexOf('var rngButtons')<0);
+  T('R24-5b: 日期按钮文案紧凑(dpLabel 当年只显示 MM-DD)',()=> html.indexOf('function dpLabel()')>=0 && html.indexOf('esc(dpLabel())')>=0);
+  T('R24-6: 旧失效转义 onclick="setSchedRange( 已彻底清除',()=> html.indexOf('onclick="setSchedRange(')<0);
+  T('R24-7: 快捷按钮改 data-r + dpRange(不再内联转义引号)',()=> html.indexOf('onclick="dpRange(this)" data-r="today"')>=0 && html.indexOf('onclick="dpRange(this)" data-r="month"')>=0 && html.indexOf('onclick="dpRange(this)" data-r="year"')>=0);
+  T('R24-8: 点弹层外部关闭(document 监听 .dp-host)',()=> html.indexOf("t.closest('.dp-host')")>=0);
+  T('R24-9: 原生 date 输入已从筛选区移除',()=> html.indexOf('class="filt-btn date-filt" type="date"')<0);
+  T('R24-10: dp* 函数齐备',()=> ['function dpOpen()','function dpShift(n)','function renderDp()','function dpPick(el)','function dpClear()','function dpRange(el)'].every(k=>html.indexOf(k)>=0));
+  /* ---- 功能性：真渲 DOM、真点按钮 ---- */
+  T('R24-11: 渲染后弹层默认隐藏，点开后 28~37 格',()=>{ w.renderSchedule([]); const pop=d.getElementById('datePop'); if(!pop) return false; if(pop.style.display!=='none') return false; w.dpOpen(); const g=d.getElementById('dp-grid'); const n=g?g.children.length:0; const ok=(pop.style.display==='block') && n>=28 && n<=37; w.dpOpen(); return ok ? n+' 格' : false; });
+  T('R24-12: 翻月后标题跟随(年/月)',()=>{ w.renderSchedule([]); w.schedSelDate='2026-03-15'; w.dpOpen(); const t1=d.getElementById('dp-title').textContent; w.dpShift(1); const t2=d.getElementById('dp-title').textContent; w.dpShift(-1); const t3=d.getElementById('dp-title').textContent; w.dpOpen(); return (t1==='2026年03月' && t2==='2026年04月' && t3==='2026年03月') ? t1+'→'+t2+'→'+t3 : false; });
+  T('R24-13: 点某天 → schedSelDate 落地且 range 清空',()=>{ w.renderSchedule([]); w.schedSelDate=null; w.schedRange='month'; w.renderDp(); const g=d.getElementById('dp-grid'); const cell=[...g.children].find(x=>x.getAttribute && x.getAttribute('data-d')); if(!cell) return false; const want=cell.getAttribute('data-d'); w.dpPick(cell); return w.schedSelDate===want && w.schedRange===null ? want : false; });
+  T('R24-14: 底栏「全月」→ schedRange=month 且只显示当月',()=>{ const rows=[{__id:'r1',标题:'甲九月五',日期:'2026-09-05'},{__id:'r2',标题:'乙九月二十',日期:'2026-09-20'},{__id:'r3',标题:'丙十二月三十一',日期:'2026-12-31'}]; w.schedSelDate=null; w.schedRange=null; w.renderSchedule(rows); const btn=d.querySelector('#schedFilters button[data-r="month"]'); if(!btn) return false; w.dpRange(btn); const seg=d.getElementById('schedule-body').innerHTML; return w.schedRange==='month' && w.schedSelDate===null && seg.indexOf('甲九月五')>=0 && seg.indexOf('乙九月二十')>=0 && seg.indexOf('丙十二月三十一')<0; });
+  T('R24-15: 底栏「今天」→ schedRange=today 且只剩今天事项',()=>{ const td=w.today(); const rows=[{__id:'r1',标题:'甲就是今天',日期:td},{__id:'r2',标题:'乙不是今天',日期:'2000-01-01'}]; w.schedSelDate=null; w.schedRange=null; w.renderSchedule(rows); const btn=d.querySelector('#schedFilters button[data-r="today"]'); if(!btn) return false; w.dpRange(btn); const seg=d.getElementById('schedule-body').innerHTML; return w.schedRange==='today' && seg.indexOf('甲就是今天')>=0 && seg.indexOf('乙不是今天')<0; });
+  T('R24-16: 底栏「清除」→ 日期与范围双清',()=>{ w.schedSelDate='2026-09-15'; w.schedRange='month'; w.renderSchedule([]); w.dpClear(); return w.schedSelDate===null && w.schedRange===null; });
+  T('R24-17: 快捷按钮 onclick 属性是合法 JS(旧版少引号点不动)',()=>{ w.renderSchedule([]); const b=d.querySelector('#schedFilters button[data-r="today"]'); if(!b) return false; const code=b.getAttribute('onclick'); if(!code) return false; try{ new Function(code); }catch(e){ return false; } return code==='dpRange(this)' ? code : false; });
+  T('R24-18: 弹层开关切换(再点触发按钮收起)',()=>{ w.renderSchedule([]); const pop=d.getElementById('datePop'); w.dpOpen(); const a=pop.style.display; w.dpOpen(); const b=pop.style.display; return (a==='block' && b==='none') ? a+'→'+b : false; });
+  /* 复位筛选态，避免影响后续 */
+  w.schedSelDate=null; w.schedRange=null; w.schedFilter='全部'; w.schedStatusF='全部状态';
+
   T('无 JS 运行时错误',()=>errs.length===0? 'clean' : (console.log(errs.join('\n')), false));
   console.log('\n结果: '+pass+' 通过 / '+fail+' 失败');
   process.exit(fail?1:0);

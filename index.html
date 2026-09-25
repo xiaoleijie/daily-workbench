@@ -1580,6 +1580,7 @@ function hourOpts(sel){ var o=''; for(var h=0;h<24;h++){ var v=('0'+h).slice(-2)
 function minOpts(sel){ var o=''; for(var m=0;m<60;m+=5){ var v=('0'+m).slice(-2); o+='<option'+(v===sel?' selected':'')+'>'+v+'</option>'; } return o; }
 function timeVal(hId,mId){ var h=document.getElementById(hId), m=document.getElementById(mId); if(!h||!m) return ''; return ('0'+h.value).slice(-2)+':'+('0'+m.value).slice(-2); }
 function parseHM(t){ var p=(t||'').split(':'); return { h:(p[0]||'00'), m:(p[1]||'00') }; }
+function hm24(t){ if(!t) return ''; var p=parseHM(t); return ('0'+p.h).slice(-2)+':'+('0'+p.m).slice(-2); }
 function weekdayOfDate(dstr){ var dt=new Date(dstr); if(isNaN(dt.getTime())) dt=new Date(); return ['周日','周一','周二','周三','周四','周五','周六'][dt.getDay()]; }
 
 /* 记账分类：支出 / 收入 各一套，可像日程分类一样自行增删改 + 拖拽排序 */
@@ -4181,8 +4182,8 @@ function openEditSchedModal(rec){
     '<div class="fld"><label>事项</label><input id="es-title" value="'+esc(rec['标题']||'')+'"></div>'+
     '<div class="es-row es-row-3">'+
       '<div class="fld"><label>日期</label><input id="es-date" type="date" value="'+esc(d)+'"></div>'+
-      '<div class="fld"><label>开始</label><div class="time-sel"><select id="es-st-h">'+hourOpts(parseHM(rec['开始时间']).h)+'</select><span>:</span><select id="es-st-m">'+minOpts(parseHM(rec['开始时间']).m)+'</select></div></div>'+
-      '<div class="fld"><label>结束</label><div class="time-sel"><select id="es-en-h">'+hourOpts(parseHM(rec['结束时间']).h)+'</select><span>:</span><select id="es-en-m">'+minOpts(parseHM(rec['结束时间']).m)+'</select></div></div>'+
+      '<div class="fld"><label>开始</label><input id="es-st" type="time" class="time-input" value="'+esc(hm24(rec['开始时间']))+'"></div>'+
+      '<div class="fld"><label>结束</label><input id="es-en" type="time" class="time-input" value="'+esc(hm24(rec['结束时间']))+'"></div>'+
     '</div>'+
     '<div class="es-row es-row-2">'+
       '<div class="fld"><label>分类</label><select id="es-cat">'+optHTML(getSchedCats(), rec['分类']||'')+'</select></div>'+
@@ -4263,7 +4264,7 @@ function _esBatchPanelHTML(rec){
 function saveEditSchedItem(id){
   var ti=val('es-title'); if(!ti){ toast('请填写事项',true); return; }
   var rec=(window.__sched||[]).filter(function(r){ return rid(r)===id; })[0]||{};
-  var st=timeVal('es-st-h','es-st-m'), en=timeVal('es-en-h','es-en-m');
+  var st=val('es-st'), en=val('es-en');
   if(st && en && en<=st){ toast('结束时间不能早于开始时间',true); return; }
   /* 公共字段（不含日期）——所有同组日程都套用 */
   var common={ "标题":{text:ti}, "分类":{select:val('es-cat')||'其他'},
@@ -4312,8 +4313,8 @@ function openBatchEditModal(ids){
     '<div class="imp-sub">改完点保存，内容会套用到选中的 '+recs.length+' 条；各自日期默认保留不变。</div>'+
     '<div class="fld"><label>事项</label><input id="be-title" value="'+esc(first['标题']||'')+'"></div>'+
     '<div class="es-row es-row-3">'+
-      '<div class="fld"><label>开始</label><div class="time-sel"><select id="be-st-h">'+hourOpts(ph.h)+'</select><span>:</span><select id="be-st-m">'+minOpts(ph.m)+'</select></div></div>'+
-      '<div class="fld"><label>结束</label><div class="time-sel"><select id="be-en-h">'+hourOpts(pe.h)+'</select><span>:</span><select id="be-en-m">'+minOpts(pe.m)+'</select></div></div>'+
+      '<div class="fld"><label>开始</label><input id="be-st" type="time" class="time-input" value="'+esc(hm24(first['开始时间']))+'"></div>'+
+      '<div class="fld"><label>结束</label><input id="be-en" type="time" class="time-input" value="'+esc(hm24(first['结束时间']))+'"></div>'+
       '<div class="fld"><label>分类</label><select id="be-cat">'+optHTML(getSchedCats(), first['分类']||'')+'</select></div>'+
     '</div>'+
     '<div class="es-row es-row-2">'+
@@ -4333,7 +4334,7 @@ function openBatchEditModal(ids){
 function closeBatchEditModal(){ var m=document.getElementById('batchEdit-modal'); if(m) m.style.display='none'; }
 function saveBatchEdit(ids){
   var ti=val('be-title'); if(!ti){ toast('请填写事项',true); return; }
-  var st=timeVal('be-st-h','be-st-m'), en=timeVal('be-en-h','be-en-m');
+  var st=val('be-st'), en=val('be-en');
   if(st && en && en<=st){ toast('结束时间不能早于开始时间',true); return; }
   var common={ "标题":{text:ti}, "分类":{select:val('be-cat')||'其他'},
     "开始时间":{text:st}, "结束时间":{text:en},

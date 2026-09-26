@@ -2798,7 +2798,7 @@ setTimeout(()=>{
 
 
 
-  T('R22-A: 今日安排笔记按钮引号修复(openNote 参数加引号)',()=> html.indexOf("onclick=\"openNote(\\'+id+\\')\"")>=0 && html.indexOf("onclick=\"openNote('+id+')\"")<0);
+  T('R22-A: 今日安排笔记按钮引号修复(openNote 参数加引号)',()=> html.indexOf("onclick=\"openNote(\\''+id+'\\')\"")>=0 && html.indexOf("onclick=\"openNote(\'+id+\')\"")<0);
 
 
 
@@ -3036,6 +3036,58 @@ console.log('--- 回归 ---');
     try{ w.revertSched('S3'); const tk=calls.filter(c=>c[0]===w.DB.tasks&&c[1]==='T3')[0]; ok=!!(tk&&tk[2]['完成'].select==='否'); }catch(e){}
     w.updRec=oU; w.LOADERS.tasks=oT; w.LOADERS.schedule=oS; w.__sched=[];
     return ok?'T3 synced':false; });
+  /* ===== R29：今日日程「↺恢复待办」+ 便利贴「修改」统一为「修改日程」弹窗 + 同族转义修复 ===== */
+  T('R29-1: 今日日程 ↺ 按钮样式 .m-ops .m-rev-btn',()=> html.indexOf('.m-ops .m-rev-btn{')>=0);
+  T('R29-2: 今日日程 已完成行渲染 ↺(onclick 带真实 id)',()=>{
+    const td=w.today();
+    const h=w.buildMorningLeft([],[{owner:w.MY_UID,id:'S9',日期:td,开始时间:'09:00',标题:'完成项',分类:'工作',完成:'是'}]);
+    const ok=h.indexOf('m-rev-btn')>=0 && h.indexOf("revertSched('S9')")>=0;
+    return ok? 'rev ok' : false; });
+  T('R29-3: 今日日程 未完成行不渲染 ↺',()=>{
+    const td=w.today();
+    const h=w.buildMorningLeft([],[{owner:w.MY_UID,id:'S8',日期:td,开始时间:'10:00',标题:'待办项',分类:'工作',完成:'否'}]);
+    return h.indexOf('m-rev-btn')<0 ? 'hidden' : false; });
+  T('R29-4: 今日日程 行内 onclick 表达式全部可解析',()=>{
+    const td=w.today();
+    const h=w.buildMorningLeft([],[{owner:w.MY_UID,id:'S11',日期:td,开始时间:'09:00',标题:'校验项',分类:'工作',完成:'是'}]);
+    const m=h.match(/onclick="([^"]*)"/g)||[];
+    const bad=[];
+    m.forEach(function(x){ const expr=x.slice(9,-1); try{ new Function('return ('+expr+')'); }catch(e){ bad.push(expr); } });
+    return bad.length===0 ? ('exprs='+m.length) : ('bad='+bad.join('|')); });
+  T('R29-5: 今日日程「笔记」按钮 onclick 带真实 id(修死键)',()=>{
+    const td=w.today();
+    const h=w.buildMorningLeft([],[{owner:w.MY_UID,id:'S7',日期:td,开始时间:'11:00',标题:'笔记项',分类:'工作',完成:'否'}]);
+    return (h.indexOf("openNote('S7')")>=0 && h.indexOf("openNote('+id+')")<0) ? 'ok' : false; });
+  T('R29-6: 便利贴「修改」改走「修改日程」弹窗(有镜像日程时)',()=>{
+    const seen=[]; const o=w.openEditSchedModal;
+    w.openEditSchedModal=(r)=>{ seen.push(r); };
+    w.__lastTasks=[{id:'T5',标题:'甲',_sched:'S5'}];
+    w.__sched=[{id:'S5',标题:'甲',_fromTask:'T5'}];
+    let ok=false,dbg='';
+    try{ w.editWorkItem('task','T5'); ok=!!(seen.length===1&&seen[0]&&seen[0].id==='S5'); dbg='opened='+(seen[0]?seen[0].id:'none'); }
+    catch(e){ dbg='ERR:'+e.message; }
+    w.openEditSchedModal=o; w.__lastTasks=[]; w.__sched=[];
+    return ok?dbg:false; });
+  T('R29-7: 便利贴无镜像日程时回落「修改事项」弹窗',()=>{
+    const seen=[]; const o=w.openEditWorkModal;
+    w.openEditWorkModal=(src)=>{ seen.push(src); };
+    w.__lastTasks=[{id:'T6',标题:'乙'}];
+    w.__sched=[]; w.__lastWorks=[];
+    let ok=false,dbg='';
+    try{ w.editWorkItem('task','T6'); ok=!!(seen.length===1&&seen[0]==='task'); dbg='fallback='+seen[0]; }
+    catch(e){ dbg='ERR:'+e.message; }
+    w.openEditWorkModal=o; w.__lastTasks=[];
+    return ok?dbg:false; });
+  T('R29-8: __schedById 在 __sched 为空时回退 __lastWorks',()=>{
+    w.__sched=[]; w.__lastWorks=[{id:'S6',标题:'丙'}];
+    let ok=false,dbg='';
+    try{ const r=w.__schedById('S6'); ok=!!(r&&r['标题']==='丙'); dbg=ok?'hit':'miss'; }
+    catch(e){ dbg='ERR:'+e.message; }
+    w.__sched=[]; w.__lastWorks=[];
+    return ok?dbg:false; });
+  T('R29-9: 事项明细 标题 onclick 已修正为真实 id 拼接',()=> html.indexOf('s-ttl-click" onclick="editSchedItem(\\\'\'+rid(r)+\'\\\')"')>=0);
+  T('R29-10: 修改日程弹窗 笔记框 onchange 已修正(不再引用裸 rec)',()=> html.indexOf('lwSaveJSON(\\\'lw_note_\'+rid(rec)+\'\\\',')>=0);
+  T('R29-11: 全库无「字符串未闭合致 id 变字面量」的转义残留',()=> html.indexOf("\\'+")<0);
   /* 复位筛选态，避免影响后续 */
   w.schedSelDate=null; w.schedRange=null; w.schedFilter='全部'; w.schedStatusF='全部状态';
 

@@ -1200,6 +1200,8 @@
 .m-ops{display:flex;gap:3px;flex:0 0 auto;align-self:center}
 .m-ops .icon-btn{width:30px;height:30px;border:1px solid var(--line2);background:var(--paper)}
 .m-ops .icon-btn svg{width:17px;height:17px}
+.m-ops .m-rev-btn{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;line-height:1;color:var(--muted);border:1px solid var(--line2);background:var(--paper);cursor:pointer;padding:0}
+.m-ops .m-rev-btn:hover{background:var(--surface);color:var(--ink)}
 
 .m-city{flex:1;background:#fff4e0;border-radius:11px;position:relative;padding:15px 6px 8px;text-align:center}
 
@@ -2286,7 +2288,7 @@ function buildMorningLeft(tasks, works){
 
     var id=rid(r); var dl=r['_fromTask']||'';
     var fnEd="editSchedItem('"+id+"')"; var fnDl="delWorkItem('sched','"+id+"','"+esc(dl)+"')";
-    var ops='<div class="m-ops"><button class="icon-btn" title="笔记" onclick="openNote(\'+id+\')">'+icon('note')+'</button><button class="icon-btn" title="修改" onclick="'+fnEd+'">'+icon('edit')+'</button><button class="icon-btn" title="删除" onclick="'+fnDl+'">'+icon('trash')+'</button></div>';
+    var ops='<div class="m-ops">'+(done?'<button class="m-rev-btn" title="恢复为待办" onclick="revertSched(\''+id+'\')">↺</button>':'')+'<button class="icon-btn" title="笔记" onclick="openNote(\''+id+'\')">'+icon('note')+'</button><button class="icon-btn" title="修改" onclick="'+fnEd+'">'+icon('edit')+'</button><button class="icon-btn" title="删除" onclick="'+fnDl+'">'+icon('trash')+'</button></div>';
     return '<div class="'+cls+'"><div class="m-tm">'+(done?'✅ ':'')+tm+'</div><div class="m-bd"><div class="m-t">'+tag+esc(r['标题']||'(无标题)')+'</div>'+
 
       (m.length?'<div class="m-m">'+m.join(' · ')+'</div>':'')+'</div>'+ops+'</div>';
@@ -2587,6 +2589,12 @@ function editWorkItem(src, id){
   var rows = src==='task' ? (window.__lastTasks||[]) : (window.__lastWorks||[]);
   var rec = rows.filter(function(r){ return rid(r)===id; })[0];
   if(!rec){ toast('记录未找到，请刷新后重试',true); return; }
+  /* R29: 便利贴「修改」统一走与「修改日程」一致的弹窗（编辑关联日程，保存自动回写便利贴） */
+  if(src==='task'){
+    var _sl=mirrorSchedOfTask(id, rec);
+    var _sc=_sl ? ((window.__sched||[]).filter(function(r){ return rid(r)===_sl; })[0] || (window.__lastWorks||[]).filter(function(r){ return rid(r)===_sl; })[0]) : null;
+    if(_sc){ openEditSchedModal(_sc); return; }
+  }
   openEditWorkModal(src, rec);
 }
 function openEditWorkModal(src, rec){
@@ -3827,7 +3835,7 @@ function renderSchedule(rows){
     }
     acts+='</div>';
     list+='<div class="'+cls+'">'+acts+
-      '<div class="main"><div class="ttl s-ttl-click" onclick="editSchedItem(\'+rid(r)+\')" title="点击可修改">'+esc(r["标题"])+'</div>'+
+      '<div class="main"><div class="ttl s-ttl-click" onclick="editSchedItem(\''+rid(r)+'\')" title="点击可修改">'+esc(r["标题"])+'</div>'+
       '<div class="meta"><span class="badge '+esc(r["分类"])+'">'+esc(r["分类"])+'</span>'+
       (r["开始时间"]||r["结束时间"]?'<span>'+(r["开始时间"]||'')+(r["结束时间"]?'–'+r["结束时间"]:'')+'</span>':'')+
       (r["地点"]?'<span>📍'+esc(r["地点"])+'</span>':'')+(r["备注"]?'<span class="s-note-clamp">'+esc(r["备注"])+'</span>':'')+'</div></div>'+
@@ -4131,7 +4139,7 @@ function schedStatus(r){
   if(d && d<t) return 'overdue';
   return 'todo';
 }
-function __schedById(id){ return (window.__sched||[]).filter(function(r){ return rid(r)===id; })[0]; }
+function __schedById(id){ return (window.__sched||[]).filter(function(r){ return rid(r)===id; })[0] || (window.__lastWorks||[]).filter(function(r){ return rid(r)===id; })[0] || null; }
 function revertSched(id){
   /* R28: 恢复为待办 → 镜像便利贴一并回到「未完成」，重新出现在四象限对应格；同时刷新今日安排(今日日程) */
   var _rec=__schedById(id);
@@ -4213,7 +4221,7 @@ function editSchedItem(id){
   var ids=getSchedSelIds();
   if(ids.length===0) ids=[id];
   if(ids.length>1){ openBatchEditModal(ids); return; }
-  var rec=(window.__sched||[]).filter(function(r){ return rid(r)===id; })[0];
+  var rec=__schedById(id);
   if(!rec){ toast('记录未找到，请刷新后重试',true); return; }
   openEditSchedModal(rec);
 }
@@ -4238,7 +4246,7 @@ function openEditSchedModal(rec){
       '<div class="fld"><label>备注</label><input id="es-note" value="'+esc(rec['备注']||'')+'" placeholder="选填"></div>'+
       '<div class="fld"><label>地点</label><input id="es-place" value="'+esc(rec['地点']||'')+'" placeholder="选填"></div>'+
     '</div>'+
-    '<div class="es-row es-row-1"><div class="fld" style="flex:1 1 auto"><label>笔记（与今日安排「笔记」联动）</label><textarea id="es-letter" rows="3" onchange="lwSaveJSON(\'lw_note_\'+rid(rec),{tpl:\'letter\',text:this.value})" placeholder="和今日安排里的笔记是同一份，自动关联">'+esc(((lwLoadJSON('lw_note_'+rid(rec))||{}).text||''))+'</textarea></div></div>'+_esBatchPanelHTML(rec)+
+    '<div class="es-row es-row-1"><div class="fld" style="flex:1 1 auto"><label>笔记（与今日安排「笔记」联动）</label><textarea id="es-letter" rows="3" onchange="lwSaveJSON(\'lw_note_'+rid(rec)+'\',{tpl:\'letter\',text:this.value})" placeholder="和今日安排里的笔记是同一份，自动关联">'+esc(((lwLoadJSON('lw_note_'+rid(rec))||{}).text||''))+'</textarea></div></div>'+_esBatchPanelHTML(rec)+
     '<div class="imp-foot"><button class="btn" onclick="closeEditSchedModal()">取消</button>'+
       '<button class="btn primary" onclick="saveEditSchedItem(\''+rid(rec)+'\')">保存修改</button></div>'+
   '</div>';
@@ -4308,7 +4316,7 @@ function _esBatchPanelHTML(rec){
 }
 function saveEditSchedItem(id){
   var ti=val('es-title'); if(!ti){ toast('请填写事项',true); return; }
-  var rec=(window.__sched||[]).filter(function(r){ return rid(r)===id; })[0]||{};
+  var rec=__schedById(id)||{};
   var st=val('es-st'), en=val('es-en');
   if(st && en && en<=st){ toast('结束时间不能早于开始时间',true); return; }
   /* 公共字段（不含日期）——所有同组日程都套用 */
@@ -4328,7 +4336,7 @@ function saveEditSchedItem(id){
     ids.forEach(function(xid){
       var pp={}; for(var k in common) pp[k]=common[k];
       ops.push(updRec(DB.schedule, xid, pp));
-      var _rr=(window.__sched||[]).filter(function(_q){ return rid(_q)===xid; })[0]||{};
+      var _rr=__schedById(xid)||{};
       var _fid=mirrorTaskOfSched(xid, _rr);
       if(_fid) ops.push(_taskSync(_fid, _rr['日期']||newDate));
     });

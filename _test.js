@@ -646,7 +646,7 @@ setTimeout(()=>{
 
 
 
-  T('R14-CSS: .sa-cal 半宽(flex:1 1 0) + .sa-ops 1列网格 + .sa-quick 网格',()=> html.indexOf('.sa-cal{flex:1 1 0;min-width:0}')>=0 && html.indexOf('.sa-ops{flex:1 1 0;min-width:0;display:grid;grid-template-columns:1fr')>=0 && html.indexOf('.sa-quick{display:grid;grid-template-columns:repeat(3,1fr)')>=0);
+  T('R14-CSS: .sa-cal 半宽(flex:1 1 0) + .sa-ops 1列网格 + .sa-quick 4列网格',()=> html.indexOf('.sa-cal{flex:1 1 0;min-width:0}')>=0 && html.indexOf('.sa-ops{flex:1 1 0;min-width:0;display:grid;grid-template-columns:1fr')>=0 && html.indexOf('.sa-quick{display:grid;grid-template-columns:repeat(4,1fr)')>=0);
 
 
 
@@ -1438,7 +1438,7 @@ setTimeout(()=>{
 
 
 
-  T('左列模块栈：本月日程 + 本月安排',()=>{ const box=d.getElementById('schedMods'); if(!box) return false; const ks=[].map.call(box.querySelectorAll('.sched-mod'),m=>m.getAttribute('data-mod')); return ks.join(',')==='mini,sticky'; });
+  T('左列模块栈：本月日程 + 本月安排',()=>{ const box=d.getElementById('schedMods'); if(!box) return false; const ks=[].map.call(box.querySelectorAll('.sched-mod'),m=>m.getAttribute('data-mod')); return ks.join(',')==='mini,sticky,review'; });
 
 
 
@@ -1954,7 +1954,7 @@ setTimeout(()=>{
 
 
 
-  T('③ 模块含 mini/sticky/filters/list 四键',()=>/SCHED_MOD_DEFAULT=\['mini','sticky','filters','list'\]/.test(html));
+  T('③ 模块含 mini/sticky/review/filters/list 五键',()=>/SCHED_MOD_DEFAULT=\['mini','sticky','review','filters','list'\]/.test(html));
 
 
 
@@ -2926,8 +2926,8 @@ console.log('--- 回归 ---');
   T('R24-11: 渲染后弹层默认隐藏，点开后 28~37 格',()=>{ w.renderSchedule([]); const pop=d.getElementById('datePop'); if(!pop) return false; if(pop.style.display!=='none') return false; w.dpOpen(); const g=d.getElementById('dp-grid'); const n=g?g.children.length:0; const ok=(pop.style.display==='block') && n>=28 && n<=37; w.dpOpen(); return ok ? n+' 格' : false; });
   T('R24-12: 翻月后标题跟随(年/月)',()=>{ w.renderSchedule([]); w.schedSelDate='2026-03-15'; w.dpOpen(); const t1=d.getElementById('dp-title').textContent; w.dpShift(1); const t2=d.getElementById('dp-title').textContent; w.dpShift(-1); const t3=d.getElementById('dp-title').textContent; w.dpOpen(); return (t1==='2026年03月' && t2==='2026年04月' && t3==='2026年03月') ? t1+'→'+t2+'→'+t3 : false; });
   T('R24-13: 点某天 → schedSelDate 落地且 range 清空',()=>{ w.renderSchedule([]); w.schedSelDate=null; w.schedRange='month'; w.renderDp(); const g=d.getElementById('dp-grid'); const cell=[...g.children].find(x=>x.getAttribute && x.getAttribute('data-d')); if(!cell) return false; const want=cell.getAttribute('data-d'); w.dpPick(cell); return w.schedSelDate===want && w.schedRange===null ? want : false; });
-  T('R24-14: 底栏「全月」→ schedRange=month 且只显示当月',()=>{ const rows=[{__id:'r1',标题:'甲九月五',日期:'2026-09-05'},{__id:'r2',标题:'乙九月二十',日期:'2026-09-20'},{__id:'r3',标题:'丙十二月三十一',日期:'2026-12-31'}]; w.schedSelDate=null; w.schedRange=null; w.renderSchedule(rows); const btn=d.querySelector('#schedFilters button[data-r="month"]'); if(!btn) return false; w.dpRange(btn); const seg=d.getElementById('schedule-body').innerHTML; return w.schedRange==='month' && w.schedSelDate===null && seg.indexOf('甲九月五')>=0 && seg.indexOf('乙九月二十')>=0 && seg.indexOf('丙十二月三十一')<0; });
-  T('R24-15: 底栏「今天」→ schedRange=today 且只剩今天事项',()=>{ const td=w.today(); const rows=[{__id:'r1',标题:'甲就是今天',日期:td},{__id:'r2',标题:'乙不是今天',日期:'2000-01-01'}]; w.schedSelDate=null; w.schedRange=null; w.renderSchedule(rows); const btn=d.querySelector('#schedFilters button[data-r="today"]'); if(!btn) return false; w.dpRange(btn); const seg=d.getElementById('schedule-body').innerHTML; return w.schedRange==='today' && seg.indexOf('甲就是今天')>=0 && seg.indexOf('乙不是今天')<0; });
+  T('R24-14: 底栏「全月」→ schedRange=month 且只显示当月',()=>{ const rows=[{__id:'r1',标题:'甲九月五',日期:'2026-09-05'},{__id:'r2',标题:'乙九月二十',日期:'2026-09-20'},{__id:'r3',标题:'丙十二月三十一',日期:'2026-12-31'}]; w.schedSelDate=null; w.schedRange=null; w.renderSchedule(rows); const btn=d.querySelector('#schedFilters button[data-r="month"]'); if(!btn) return false; w.dpRange(btn); const lk=d.querySelector('#schedule-body .sched-list-panel'); const seg=lk?lk.innerHTML:''; return w.schedRange==='month' && w.schedSelDate===null && seg.indexOf('甲九月五')>=0 && seg.indexOf('乙九月二十')>=0 && seg.indexOf('丙十二月三十一')<0; });
+  T('R24-15: 底栏「今天」→ schedRange=today 且只剩今天事项',()=>{ const td=w.today(); const rows=[{__id:'r1',标题:'甲就是今天',日期:td},{__id:'r2',标题:'乙不是今天',日期:'2000-01-01'}]; w.schedSelDate=null; w.schedRange=null; w.renderSchedule(rows); const btn=d.querySelector('#schedFilters button[data-r="today"]'); if(!btn) return false; w.dpRange(btn); const lk=d.querySelector('#schedule-body .sched-list-panel'); const seg=lk?lk.innerHTML:''; return w.schedRange==='today' && seg.indexOf('甲就是今天')>=0 && seg.indexOf('乙不是今天')<0; });
   T('R24-16: 底栏「清除」→ 日期与范围双清',()=>{ w.schedSelDate='2026-09-15'; w.schedRange='month'; w.renderSchedule([]); w.dpClear(); return w.schedSelDate===null && w.schedRange===null; });
   T('R24-17: 快捷按钮 onclick 属性是合法 JS(旧版少引号点不动)',()=>{ w.renderSchedule([]); const b=d.querySelector('#schedFilters button[data-r="today"]'); if(!b) return false; const code=b.getAttribute('onclick'); if(!code) return false; try{ new Function(code); }catch(e){ return false; } return code==='dpRange(this)' ? code : false; });
   T('R24-18: 弹层开关切换(再点触发按钮收起)',()=>{ w.renderSchedule([]); const pop=d.getElementById('datePop'); w.dpOpen(); const a=pop.style.display; w.dpOpen(); const b=pop.style.display; return (a==='block' && b==='none') ? a+'→'+b : false; });
@@ -3086,8 +3086,147 @@ console.log('--- 回归 ---');
     w.__sched=[]; w.__lastWorks=[];
     return ok?dbg:false; });
   T('R29-9: 事项明细 标题 onclick 已修正为真实 id 拼接',()=> html.indexOf('s-ttl-click" onclick="editSchedItem(\\\'\'+rid(r)+\'\\\')"')>=0);
-  T('R29-10: 修改日程弹窗 笔记框 onchange 已修正(不再引用裸 rec)',()=> html.indexOf('lwSaveJSON(\\\'lw_note_\'+rid(rec)+\'\\\',')>=0);
+  T('R29-10: 修改日程弹窗 笔记框已改走 data-notekey + saveEditNote(不再引用裸 rec)',()=> html.indexOf('saveEditNote(this)')>=0 && html.indexOf('data-notekey="lw_note_')>=0);
   T('R29-11: 全库无「字符串未闭合致 id 变字面量」的转义残留',()=> html.indexOf("\\'+")<0);
+  /* ===== R30：本月事项「全月」按钮 + 复盘卡片 ===== */
+  T('R30-1: 本月事项 快速选择含「全月」且排在工作日前(4 列栅格)',()=>{
+    const iAll=html.indexOf('schedPickQuick(&quot;all&quot;)');
+    const iWd=html.indexOf('schedPickQuick(&quot;weekday&quot;)');
+    const g=html.indexOf('.sa-quick{display:grid;grid-template-columns:repeat(4,1fr)');
+    return (iAll>=0 && iWd>=0 && iAll<iWd && g>=0)? ('all@'+iAll+' wd@'+iWd) : false; });
+  T('R30-2: schedPickQuick("all") 选中当月所有天',()=>{
+    const t=w.today(); const y=+t.slice(0,4), m=+t.slice(5,7)-1;
+    w.schedPickDates=[]; w.schedPickY=y; w.schedPickM=m;
+    w.schedPickQuick('all');
+    const days=new Date(y,m+1,0).getDate();
+    const got=w.schedPickDates.length;
+    w.schedPickDates=[];
+    return got===days ? (got+'/'+days) : false; });
+  T('R30-3: 复盘卡片样式类已注入',()=> html.indexOf('.rev-card{')>=0 && html.indexOf('.rev-card .rv-done{')>=0);
+  T('R30-4: 复盘 只列未完成事项，且 ✓ / 修改 带真实 id',()=>{
+    w.__sched=[
+      {id:'RS_A',标题:'未完成甲',分类:'工作',日期:w.today(),完成:'否'},
+      {id:'RS_B',标题:'已完成乙',分类:'学习',日期:w.today(),完成:'是'}
+    ];
+    const h=w.revPanelHTML();
+    const ok=(h.indexOf('未完成甲')>=0) && (h.indexOf('已完成乙')<0)
+      && (h.indexOf("openSchedDoneModal('RS_A',__schedById('RS_A'))")>=0)
+      && (h.indexOf("editSchedItem('RS_A')")>=0);
+    w.__sched=[];
+    return ok?'ok':false; });
+  T('R30-5: 复盘 年份/月份下拉筛选生效',()=>{
+    w.__sched=[
+      {id:'Y1',标题:'去年十二月',分类:'工作',日期:'2025-12-20',完成:'否'},
+      {id:'Y2',标题:'今年一月',分类:'工作',日期:'2026-01-20',完成:'否'},
+      {id:'Y3',标题:'今年七月',分类:'工作',日期:'2026-07-20',完成:'否'}
+    ];
+    w.REV_YEAR='全部'; w.REV_MONTH='全部';
+    const all=w.revPanelHTML();
+    w.REV_YEAR='2026'; w.REV_MONTH='全部';
+    const y26=w.revPanelHTML();
+    w.REV_YEAR='2026'; w.REV_MONTH='01';
+    const y26m1=w.revPanelHTML();
+    const ok=(all.indexOf('去年十二月')>=0 && all.indexOf('今年一月')>=0)
+      && (y26.indexOf('去年十二月')<0 && y26.indexOf('今年一月')>=0 && y26.indexOf('今年七月')>=0)
+      && (y26m1.indexOf('今年一月')>=0 && y26m1.indexOf('今年七月')<0);
+    w.REV_YEAR='全部'; w.REV_MONTH='全部'; w.__sched=[];
+    return ok?'ok':false; });
+  T('R30-6: 复盘 空数据提示语',()=>{
+    w.__sched=[]; w.REV_YEAR='全部'; w.REV_MONTH='全部';
+    const h=w.revPanelHTML();
+    return h.indexOf('这个范围内还没有安排')>=0 ? 'empty-ok' : false; });
+  T('R30-7: 复盘 行内 onclick 表达式全部可解析',()=>{
+    w.__sched=[{id:'RS_X',标题:'校验项',分类:'工作',日期:w.today(),完成:'否'}];
+    const h=w.revPanelHTML();
+    const m=h.match(/onclick="([^"]*)"/g)||[];
+    const bad=[];
+    m.forEach(function(x){ const expr=x.slice(9,-1); try{ new Function(expr); }catch(e){ bad.push(expr); } });
+    w.__sched=[];
+    if(bad.length) console.log('R30-7 bad:', bad.join(' | '));
+    return bad.length===0 ? ('exprs='+m.length) : false; });
+  T('R30-8: 复盘卡片已拆为独立可拖模块 data-mod="review"',()=>{
+    const rows=[{id:'RS_R',标题:'渲染甲',分类:'工作',日期:w.today(),完成:'否'}];
+    let ok=false,dbg='';
+    try{
+      w.showModule('schedule');
+      w.renderSchedule(rows);
+      const body=w.document.getElementById('schedule-body');
+      const sb=body?body.innerHTML:'';
+      const iSticky=sb.indexOf('data-mod="sticky"');
+      const iRev=sb.indexOf('data-mod="review"');
+      const iRevCard=sb.indexOf('m-card rev-card');
+      ok=(iSticky>=0 && iRev>iSticky && iRevCard>iRev);
+      dbg='sticky@'+iSticky+' review@'+iRev+' revcard@'+iRevCard;
+    }catch(e){ dbg='ERR:'+e.message; }
+    w.__sched=[]; w.__lastWorks=[];
+    return ok?dbg:false; });
+  T('R30-9: 复盘 完成率环 --p 与文本一致',()=>{
+    w.__sched=[
+      {id:'P1',标题:'甲',分类:'工作',日期:w.today(),完成:'是'},
+      {id:'P2',标题:'乙',分类:'工作',日期:w.today(),完成:'否'}
+    ];
+    w.REV_YEAR='全部'; w.REV_MONTH='全部';
+    const h=w.revPanelHTML();
+    const ok=h.indexOf('--p:50')>=0 && h.indexOf('共 <b>2</b> 项，完成 <b>1</b> 项')>=0;
+    w.__sched=[];
+    return ok?'pct50':false; });
+  T('R30-10: 全库仍无「字符串未闭合致 id 变字面量」的转义残留',()=> html.indexOf("\\'+")<0);
+  /* ===== R31：笔记按日程分开 / 刷新全部回今日 / 幸福历字号单位 / 复盘独立模块 ===== */
+  T('R31-1: 今日日程笔记按日程分开(openNote 落到各自 id，不再字面量键)',()=>{
+    w.localStorage.setItem('lw_note_rA', JSON.stringify({tpl:'letter',text:'甲笔记'}));
+    w.localStorage.setItem('lw_note_rB', JSON.stringify({tpl:'letter',text:'乙笔记'}));
+    w.openNote('rA'); const a=w.document.getElementById('note-body').innerHTML;
+    w.openNote('rB'); const b2=w.document.getElementById('note-body').innerHTML;
+    const k=w.document.getElementById('note-modal')._key;
+    w.closeNote();
+    return (a==='甲笔记' && b2==='乙笔记' && k==='lw_note_rB')?('k='+k):false; });
+  T('R31-2: 修改日程笔记框 data-notekey 与今日日程同源，且显示为纯文本',()=>{
+    const rec={id:'rN1',标题:'笔记联动',分类:'工作',日期:w.today(),完成:'否',象限:'Q1'};
+    w.__sched=[rec];
+    w.localStorage.setItem('lw_note_rN1', JSON.stringify({tpl:'letter',text:'第一行<br>第二行'}));
+    w.openEditSchedModal(rec);
+    const ta=w.document.getElementById('es-letter');
+    const key=ta?ta.getAttribute('data-notekey'):'';
+    const val=ta?ta.value:'';
+    const onc=ta?ta.getAttribute('onchange'):'';
+    w.closeEditSchedModal(); w.__sched=[];
+    return (key==='lw_note_rN1' && val==='第一行\n第二行' && onc==='saveEditNote(this)')?('key='+key+' val='+JSON.stringify(val)):false; });
+  T('R31-3: saveEditNote 把纯文本写回同一 key(换行转 <br>)',()=>{
+    const ta=w.document.createElement('textarea');
+    ta.setAttribute('data-notekey','lw_note_rN1'); ta.value='行一\n行二';
+    w.saveEditNote(ta);
+    const o=JSON.parse(w.localStorage.getItem('lw_note_rN1')||'{}');
+    return (o.text==='行一<br>行二')?('tpl='+o.tpl):false; });
+  T('R31-4: notePlain 将 div/br 结构转纯文本换行',()=>{
+    const got=w.notePlain('<div>甲</div><div>乙<br>丙</div>');
+    return got==='甲\n乙\n丙' ? 'ok' : JSON.stringify(got); });
+  T('R31-5: saveEditSchedItem 会顺带保存笔记框内容',()=> html.indexOf("var _ta=document.getElementById('es-letter'); if(_ta) saveEditNote(_ta);")>=0);
+  T('R31-6: 刷新全部 会把日期筛选复位为「今日」',()=> /schedSelDate=today\(\); schedRange=null; reloadAll\(\)/.test(html) ? 'ok' : false);
+  T('R31-7: 幸福历空白格字号 单位不重复(26px 旧数据仍渲染 font-size:26px)',()=>{
+    const srcOk = html.indexOf("if(!/[a-zA-Z%]/.test(_fs)) _fs+='px'")>=0;
+    const saveOk = html.indexOf("(el.style.fontSize||'').replace('px','')")>=0;
+    const k=w.doodleKey(0);
+    const prev=w.localStorage.getItem(k);
+    w.localStorage.setItem(k, JSON.stringify({h:'x',c:'',s:'26px'}));
+    let out='';
+    try{ w.showModule('schedule'); w.renderSchedule(w.__sched||[]); }catch(e){}
+    const dc=w.document.querySelector('.doodle-cell[data-e="0"]');
+    out=dc?(dc.getAttribute('style')||''):'';
+    if(prev===null) w.localStorage.removeItem(k); else w.localStorage.setItem(k, prev);
+    return (srcOk && saveOk && out.indexOf('font-size:26px;')>=0 && out.indexOf('26pxpx')<0) ? ('style='+out) : false; });
+  T('R31-8: 复盘为独立模块 review，且排在 sticky 之后并含复习卡片',()=>{
+    let ok=false,dbg='';
+    try{
+      w.showModule('schedule'); w.renderSchedule([]);
+      const sb=(w.document.getElementById('schedule-body')||{}).innerHTML||'';
+      const iSticky=sb.indexOf('data-mod="sticky"');
+      const iRev=sb.indexOf('data-mod="review"');
+      const iCard=sb.indexOf('m-card rev-card');
+      ok=(iSticky>=0 && iRev>iSticky && iCard>iRev);
+      dbg='sticky@'+iSticky+' review@'+iRev+' card@'+iCard;
+    }catch(e){ dbg='ERR:'+e.message; }
+    return ok?dbg:false; });
+
   /* 复位筛选态，避免影响后续 */
   w.schedSelDate=null; w.schedRange=null; w.schedFilter='全部'; w.schedStatusF='全部状态';
 

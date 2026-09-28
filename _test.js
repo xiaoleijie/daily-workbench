@@ -2550,7 +2550,7 @@ setTimeout(()=>{
 
 
 
-  T('日程标签-已改为「📌 日程」',()=> html.indexOf('📌 日程·工作')<0 && html.indexOf('📌 日程')>=0);
+  T('R33-1: 便利贴来源标记改纯📌，不再冒充分类',()=> html.indexOf('note-src')>=0 && html.indexOf('📌 日程')<0);
 
 
 
@@ -2702,7 +2702,7 @@ setTimeout(()=>{
 
 
 
-  T('R15-多选修改: editSchedItem 选中>1 时调 openBatchEditModal',()=> /function editSchedItem\(id\)\{/.test(html) && html.indexOf('if(ids.length>1){ openBatchEditModal(ids); return; }')>=0 && /function openBatchEditModal/.test(html) && /function saveBatchEdit/.test(html));
+  T('R15-多选修改: editSchedItem 选中>1 时调 openBatchEditModal',()=> /function editSchedItem\(id, forceOne\)/.test(html) && html.indexOf('if(ids.length>1){ openBatchEditModal(ids); return; }')>=0 && /function openBatchEditModal/.test(html) && /function saveBatchEdit/.test(html));
 
 
 
@@ -2955,7 +2955,7 @@ console.log('--- 回归 ---');
   T('R26-13: 修改日程保存→回写 task 全字段(截止日期/时间/分类/象限)',()=>{ const calls=[]; const oU=w.updRec, oT=w.LOADERS.tasks, oS=w.LOADERS.schedule; w.updRec=(db,id,p)=>{ calls.push([db,id,p]); return Promise.resolve({}); }; w.LOADERS.tasks=()=>{}; w.LOADERS.schedule=()=>{}; w.__sched=[{id:'S1','标题':'X','日期':'2026-09-25','_fromTask':'T1','完成':'否'}]; let ok=false, dbg=''; try{ w.openEditSchedModal({'标题':'X','日期':'2026-09-25','开始时间':'08:00','结束时间':'09:00','分类':'工作','象限':'Q1','_fromTask':'T1'}); d.getElementById('es-st').value='08:30'; d.getElementById('es-en').value='09:30'; d.getElementById('es-date').value='2026-09-27'; w.saveEditSchedItem('S1'); const t=calls.filter(c=>c[0]===w.DB.tasks&&c[1]==='T1')[0]; ok=!!(t && t[2]['截止日期'] && t[2]['截止日期'].date==='2026-09-27' && t[2]['时间'] && t[2]['时间'].text==='08:30' && t[2]['分类'] && t[2]['象限']); dbg=t?('task:'+t[2]['截止日期'].date+' '+t[2]['时间'].text):'no-task-call'; }catch(e){ dbg='ERR:'+e.message; } w.updRec=oU; w.LOADERS.tasks=oT; w.LOADERS.schedule=oS; w.closeEditSchedModal(); w.__sched=[]; return ok?dbg:false; });
   /* ===== R27：便利贴「修改」弹窗化 + 镜像回写「反向兜底」 ===== */
   T('R27-1: 便利贴卡片「修改」改为弹窗 editWorkItem(task)',()=> html.indexOf('? "editWorkItem(\'task\',\'"+id+"\')"')>=0 && html.indexOf('? "editTask(\'"')<0);
-  T('R27-2: 非便利贴卡片「修改」用 editSchedItem',()=> html.indexOf('"editSchedItem(\'"+id+"\')"')>=0);
+  T('R27-2: 非便利贴卡片「修改」用 editSchedItem(forceOne)',()=> html.indexOf('"editSchedItem(\'"+id+"\',true)"')>=0);
   T('R27-3: 卡片 修改/删除 按钮带 title',()=> html.indexOf('title="修改" onclick="\'+editFn+\'"')>=0 && html.indexOf('title="删除" onclick="\'+delFn+\'"')>=0);
   T('R27-4: 镜像互查 helper 存在(_mid/mirrorSchedOfTask/mirrorTaskOfSched)',()=> html.indexOf('function _mid(v)')>=0 && html.indexOf('function mirrorSchedOfTask')>=0 && html.indexOf('function mirrorTaskOfSched')>=0);
   T('R27-5: submitTask 编辑分支改用 mirrorSchedOfTask 反向兜底',()=> html.indexOf('var _eid=taskEditId; var sl = mirrorSchedOfTask(_eid, window.__taskEdit);')>=0);
@@ -2965,7 +2965,7 @@ console.log('--- 回归 ---');
   T('R27-9: mirrorSchedOfTask 反向兜底(_sched 空→按 _fromTask 反查)',()=>{ w.__lastTasks=[{id:'T1','_sched':null}]; w.__lastWorks=[{id:'S1','_fromTask':'T1'}]; return w.mirrorSchedOfTask('T1', {})==='S1'?'T1→S1':false; });
   T('R27-10: mirrorTaskOfSched 反向兜底(_fromTask 空→按 _sched 反查)',()=>{ w.__lastTasks=[{id:'T1','_sched':'S1'}]; w.__lastWorks=[{id:'S1','_fromTask':null}]; return w.mirrorTaskOfSched('S1', {})==='T1'?'S1→T1':false; });
   T('R27-11: 记录自带链接优先',()=>{ const a=w.mirrorSchedOfTask('T1',{'_sched':'S9'}); const b=w.mirrorTaskOfSched('S1',{'_fromTask':'T9'}); return (a==='S9'&&b==='T9')?'ok':false; });
-  T('R27-12: 修改事项弹窗渲染并带出标题',()=>{ w.openEditWorkModal('task',{'id':'T1','标题':'甲','截止日期':'2026-09-25','象限':'Q2','完成':'否'}); const m=d.getElementById('editwork-modal'); const t=d.getElementById('ew-title'); const ok=!!(m && t && t.value==='甲' && m.style.display==='flex'); const hasNoCat=(m?m.innerHTML:'').indexOf('ew-cat')<0; w.closeEditWorkModal(); return (ok&&hasNoCat)?'标题=甲':false; });
+  T('R27-12: 修改事项弹窗渲染并带出标题',()=>{ w.openEditWorkModal('task',{'id':'T1','标题':'甲','截止日期':'2026-09-25','象限':'Q2','完成':'否'}); const m=d.getElementById('editwork-modal'); const t=d.getElementById('ew-title'); const ok=!!(m && t && t.value==='甲' && m.style.display==='flex'); const hasCat=(m?m.innerHTML:'').indexOf('ew-cat')>=0; w.closeEditWorkModal(); return (ok&&hasCat)?'标题=甲·含分类':false; });
   T('R27-13: 改便利贴(弹窗)保存→mirror 日程同步(反向兜底)',()=>{
     const calls=[]; const oU=w.updRec, oT=w.LOADERS.tasks, oS=w.LOADERS.schedule;
     function sq(){ var o={ then:function(cb){ try{cb({});}catch(e){} return o; }, catch:function(){ return o; } }; return o; }
@@ -3256,6 +3256,20 @@ console.log('--- 回归 ---');
     w.closeNote(); return ok?'ok':false; });
   /* 复位筛选态，避免影响后续 */
   w.schedSelDate=null; w.schedRange=null; w.schedFilter='全部'; w.schedStatusF='全部状态';
+
+  T('R33-2: 空分类统一「未分类」，假分类「日程」彻底移除',()=> html.indexOf("||'未分类'")>=0 && html.indexOf("||'日程'")<0 && html.indexOf('badge-empty')>=0);
+  T('R33-3: editSchedItem 支持 forceOne 强制单条',()=> /function editSchedItem\(id, forceOne\)/.test(html));
+  T('R33-4: 便利贴白板与今日安排的「修改」传 forceOne',()=> html.indexOf("editSchedItem('\"+id+\"',true)")>=0);
+  T('R33-5: 便利贴编辑弹窗含分类字段 ew-cat',()=> html.indexOf('id="ew-cat"')>=0);
+  T('R33-6: 分类下拉空值用 catSelectHTML 占位',()=> html.indexOf('function catSelectHTML')>=0 && html.indexOf("catSelectHTML(rec['分类'])")>=0 && html.indexOf("catSelectHTML(first['分类'])")>=0);
+  T('R33-7: 缺镜像自动补建 ensureTaskMirror（含 _fromTask 回链）',()=> html.indexOf('function ensureTaskMirror')>=0 && /ensureTaskMirror\(_eid/.test(html) && /ensureTaskMirror\(id, rec, title, date, quad, cat\)/.test(html));
+  T('R33-8: 保存分类不再兜底改写为「其他」',()=> html.indexOf("val('es-cat')||'其他'")<0 && html.indexOf("val('be-cat')||'其他'")<0 && html.indexOf("val('ew-cat')||'其他'")<0);
+  T('R33-9: 运行时-空分类在今日安排显示「未分类」',()=>{ const td=w.today(); const h=w.buildMorningLeft([], [{owner:w.MY_UID, id:'NZ1', 日期:td, 开始时间:'09:00', 标题:'无分类项', 分类:'', 完成:'否'}]); return (h.indexOf('>未分类<')>=0 && h.indexOf('m-tag empty')>=0) ? 'ok' : false; });
+
+  T('R34-1: nowHM 返回当前时间的 HH:MM',()=>{ const v=w.nowHM(); const d=new Date(); const exp=('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2); return (/^\d{2}:\d{2}$/.test(v) && (v===exp || v===w.nowHM()))?'ok':false; });
+  T('R34-2: 「＋本月事项」开始时间默认当前时间',()=> html.indexOf('id="s-st" type="time" class="time-input" value="\'+nowHM()')>=0);
+  T('R34-3: 今日安排「添加便利贴」时间默认当前时间(编辑态不覆盖)',()=> html.indexOf('id="t-time" type="time" value="\'+(taskEditId?\'\':nowHM())')>=0);
+  T('R34-4: 运行时-打开「＋本月事项」开始框自动填 HH:MM',()=>{ w.openSchedAddModal(); const el=w.document.getElementById('s-st'); const v=el?el.value:''; if(w.closeSchedAddModal) w.closeSchedAddModal(); return /^\d{2}:\d{2}$/.test(v)?'ok':false; });
 
   T('无 JS 运行时错误',()=>errs.length===0? 'clean' : (console.log(errs.join('\n')), false));
 

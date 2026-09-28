@@ -1,6 +1,6 @@
 /* 日常集生活工作台 · Service Worker（离线缓存 + 快速打开）
    v2：导航请求改走 no-cache 校验，保证发布后无需强刷即可看到新版 */
-const CACHE = 'daily-workbench-v3';   /* ← 升版本号：强制旧设备重建缓存 */
+const CACHE = 'daily-workbench-v4';   /* ← 升版本号：强制旧设备重建缓存 */
 const ASSETS = [
   './',
   './index.html',

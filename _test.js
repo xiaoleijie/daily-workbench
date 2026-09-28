@@ -626,7 +626,7 @@ setTimeout(()=>{
 
 
 
-  T('R14-表单：sa-ops 5 按钮(添加/导入/导出/修日期/撤销，无认领隐身)，工作日/周末/清空移到日历下方 sa-quick，无今天',()=>{ const m=d.getElementById('sched-add-modal'); const ops=(m.innerHTML.split('class="sa-ops"')[1]||'').split('</div>')[0]; const q=(m.innerHTML.split('class="sa-quick"')[1]||'').split('</div>')[0]; return ['添加','导入','导出','修日期','撤销'].every(t=>ops.includes('>'+t+'<')) && ['工作日','周末','清空'].every(t=>q.includes('>'+t+'<')) && !ops.includes('>今天<') && !q.includes('>今天<'); });
+  T('R14-表单：sa-ops 5 按钮(添加/导入/导出/修日期/撤销，无认领隐身)，工作日/周末/清空移到日历下方 sa-quick，无今天',()=>{ const m=d.getElementById('sched-add-modal'); const ops=(m.innerHTML.split('class="sa-ops"')[1]||'').split('</div>')[0]; const q=(m.innerHTML.split('class="sa-quick"')[1]||'').split('</div>')[0]; return ['添加','导入','导出','修日期','撤销上次批量修改'].every(t=>ops.includes('>'+t+'<')) && ['工作日','周末','清空'].every(t=>q.includes('>'+t+'<')) && !ops.includes('>今天<') && !q.includes('>今天<'); });
 
 
 
@@ -3227,6 +3227,33 @@ console.log('--- 回归 ---');
     }catch(e){ dbg='ERR:'+e.message; }
     return ok?dbg:false; });
 
+  /* ===== R32：事项明细撤销入口 / 按钮文案 / 信纸划线对齐 / 笔记图片 ===== */
+  T('R32-1: 事项明细批量条新增「撤销上次批量修改」入口',()=> html.indexOf('s-sel-cnt" style="margin-left:auto"></span><button class="btn sm" onclick="schedUndoLast()"')>=0);
+  T('R32-2: 添加事项弹窗按钮文案改为「撤销上次批量修改」',()=> html.indexOf('white-space:nowrap">撤销上次批量修改</button>')>=0);
+  T('R32-3: 信纸文字在划线上方(内容盒起算 + 行高=线距)',()=> (html.indexOf('background-origin:content-box;line-height:32px;')>=0)?'ok':false);
+  T('R32-4: 笔记弹窗含图片按钮/图片区/文件选择器',()=>{
+    w.openNote('rZ'); const box=w.document.getElementById('note-modal');
+    const ok=!!box.querySelector('.note-img-btn') && !!box.querySelector('#note-imgs') && !!box.querySelector('#note-file');
+    w.closeNote(); return ok?'ok':false; });
+  T('R32-5: saveNote 保存文字同时保存图片数组',()=>{
+    w.openNote('rZ2'); const box=w.document.getElementById('note-modal');
+    box._imgs=['data:image/webp;base64,AAA']; box.querySelector('#note-body').innerHTML='文字';
+    w.saveNote(); const o=JSON.parse(w.localStorage.getItem('lw_note_rZ2')||'{}'); w.closeNote();
+    return (o.text==='文字' && Array.isArray(o.imgs) && o.imgs.length===1)?'ok':false; });
+  T('R32-6: saveEditNote 只改文字、保留图片(不丢图)',()=>{
+    w.localStorage.setItem('lw_note_rZ3', JSON.stringify({tpl:'letter',text:'旧',imgs:['data:image/webp;base64,BBB']}));
+    const ta=w.document.createElement('textarea'); ta.setAttribute('data-notekey','lw_note_rZ3'); ta.value='新文本';
+    w.saveEditNote(ta); const o=JSON.parse(w.localStorage.getItem('lw_note_rZ3')||'{}');
+    return (o.text==='新文本' && Array.isArray(o.imgs) && o.imgs.length===1)?'ok':false; });
+  T('R32-7: noteHasImgs 识别含图笔记(0/1)',()=>{
+    w.localStorage.setItem('lw_note_rZ4', JSON.stringify({tpl:'letter',text:'',imgs:['x']}));
+    return (w.noteHasImgs('rZ4')===1 && w.noteHasImgs('__nope__')===0)?'ok':false; });
+  T('R32-8: noteRenderGallery 渲染缩略图区',()=>{
+    w.openNote('rZ5'); const box=w.document.getElementById('note-modal');
+    box._imgs=['data:image/webp;base64,CCC']; w.noteRenderGallery();
+    const host=box.querySelector('#note-imgs');
+    const ok=host.innerHTML.indexOf('note-img-item')>=0 && host.style.display==='flex';
+    w.closeNote(); return ok?'ok':false; });
   /* 复位筛选态，避免影响后续 */
   w.schedSelDate=null; w.schedRange=null; w.schedFilter='全部'; w.schedStatusF='全部状态';
 

@@ -344,6 +344,7 @@
   .m-prog-bar{height:5px;background:var(--paper);border-radius:3px;overflow:hidden}
   .m-prog-bar i{display:block;height:100%;background:var(--accent-grad);border-radius:3px}
   .m-prog-tx{font-size:10.5px;color:var(--muted);margin-top:3px}
+  .mc-open{display:inline-block;margin-top:5px;font-size:11px;color:var(--accent);text-decoration:none}
   .badge.src-wr{background:#e9f1fb;color:#2f6fb0;border-color:#c9ddf4}
   .badge.src-paper{background:#f2ecdf;color:#8a7a52;border-color:#e2d8c1}
   .badge.src-manual{background:var(--paper);color:var(--muted)}
@@ -4803,6 +4804,18 @@ function mediaCoverLink(r){
   if(c.text&&/^https?:/i.test(c.text)) return c.text;
   return '';
 }
+function mediaReadLink(r){
+  var c=r&&r["阅读链接"]; if(!c) return '';
+  if(typeof c==='string') return c;
+  if(c.link) return c.link;
+  if(c.url&&c.url.link) return c.url.link;
+  if(c.text&&/^https?:/i.test(c.text)) return c.text;
+  return '';
+}
+function mediaReadBtn(r){
+  var l=mediaReadLink(r); if(!l) return '';
+  return '<a class="mc-open" href="'+esc(l)+'" target="_blank" rel="noopener" onclick="event.stopPropagation()">打开阅读 ↗</a>';
+}
 function mediaSrcBadge(r){
   var s=r&&r["来源"]; if(!s) return '';
   var cls=(s==='微信读书')?'src-wr':((s==='纸质书')?'src-paper':'src-manual');
@@ -4824,6 +4837,7 @@ function mediaCard(r){
         '<div class="mc-title">'+esc(r["标题"]||'')+'</div>'+
         '<div class="mc-meta">'+mediaSrcBadge(r)+star+'</div>'+
         mediaProgHTML(r)+
+        mediaReadBtn(r)+
       '</div></div>';
 }
 function mediaCol(status,color,hint,shown){
@@ -4845,9 +4859,10 @@ function renderMedia(rows){
   var actbar='<div class="m-actbar">'+
       '<button class="btn sm primary" onclick="openWeRead()">打开微信读书 ↗</button>'+
       '<button class="btn sm" onclick="openMediaImport()">批量导入</button>'+
+      '<button class="btn sm" onclick="openWeReadSync()">📥 微信读书同步</button>'+
       '<button class="btn sm" onclick="openMediaAdd()">＋ 添加</button>'+
       '<span class="spacer"></span>'+
-      '<span class="m-hint">微信读书不能自动同步，但可以一键打开，再把书架书名批量粘进来</span>'+
+      '<span class="m-hint">点「微信读书同步」选同步文件，一次把书架搬进来（已记过的自动跳过）</span>'+
     '</div>';
 
   var stats='<div class="grid" style="grid-template-columns:repeat(4,1fr);margin-bottom:14px">'+
@@ -4928,6 +4943,8 @@ function mediaFormModal(id){
     '<div class="es-row es-row-2"><div class="fld"><label>评分</label><select id="me-rating"><option>未评</option>'+optHTML(OPT.mediaRating,(r&&r["评分"])||'')+'</select></div>'+
       '<div class="fld"><label>进度%（在读时填）</label><input id="me-prog" type="number" min="0" max="100" placeholder="0-100" value="'+esc(prog)+'"></div></div>'+
     '<div class="fld"><label>封面链接（选填）</label><input id="me-cover" placeholder="https://..." value="'+esc(cover)+'"></div>'+
+    '<div class="es-row es-row-2"><div class="fld"><label>作者（选填）</label><input id="me-author" placeholder="作者" value="'+esc((r&&r["作者"])||'')+'"></div>'+
+      '<div class="fld"><label>阅读链接（选填）</label><input id="me-link" placeholder="微信读书链接，卡片可一键打开" value="'+esc(mediaReadLink(r))+'"></div></div>'+
     '<div class="fld"><label>短评 / 笔记（选填）</label><input id="me-note" placeholder="写点什么…" value="'+esc((r&&r["短评"])||'')+'"></div>'+
     '<div class="imp-foot" style="justify-content:space-between">'+
       (id?'<button class="btn danger" onclick="delMedia()">删除</button>':'<span></span>')+
@@ -4945,7 +4962,8 @@ function saveMedia(){
   var prog=val('me-prog'); prog=(prog==='')?null:Math.max(0,Math.min(100,Math.round(Number(prog)||0)));
   var link=val('me-cover');
   var p={ "类型":{select:val('me-type')}, "标题":{text:ti}, "来源":{select:val('me-src')}, "状态":{select:val('me-status')},
-          "评分":{select:rating}, "进度":{number:prog}, "短评":{text:val('me-note')}, "封面链接":{url:{text:'封面',link:link}} };
+          "评分":{select:rating}, "进度":{number:prog}, "短评":{text:val('me-note')}, "封面链接":{url:{text:'封面',link:link}},
+          "作者":{text:val('me-author')}, "阅读链接":{url:{text:'打开阅读',link:val('me-link')}} };
   if(MEDIA_EDIT_ID){
     updRec(DB.media, MEDIA_EDIT_ID, p).then(function(){ closeMediaModal(); LOADERS.media(); toast('已保存修改'); })
       .catch(function(e){ toast('保存失败：'+((e&&e.message)||'错误'),true); });
@@ -4997,6 +5015,59 @@ function doMediaImport(){
     return addRec(DB.media, { "类型":{select:type}, "标题":{text:it.title}, "来源":{select:src}, "状态":{select:'想看'}, "短评":{text:it.note}, "记录日期":{date:today()} });
   });
   Promise.all(ops).then(function(){ closeMediaImport(); LOADERS.media(); toast('已导入 '+items.length+' 本 ✅'); })
+    .catch(function(e){ LOADERS.media(); toast('部分导入失败：'+((e&&e.message)||'错误'),true); });
+}
+
+/* ---- R39：微信读书同步文件导入（文件由本机脚本生成，Key 不进页面） ---- */
+var WR_SYNC_PENDING=null;
+function openWeReadSync(){
+  var inp=document.getElementById('wr-sync-file');
+  if(!inp){ inp=document.createElement('input'); inp.type='file'; inp.id='wr-sync-file'; inp.accept='.json,application/json'; inp.style.display='none';
+    inp.addEventListener('change', function(){ if(inp.files&&inp.files[0]) wrSyncReadFile(inp.files[0]); inp.value=''; });
+    document.body.appendChild(inp); }
+  try{ inp.click(); }catch(e){ toast('无法打开文件选择，请重试',true); }
+}
+function wrSyncReadFile(f){
+  var fr=new FileReader();
+  fr.onload=function(){
+    var d=null;
+    try{ d=JSON.parse(String(fr.result||'')); }catch(e){ toast('这个文件读不出来，确认是同步生成的 JSON',true); return; }
+    var items=(d&&d.items)||[];
+    if(!items.length){ toast('文件里没有书',true); return; }
+    WR_SYNC_PENDING=items;
+    var have={}; (window.__media||[]).forEach(function(r){ have[String(r["标题"]||'').trim()]=1; });
+    var dup=items.filter(function(it){ return have[String(it.title||'').trim()]; }).length;
+    var m=document.getElementById('wr-sync-modal');
+    if(!m){ m=document.createElement('div'); m.id='wr-sync-modal'; m.className='imp-modal-mask'; document.body.appendChild(m); }
+    m.innerHTML='<div class="imp-modal-card" style="width:520px" onclick="event.stopPropagation()">'+
+      '<h3>微信读书同步</h3>'+
+      '<div class="imp-sub">文件里有 <b>'+items.length+'</b> 本'+(dup?('，其中 <b>'+dup+'</b> 本你已经记过，会自动跳过'):'')+'。确认导入：</div>'+
+      '<div style="max-height:250px;overflow:auto;margin:8px 0;font-size:12.5px;line-height:1.9">'+
+        items.slice(0,60).map(function(it){ return '<div>· '+esc(it.title)+(it.author?(' <span style="color:var(--muted)">'+esc(it.author)+'</span>'):'')+(it.status?(' <span style="color:var(--muted)">['+esc(it.status)+']</span>'):'')+(it.progress?(' <span style="color:var(--muted)">'+it.progress+'%</span>'):'')+'</div>'; }).join('')+
+        (items.length>60?('<div style="color:var(--muted)">… 还有 '+(items.length-60)+' 本</div>'):'')+
+      '</div>'+
+      '<div class="imp-foot" style="justify-content:space-between"><span class="mi-count">来源：微信读书</span>'+
+        '<span style="display:flex;gap:8px"><button class="btn" onclick="closeWeReadSync()">取消</button>'+
+        '<button class="btn primary" onclick="doWeReadImport()">确认导入</button></span></div>'+
+    '</div>';
+    m.onclick=function(e){ if(e.target===m) closeWeReadSync(); };
+    m.style.display='flex';
+  };
+  fr.readAsText(f,'utf-8');
+}
+function closeWeReadSync(){ var m=document.getElementById('wr-sync-modal'); if(m) m.style.display='none'; WR_SYNC_PENDING=null; }
+function doWeReadImport(){
+  var items=WR_SYNC_PENDING||[]; if(!items.length){ toast('没有可导入的书',true); return; }
+  var have={}; (window.__media||[]).forEach(function(r){ have[String(r["标题"]||'').trim()]=1; });
+  var add=items.filter(function(it){ return !have[String(it.title||'').trim()]; });
+  if(!add.length){ toast('这些书你都已经记过了',true); closeWeReadSync(); return; }
+  var ops=add.map(function(it){
+    return addRec(DB.media, { "类型":{select:it.type||'书籍'}, "标题":{text:it.title}, "来源":{select:'微信读书'},
+      "状态":{select:it.status||'想看'}, "作者":{text:it.author||''}, "进度":{number:(it.progress==null?null:it.progress)},
+      "封面链接":{url:{text:'封面',link:it.cover||''}}, "阅读链接":{url:{text:'打开阅读',link:it.link||''}},
+      "记录日期":{date:today()} });
+  });
+  Promise.all(ops).then(function(){ closeWeReadSync(); LOADERS.media(); toast('已导入 '+add.length+' 本 ✅'); })
     .catch(function(e){ LOADERS.media(); toast('部分导入失败：'+((e&&e.message)||'错误'),true); });
 }
 

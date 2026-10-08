@@ -3307,6 +3307,70 @@ console.log('--- 回归 ---');
 
 
 
+
+  /* ================= R39：微信读书同步接入 ================= */
+  T('R39-1 mediaReadLink 能解析 url 对象', function(){
+    var a=w.mediaReadLink({"阅读链接":{url:{text:'打开阅读',link:'https://weread.example/x'}}});
+    var b=w.mediaReadLink({"阅读链接":'https://weread.example/y'});
+    return a==='https://weread.example/x' && b==='https://weread.example/y';
+  });
+  T('R39-2 mediaReadLink 无字段返回空', function(){
+    return w.mediaReadLink({})==='' && w.mediaReadLink(null)==='';
+  });
+  T('R39-3 mediaReadBtn 有链接才出按钮', function(){
+    var has=w.mediaReadBtn({"阅读链接":{url:{text:'打开阅读',link:'https://a.b/c'}}});
+    var none=w.mediaReadBtn({"标题":'x'});
+    return has.indexOf('mc-open')>=0 && has.indexOf('https://a.b/c')>=0 && none==='';
+  });
+  T('R39-4 同步相关函数齐全', function(){
+    return typeof w.openWeReadSync==='function' && typeof w.doWeReadImport==='function'
+        && typeof w.wrSyncReadFile==='function' && typeof w.closeWeReadSync==='function';
+  });
+  T('R39-5 书影音顶部有微信读书同步按钮', function(){
+    w.renderMedia([]);
+    var h=(d.getElementById('media-body')||{innerHTML:''}).innerHTML;
+    return h.indexOf('openWeReadSync')>=0 && h.indexOf('微信读书同步')>=0;
+  });
+  T('R39-6 收藏表单有作者与阅读链接字段', function(){
+    try{ w.openMediaAdd(); }catch(e){ return false; }
+    var m=d.getElementById('media-edit-modal');
+    var ok=!!(m&&d.getElementById('me-author')&&d.getElementById('me-link'));
+    try{ w.closeMediaModal(); }catch(e){}
+    return ok;
+  });
+  T('R39-7 卡片渲染带打开阅读按钮', function(){
+    w.renderMedia([{owner:w.MY_UID,id:'mm1','标题':'测试书','类型':'书籍','状态':'在读','进度':40,
+                    '来源':'微信读书','阅读链接':{url:{text:'打开阅读',link:'https://a.b/c'}},'记录日期':'2026-10-08'}]);
+    var h=(d.getElementById('media-body')||{innerHTML:''}).innerHTML;
+    return h.indexOf('mc-open')>=0;
+  });
+  T('R39-8 同步文件结构合法', function(){
+    var fs=require('fs'), path=require('path');
+    var dir=path.join(process.env.USERPROFILE||process.env.HOME||'','Desktop');
+    var f=path.join(dir,'微信读书书架_同步_2026-10-08.json');
+    if(!fs.existsSync(f)) return true;
+    var o=JSON.parse(fs.readFileSync(f,'utf8'));
+    if(o.kind!=='weread-shelf') return false;
+    if(!Array.isArray(o.items)) return false;
+    if(o.count!==o.items.length) return false;
+    var okStatus={'想看':1,'在读':1,'看过':1};
+    for(var i=0;i<o.items.length;i++){
+      var it=o.items[i];
+      if(!it.title) return false;
+      if(!okStatus[it.status]) return false;
+      if(it.status==='在读' && !(it.progress>=1 && it.progress<=99)) return false;
+    }
+    return true;
+  });
+  T('R39-9 同步文件不含任何密钥', function(){
+    var fs=require('fs'), path=require('path');
+    var dir=path.join(process.env.USERPROFILE||process.env.HOME||'','Desktop');
+    var f=path.join(dir,'微信读书书架_同步_2026-10-08.json');
+    if(!fs.existsSync(f)) return true;
+    var s=fs.readFileSync(f,'utf8');
+    return s.indexOf('wrk-')<0 && s.indexOf('WEREAD_API_KEY')<0;
+  });
+
   console.log('\n结果: '+pass+' 通过 / '+fail+' 失败');
 
 

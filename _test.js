@@ -1234,7 +1234,7 @@ setTimeout(()=>{
 
 
 
-    const i=html.indexOf('function openDateFixer');
+    const i=html.indexOf('function dfBuildGroups');
 
 
 
@@ -1242,7 +1242,7 @@ setTimeout(()=>{
 
 
 
-    return seg.indexOf('groups[k2].length>bestN')>=0;
+    return seg.indexOf('b.rows.length-a.rows.length')>=0;
 
 
 
@@ -3291,6 +3291,18 @@ console.log('--- 回归 ---');
   T('R36-6: CSS .sa-quick 5列 + .sa-ops-2 两列 + .sa-right 竖向网格',()=> html.indexOf('.sa-quick{display:grid;grid-template-columns:repeat(5,1fr)')>=0 && html.indexOf('.sa-ops-2{display:grid;grid-template-columns:1fr 1fr')>=0 && html.indexOf('.sa-right{flex:1 1 0;min-width:0;display:grid')>=0);
   T('R36-7: 运行时-右列 .sa-right 内含全部 5 项字段控件',()=>{ w.openSchedAddModal(); const r=d.querySelector('#sched-add-modal .sa-right'); if(!r) return false; const ok=['s-st','s-en','s-cat','s-quad','s-place','s-note'].every(id=>!!r.querySelector('#'+id)); w.closeSchedAddModal(); return ok; });
   T('R36-8: 运行时-日期日历在左列、且仍在事项之后',()=>{ w.openSchedAddModal(); const c=d.querySelector('#sched-add-modal .sa-cal'); if(!c) return false; const ok=!!c.querySelector('#s-title') && !!c.querySelector('#s-dates-block') && !!d.querySelector('#sched-add-modal .sa-cal .sa-quick'); w.closeSchedAddModal(); return ok; });
+  T('R38-1: 修改日程-笔记区有图片按钮与文件输入',()=> html.indexOf('esNotePick()')>0 && html.indexOf('es-note-file')>0);
+  T('R38-2: 修改日程-笔记插图三个函数齐全',()=> ['function esNoteSave(','function esNoteRender(','function esNoteAddImages(','function esNoteBind('].every(k=>html.indexOf(k)>=0));
+  T('R38-3: 运行时-修改日程弹窗含笔记图片容器',()=>{ const rec={id:'r38a',标题:'R38A',日期:w.today(),开始时间:'09:00',分类:'川分',象限:'Q1',完成:'否'}; w.openEditSchedModal(rec); const ok=!!d.getElementById('es-note-imgs')&&!!d.getElementById('es-note-file')&&!!d.getElementById('es-letter'); w.closeEditSchedModal(); return ok; });
+  T('R38-4: 运行时-笔记插图与文字写进同一份 key（和今日安排联动）',()=>{ const rec={id:'r38b',标题:'R38B',日期:w.today(),分类:'川分',象限:'Q1',完成:'否'}; w.openEditSchedModal(rec); const ta=d.getElementById('es-letter'); ta.value='甲笔记'; w.esNoteSave(['data:image/webp;base64,AAA']); const saved=w.lwLoadJSON(ta.getAttribute('data-notekey')); const ok=!!saved&&saved.imgs.length===1&&saved.text==='甲笔记'&&saved.tpl==='letter'; w.closeEditSchedModal(); return ok; });
+  T('R38-5: 运行时-删图后 imgs 变空',()=>{ const rec={id:'r38d',标题:'R38D',日期:w.today(),分类:'川分',象限:'Q1',完成:'否'}; w.openEditSchedModal(rec); w.esNoteSave(['data:image/webp;base64,AAA']); w.esNoteSave([]); const k='lw_note_r38d'; const saved=w.lwLoadJSON(k); w.closeEditSchedModal(); return !!saved && saved.imgs.length===0; });
+  T('R38-6: CSS-笔记框最小高度 160px（原 rows=3 约 77px → 翻倍）',()=> html.indexOf('#es-letter{min-height:160px')>=0);
+  T('R38-7: 修日期-顶部可切换事项下拉 + 自选多条入口',()=> html.indexOf('dfPickGroup(this.value)')>=0 && html.indexOf('dfPickCustom()')>=0);
+  T('R38-8: 修日期-分组按条数降序排列',()=> html.indexOf('b.rows.length-a.rows.length')>=0);
+  T('R38-9: 运行时-自选多条可跨事项勾选并生效',()=>{ const old=w.__sched; w.__sched=[{id:'z1',标题:'甲事项',日期:w.today(),开始时间:'09:00',完成:'否'},{id:'z2',标题:'乙事项',日期:w.today(),开始时间:'10:00',完成:'否'}]; w.openDateFixer(); w.dfPickCustom(); const rows=d.querySelectorAll('#date-fixer-modal .df-pick-row'); w.dfPickAll(true); w.dfPickApply(); const n=(w.DF_ROWS||[]).length; w.closeDateFixer(); w.__sched=old; return rows.length===2 && n===2; });
+  T('R38-10: 分类下拉含「＋ 添加分类…」且复用编辑日程分类界面',()=> w.catSelectHTML('').indexOf('__add__')>=0 && html.indexOf('function openCatEditorFor(')>=0);
+  T('R38-11: 运行时-选「添加分类」会打开同一个编辑日程分类弹窗',()=>{ const rec={id:'r38c',标题:'R38C',日期:w.today(),分类:'川分',象限:'Q1',完成:'否'}; w.openEditSchedModal(rec); const sel=d.getElementById('es-cat'); sel._cp=sel.value; sel.value='__add__'; w.catSelectChanged(sel); const m=d.getElementById('cat-modal'); const shown=!!m&&m.style.display==='flex'; if(m) m.style.display='none'; w.closeEditSchedModal(); return shown; });
+  T('R38-12: 运行时-分类编辑器保存后回填原下拉',()=>{ const rec={id:'r38e',标题:'R38E',日期:w.today(),分类:'川分',象限:'Q1',完成:'否'}; w.openEditSchedModal(rec); w.syncCatSelect('es-cat'); const sel=d.getElementById('es-cat'); const ok=!!sel && sel.value==='川分' && sel.innerHTML.indexOf('__add__')>=0; w.closeEditSchedModal(); return ok; });
   T('无 JS 运行时错误',()=>errs.length===0? 'clean' : (console.log(errs.join('\n')), false));
 
 

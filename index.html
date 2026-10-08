@@ -799,6 +799,21 @@
   .fr-spacer{flex:1 1 auto;min-width:0}
   .io-btn{flex:0 0 auto;min-width:0;white-space:nowrap}
   .imp-modal-card.narrow{width:430px}
+  /* R38 修改日程：白色卡片更高、笔记区高度翻倍、笔记可插图 */
+  #editsched-modal .imp-modal-card{width:430px;max-height:92vh;overflow:auto}
+  #es-letter{min-height:160px;resize:vertical}
+  .es-note-bar{display:flex;align-items:center;gap:8px;margin:6px 0 0}
+  .es-note-tip{font-size:11.5px;color:var(--muted)}
+  .es-imgs{display:none;flex-wrap:wrap;gap:8px;padding:8px 0 2px;max-height:26vh;overflow:auto;align-content:flex-start}
+  /* R38 修复日期：可选事项 + 自选多条 */
+  .df-pickbar{display:flex;gap:8px;align-items:center;margin:0 0 8px}
+  .df-pickbar select{flex:1 1 auto;min-width:0}
+  .df-pickbar .btn{flex:0 0 auto;white-space:nowrap}
+  .df-pick-list{max-height:44vh;overflow:auto;border:1px solid var(--line2);border-radius:10px;padding:6px 8px;margin-bottom:10px}
+  .df-pick-row{display:flex;align-items:center;gap:8px;padding:6px 2px;border-bottom:1px dashed var(--line2)}
+  .df-pick-row:last-child{border-bottom:none}
+  .df-pick-row .t{flex:1 1 auto;min-width:0;font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .df-pick-row .d{flex:0 0 auto;font-size:11.5px;color:var(--muted)}
   .imp-pick{display:flex;flex-direction:column;gap:10px;margin:4px 0 14px}
   .imp-pick .btn{width:100%;justify-content:flex-start;gap:10px}
   .imp-fields{font-size:12px;color:var(--muted);line-height:1.85;background:var(--paper);
@@ -2598,7 +2613,7 @@ function optHTML(arr, sel){ return arr.map(function(o){ return '<option'+(o===se
 function catSelectHTML(selected){ var cats=getSchedCats(); var sel=selected||''; var head='';
   if(!sel){ head='<option value="" selected>未分类</option>'; }
   else if(cats.indexOf(sel)<0){ head='<option value="'+esc(sel)+'" selected>'+esc(sel)+'</option>'; }
-  return head+optHTML(cats, sel); }
+  return head+optHTML(cats, sel)+'<option value="__add__">＋ 添加分类…</option>'; }
 function quadOptions(sel){ var map=[['Q1','重要且紧急'],['Q2','重要不紧急'],['Q3','紧急不重要'],['Q4','不紧急不重要']]; return map.map(function(o){ return '<option value="'+o[0]+'"'+(o[0]===(sel||'Q1')?' selected':'')+'>'+o[1]+'</option>'; }).join(''); }
 function submitTask(){
   var title=val('t-title'); if(!title){ toast('请填写要做什么',true); return; }
@@ -2688,7 +2703,7 @@ function openEditWorkModal(src, rec){
     '<div class="fld"><label>标题</label><input id="ew-title" value="'+esc(title)+'"></div>'+
     '<div class="fld"><label>'+(isTask?'截止日期':'日期')+'</label><input id="ew-date" type="date" value="'+dateVal+'"></div>'+
     '<div class="fld"><label>重要/紧急</label><select id="ew-quad">'+quadOptions(quad)+'</select></div>'+
-    '<div class="fld"><label>分类</label><select id="ew-cat">'+catOpts+'</select></div>'+
+    '<div class="fld"><label>分类</label><select id="ew-cat" onfocus="this._cp=this.value" onchange="catSelectChanged(this)">'+catOpts+'</select></div>'+
     '<div class="imp-foot"><button class="btn" onclick="closeEditWorkModal()">取消</button>'+
       '<button class="btn primary" onclick="saveEditWorkItem(\''+src+'\',\''+rid(rec)+'\')">保存修改</button></div>'+
   '</div>';
@@ -3936,7 +3951,7 @@ function renderSchedule(rows){
   var cats=getSchedCats();
   /* 三个控件：分类 / 状态 / 日期 —— 宽度还原为原尺寸，仅三者之间可左右互换（不可跨模块拖出） */
   var fCat='<div class="sched-filter-cell" data-fk="cat">'+filterGrip('cat')+
-    '<select class="filt-btn" onchange="schedFilter=this.value;renderSchedule(window.__sched)"><option value="全部"'+(schedFilter==='全部'?' selected':'')+'>全部</option>'+cats.map(function(c){return '<option'+(c===schedFilter?' selected':'')+'>'+c+'</option>';}).join('')+'</select></div>';
+    '<select class="filt-btn" onfocus="this._cp=this.value" onchange="schedCatFilterChange(this)"><option value="全部"'+(schedFilter==='全部'?' selected':'')+'>全部</option>'+cats.map(function(c){return '<option'+(c===schedFilter?' selected':'')+'>'+c+'</option>';}).join('')+'<option value="__add__">＋ 添加分类…</option>'+'</select></div>';
   var fSta='<div class="sched-filter-cell" data-fk="status">'+filterGrip('status')+
     '<select class="filt-btn" onchange="schedStatusF=this.value;renderSchedule(window.__sched)"><option value="全部状态"'+(schedStatusF==='全部状态'?' selected':'')+'>全部</option><option'+(schedStatusF==='待办'?' selected':'')+'>待办</option><option'+(schedStatusF==='已完成'?' selected':'')+'>已完成</option></select></div>';
   var fDat='<div class="sched-filter-cell dp-host" data-fk="date">'+filterGrip('date')+
@@ -4137,7 +4152,7 @@ function schedFormHTML(){
 }
 
 /* ===== 日期修复工具：同组日程日期乱了，按规律批量重排 ===== */
-var DF_ROWS=[], DF_MODE='weekday', DF_START='', DF_STEP=1;
+var DF_ROWS=[], DF_MODE='weekday', DF_START='', DF_STEP=1, DF_GROUPS=[], DF_KEY='', DF_CUSTOM=false, DF_MIXED=false, _DF_TMP=null;
 function dfISO(dt){ return dt.getFullYear()+'-'+('0'+(dt.getMonth()+1)).slice(-2)+'-'+('0'+dt.getDate()).slice(-2); }
 function dfHits(dt){
   var wd=dt.getDay();
@@ -4146,20 +4161,83 @@ function dfHits(dt){
   if(DF_MODE==='workday6') return wd!==0;              /* 周一~周六，仅周日休 */
   return true;                                         /* step：每 N 天 */
 }
+function dfGroupKey(r){ return [r['标题']||'', r['开始时间']||'', r['结束时间']||''].join('|'); }
+function dfBuildGroups(){
+  var g={}, order=[];
+  (window.__sched||[]).forEach(function(r){
+    var k=dfGroupKey(r);
+    if(!g[k]){ g[k]=[]; order.push(k); }
+    g[k].push(r);
+  });
+  DF_GROUPS=order.map(function(k){ return { key:k, rows:g[k] }; })
+    .sort(function(a,b){ return b.rows.length-a.rows.length; });
+}
+function dfPickGroup(key){
+  var g=null;
+  for(var i=0;i<DF_GROUPS.length;i++){ if(DF_GROUPS[i].key===key){ g=DF_GROUPS[i]; break; } }
+  DF_KEY=key; DF_CUSTOM=false; DF_MIXED=false;
+  DF_ROWS=(g?g.rows:[]).slice();
+  DF_ROWS.forEach(function(r){ r._pick=true; });
+  renderDateFixer();
+}
 function openDateFixer(){
   var m=document.getElementById('date-fixer-modal');
   if(!m){ m=document.createElement('div'); m.id='date-fixer-modal'; m.className='imp-modal-mask'; document.body.appendChild(m); }
-  /* 默认取「条数最多的那一组同标题+同时段」，正好命中被压在一起的记录 */
-  var groups={};
-  (window.__sched||[]).forEach(function(r){
-    var k=[r['标题']||'', r['开始时间']||'', r['结束时间']||''].join('|');
-    (groups[k]=groups[k]||[]).push(r);
-  });
-  var bestKey='', bestN=0;
-  for(var k2 in groups){ if(groups[k2].length>bestN){ bestN=groups[k2].length; bestKey=k2; } }
-  DF_ROWS=(groups[bestKey]||[]).slice();
+  dfBuildGroups();
+  DF_CUSTOM=false; DF_MIXED=false;
+  var still=false;
+  for(var i=0;i<DF_GROUPS.length;i++){ if(DF_GROUPS[i].key===DF_KEY){ still=true; break; } }
+  if(!still) DF_KEY=DF_GROUPS.length?DF_GROUPS[0].key:'';
+  var g=null;
+  for(var j=0;j<DF_GROUPS.length;j++){ if(DF_GROUPS[j].key===DF_KEY){ g=DF_GROUPS[j]; break; } }
+  DF_ROWS=(g?g.rows:[]).slice();
+  DF_ROWS.forEach(function(r){ r._pick=true; });
   DF_START=''; DF_MODE='weekday'; DF_STEP=1;
   renderDateFixer();
+}
+function dfGroupOptions(){
+  return DF_GROUPS.map(function(g){
+    var t=g.rows[0]||{};
+    var label=(t['标题']||'（无标题）')+(t['开始时间']?('　'+t['开始时间']+'~'+(t['结束时间']||'')):'');
+    return '<option value="'+esc(g.key)+'"'+(g.key===DF_KEY?' selected':'')+'>'+esc(label)+'　· '+g.rows.length+' 条</option>';
+  }).join('');
+}
+/* ----- 自选多条：不同事项也能凑在一起重排 ----- */
+function dfPickCustom(){ DF_CUSTOM=true; _DF_TMP=null; renderDateFixerPick(); }
+function dfPickOne(i,on){ if(_DF_TMP&&_DF_TMP[i]) _DF_TMP[i].on=!!on; renderDateFixerPick(); }
+function dfPickAll(on){ (_DF_TMP||[]).forEach(function(x){ x.on=!!on; }); renderDateFixerPick(); }
+function dfPickCancel(){ DF_CUSTOM=false; renderDateFixer(); }
+function dfPickApply(){
+  DF_CUSTOM=false; DF_MIXED=true;
+  DF_ROWS=(_DF_TMP||[]).filter(function(x){ return x.on; }).map(function(x){ return x.r; });
+  DF_ROWS.forEach(function(r){ r._pick=true; });
+  renderDateFixer();
+}
+function renderDateFixerPick(){
+  var m=document.getElementById('date-fixer-modal'); if(!m) return;
+  if(!_DF_TMP){
+    _DF_TMP=(window.__sched||[]).map(function(r){ return { r:r, on:DF_ROWS.indexOf(r)>=0 }; });
+  }
+  var selN=_DF_TMP.filter(function(x){ return x.on; }).length;
+  var rows=_DF_TMP.map(function(x,i){
+    return '<div class="df-pick-row">'+
+      '<input type="checkbox" '+(x.on?'checked':'')+' onchange="dfPickOne('+i+',this.checked)">'+
+      '<span class="t">'+esc(x.r['标题']||'（无标题）')+'</span>'+
+      '<span class="d">'+esc(dateSub(x.r['日期']||''))+(x.r['开始时间']?('　'+esc(x.r['开始时间'])):'')+'</span>'+
+      '</div>';
+  }).join('');
+  m.innerHTML='<div class="imp-modal-card df-card" onclick="event.stopPropagation()">'+
+    '<h3>自选要重排的事项</h3>'+
+    '<div class="imp-sub">任意事项都能一起选（不必同标题）。勾选后点「确定」回到重排界面。</div>'+
+    '<div class="df-bar"><button class="btn sm" onclick="dfPickAll(true)">全选</button>'+
+      '<button class="btn sm" onclick="dfPickAll(false)">全不选</button>'+
+      '<span class="df-cnt">已选 <b>'+selN+'</b> / '+_DF_TMP.length+' 条</span></div>'+
+    '<div class="df-pick-list">'+rows+'</div>'+
+    '<div class="imp-foot"><button class="btn" onclick="dfPickCancel()">取消</button>'+
+      '<span style="flex:1"></span>'+
+      '<button class="btn primary" onclick="dfPickApply()">确定</button></div></div>';
+  m.onclick=function(e){ if(e.target===m) dfPickCancel(); };
+  m.style.display='flex';
 }
 function closeDateFixer(){ var m=document.getElementById('date-fixer-modal'); if(m) m.style.display='none'; }
 function dfToggleAll(on){ DF_ROWS.forEach(function(r){ r._pick=!!on; }); renderDateFixer(); }
@@ -4206,9 +4284,13 @@ function renderDateFixer(){
   }).join('');
   m.innerHTML='<div class="imp-modal-card df-card" onclick="event.stopPropagation()">'+
     '<h3>修复日期 · 按规律重排</h3>'+
-    '<div class="imp-sub">同标题同时间段的 <b>'+DF_ROWS.length+'</b> 条日程，日期乱掉了可以在这里按规律重排。'+
+    '<div class="imp-sub">上面下拉可<b>切换其它事项</b>；当前这 <b>'+DF_ROWS.length+'</b> 条，日期乱掉了可以在这里按规律重排。'+
       '勾选要处理的条目，选好规律，下面实时预览「原日期 → 新日期」。</div>'+
-    '<div class="df-title">「'+esc(t['标题']||'')+'」'+(t['开始时间']?('　'+esc(t['开始时间'])+'~'+esc(t['结束时间'])):'')+'</div>'+
+    '<div class="df-pickbar">'+
+      '<select onchange="dfPickGroup(this.value)" title="切换要重排的事项">'+dfGroupOptions()+'</select>'+
+      '<button type="button" class="btn sm" onclick="dfPickCustom()" title="不同事项也能一起选">自选多条</button>'+
+    '</div>'+
+    '<div class="df-title">'+(DF_MIXED?('自选 '+DF_ROWS.length+' 条（跨事项）'):('「'+esc(t['标题']||'')+'」'+(t['开始时间']?('　'+esc(t['开始时间'])+'~'+esc(t['结束时间'])):'')))+'</div>'+
     '<div class="df-opts">'+
       '<div class="fld"><label>起始日期</label><input type="date" id="df-start" value="'+esc(DF_START)+'" onchange="dfSetStart(this.value)"></div>'+
       '<div class="fld"><label>节奏</label><select id="df-mode" onchange="dfSetMode(this.value)">'+
@@ -4391,21 +4473,109 @@ function openEditSchedModal(rec){
       '<div class="fld"><label>结束</label><input id="es-en" type="time" class="time-input" value="'+esc(hm24(rec['结束时间']))+'"></div>'+
     '</div>'+
     '<div class="es-row es-row-2">'+
-      '<div class="fld"><label>分类</label><select id="es-cat">'+catSelectHTML(rec['分类'])+'</select></div>'+
+      '<div class="fld"><label>分类</label><select id="es-cat" onfocus="this._cp=this.value" onchange="catSelectChanged(this)">'+catSelectHTML(rec['分类'])+'</select></div>'+
       '<div class="fld"><label>重要/紧急</label><select id="es-quad">'+quadOptions(rec['象限']||'Q1')+'</select></div>'+
     '</div>'+
     '<div class="es-row es-row-2">'+
       '<div class="fld"><label>备注</label><input id="es-note" value="'+esc(rec['备注']||'')+'" placeholder="选填"></div>'+
       '<div class="fld"><label>地点</label><input id="es-place" value="'+esc(rec['地点']||'')+'" placeholder="选填"></div>'+
     '</div>'+
-    '<div class="es-row es-row-1"><div class="fld" style="flex:1 1 auto"><label>笔记（与今日安排「笔记」联动）</label><textarea id="es-letter" rows="3" data-notekey="lw_note_'+rid(rec)+'" onchange="saveEditNote(this)" placeholder="和今日安排里的笔记是同一份，自动关联">'+esc(notePlain((lwLoadJSON('lw_note_'+rid(rec))||{}).text||''))+'</textarea></div></div>'+_esBatchPanelHTML(rec)+
+    '<div class="es-row es-row-1"><div class="fld" style="flex:1 1 auto"><label>笔记（与今日安排「笔记」联动）</label><textarea id="es-letter" data-notekey="lw_note_'+rid(rec)+'" onchange="saveEditNote(this)" placeholder="和今日安排里的笔记是同一份，自动关联">'+esc(notePlain((lwLoadJSON('lw_note_'+rid(rec))||{}).text||''))+'</textarea>'+
+      '<div class="es-note-bar"><button type="button" class="note-img-btn" onclick="esNotePick()">🖼 图片</button><span class="es-note-tip">也可 Ctrl+V 粘贴、或把图片拖进来（≤10 张）</span></div>'+
+      '<div class="es-imgs" id="es-note-imgs"></div>'+
+      '<input type="file" id="es-note-file" accept="image/*" multiple style="display:none">'+
+    '</div></div>'+_esBatchPanelHTML(rec)+
     '<div class="imp-foot"><button class="btn" onclick="closeEditSchedModal()">取消</button>'+
       '<button class="btn primary" onclick="saveEditSchedItem(\''+rid(rec)+'\')">保存修改</button></div>'+
   '</div>';
   m.onclick=function(e){ if(e.target===m) closeEditSchedModal(); };
+  esNoteBind(); esNoteRender();
   m.style.display='flex';
 }
 function closeEditSchedModal(){ var m=document.getElementById('editsched-modal'); if(m) m.style.display='none'; }
+/* ===== R38：修改日程弹窗里的笔记也能插图（与今日安排笔记同一份数据、同一个 key） ===== */
+function esNoteKey(){ var ta=document.getElementById('es-letter'); return ta?String(ta.getAttribute('data-notekey')||''):''; }
+function esNoteRead(){
+  var k=esNoteKey(); if(!k) return null;
+  var d=lwLoadJSON(k)||{};
+  if(!d.tpl) d.tpl='letter';
+  if(!Array.isArray(d.imgs)) d.imgs=[];
+  return d;
+}
+function esNoteSave(imgs){
+  var k=esNoteKey(); if(!k) return;
+  var d=lwLoadJSON(k)||{};
+  if(!d.tpl) d.tpl='letter';
+  var ta=document.getElementById('es-letter');
+  if(ta) d.text=String(ta.value||'').replace(/\n/g,'<br>');
+  d.imgs=imgs||[];
+  try{ lwSaveJSON(k,d); }catch(e){}
+}
+function esNoteRender(){
+  var host=document.getElementById('es-note-imgs'); if(!host) return;
+  var d=esNoteRead(); if(!d) return;
+  var arr=d.imgs||[];
+  if(!arr.length){ host.style.display='none'; host.innerHTML=''; return; }
+  host.style.display='flex';
+  host.innerHTML=arr.map(function(src,i){
+    return '<div class="note-img-item"><img src="'+src+'" onclick="esNoteView('+i+')" alt="笔记图片" draggable="false">'+
+           '<button class="note-img-del" onclick="esNoteDel('+i+')" title="删除这张">×</button></div>';
+  }).join('')+'<div class="note-img-tip">共 '+arr.length+' 张 · 点图片可放大</div>';
+}
+function esNoteView(i){ var d=esNoteRead(); if(!d) return; var src=(d.imgs||[])[i]; if(!src) return;
+  try{ var w=window.open(''); if(!w) return;
+    w.document.write('<title>笔记图片</title><body style="margin:0;background:#111;display:flex;align-items:center;justify-content:center"><img src="'+src+'" style="max-width:100%;max-height:100vh"></body>');
+  }catch(e){} }
+function esNoteDel(i){ var d=esNoteRead(); if(!d) return;
+  myConfirm('删除这张图片？', function(){
+    var imgs=(d.imgs||[]).slice(); imgs.splice(i,1); esNoteSave(imgs); esNoteRender();
+  }); }
+function esNotePick(){ var f=document.getElementById('es-note-file'); if(f){ try{ f.value=''; }catch(e){} f.click(); } }
+function esNoteAddImages(files){
+  var k=esNoteKey(); if(!k) return;
+  var list=[]; try{ list=Array.prototype.slice.call(files||[]).filter(function(f){ return f&&/^image\//.test(f.type||''); }); }catch(e){ list=[]; }
+  if(!list.length){ toast('没识别到图片'); return; }
+  var d=esNoteRead(); if(!d) return;
+  var imgs=(d.imgs||[]).slice();
+  var idx=0,added=0,skip=0;
+  (function next(){
+    if(idx>=list.length){
+      if(added) esNoteSave(imgs);
+      esNoteRender();
+      toast('已加入 '+added+' 张图片'+(skip?('，'+skip+' 张略过（过大或超上限）'):''), added?false:true);
+      return;
+    }
+    var f=list[idx++];
+    if(imgs.length>=10){ skip++; next(); return; }
+    compressImg(f,function(durl){
+      if(durl&&noteFitSize(imgs,durl)){ imgs.push(durl); added++; } else { skip++; }
+      next();
+    });
+  })();
+}
+function esNoteBind(){
+  var box=document.getElementById('editsched-modal'); if(!box) return;
+  var fi=box.querySelector('#es-note-file');
+  if(fi && !fi._esBound){ fi._esBound=1; fi.addEventListener('change',function(){ esNoteAddImages(fi.files); try{ fi.value=''; }catch(e){} }); }
+  var ta=document.getElementById('es-letter');
+  if(ta && !ta._esBound){
+    ta._esBound=1;
+    ta.addEventListener('paste',function(e){
+      if(e.clipboardData){
+        var fs=[];
+        for(var i=0;i<e.clipboardData.items.length;i++){
+          var it=e.clipboardData.items[i];
+          if(it.kind==='file'&&/^image\//.test(it.type)) fs.push(it.getAsFile());
+        }
+        if(fs.length){ e.preventDefault(); esNoteAddImages(fs); }
+      }
+    });
+    ta.addEventListener('dragover',function(e){ e.preventDefault(); });
+    ta.addEventListener('drop',function(e){
+      if(e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files.length){ e.preventDefault(); esNoteAddImages(e.dataTransfer.files); }
+    });
+  }
+}
 /* ===== 批量改前快照：可一键撤销（只留最近 5 次）===== */
 var SCHED_UNDO_KEY='lw_sched_undo';
 function esSnapshot(ids){
@@ -4527,7 +4697,7 @@ function openBatchEditModal(ids){
     '<div class="es-row es-row-3">'+
       '<div class="fld"><label>开始</label><input id="be-st" type="time" class="time-input" value="'+esc(hm24(first['开始时间']))+'"></div>'+
       '<div class="fld"><label>结束</label><input id="be-en" type="time" class="time-input" value="'+esc(hm24(first['结束时间']))+'"></div>'+
-      '<div class="fld"><label>分类</label><select id="be-cat">'+catSelectHTML(first['分类'])+'</select></div>'+
+      '<div class="fld"><label>分类</label><select id="be-cat" onfocus="this._cp=this.value" onchange="catSelectChanged(this)">'+catSelectHTML(first['分类'])+'</select></div>'+
     '</div>'+
     '<div class="es-row es-row-2">'+
       '<div class="fld"><label>重要/紧急</label><select id="be-quad">'+quadOptions(first['象限']||'Q1')+'</select></div>'+
@@ -5772,10 +5942,32 @@ function catDelRow(btn){ var row=btn.closest('.cat-row'); if(!row) return;
 }
 function catCollectRows(){ var ins=document.querySelectorAll('#cat-list .cat-row input'); return [].slice.call(ins).map(function(i){ return i.value.trim()||'未命名'; }); }
 function saveCatEditor(){ var rows=catCollectRows(); if(!rows.length){ toast('至少保留一个分类',true); return; }
-  if(catEditorMode==='sched'){ setSchedCats(rows); closeCatEditor(); renderSchedule(window.__sched); toast('分类已更新'); }
+  if(catEditorMode==='sched'){ setSchedCats(rows); closeCatEditor(); renderSchedule(window.__sched); syncCatSelect(_catEditorFrom); _catEditorFrom=''; toast('分类已更新'); }
   else { setFinCats(catEditorFinType, rows); var sel=document.getElementById('f-cat'); if(sel) sel.innerHTML=optHTML(rows, rows[0]||''); closeCatEditor(); renderFinance(window.__fin||[]); toast('分类已更新'); }
 }
 function closeCatEditor(){ var m=document.getElementById('cat-modal'); if(m) m.style.display='none'; }
+/* ===== R38：任何分类下拉都可直接「＋ 添加分类…」，复用同一套「编辑日程分类」界面 ===== */
+var _catEditorFrom='';
+function openCatEditorFor(selId){ _catEditorFrom=selId||''; openCatEditor(); }
+function syncCatSelect(id){
+  if(!id) return;
+  var sel=document.getElementById(id); if(!sel) return;
+  var v=(sel.value==='__add__')?(sel._cp||''):sel.value;
+  sel.innerHTML=catSelectHTML(v);
+  sel.value=v;
+}
+function catSelectChanged(sel){
+  if(!sel) return false;
+  if(sel.value!=='__add__') return false;
+  var prev=sel._cp||'';
+  sel.value=prev;
+  openCatEditorFor(sel.id);
+  return true;
+}
+function schedCatFilterChange(sel){
+  if(catSelectChanged(sel)) return;
+  schedFilter=sel.value; renderSchedule(window.__sched);
+}
 
 /* ================= 导入 CSV → 日程统筹 =================
    用法：把行事历 Excel 展平成 CSV（表头含 日期/标题/开始时间/结束时间/备注/分类/完成），

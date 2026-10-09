@@ -679,7 +679,10 @@
   .s-batchbar .btn[disabled]{opacity:.45;cursor:not-allowed}
   .item .s-sel{flex:0 0 auto;width:15px;height:15px;accent-color:var(--accent);cursor:pointer}
   .sa-ops>.btn,.sa-quick>.btn{width:100%;min-width:0;height:30px;padding:0 6px;font-size:12.5px;justify-content:center;box-sizing:border-box}
-  .smc-cnt-row{font-size:11.5px;font-weight:700;color:var(--accent);margin-top:6px;text-align:center}
+  .smc-cnt-row{font-size:13px;font-weight:800;color:var(--accent);margin-top:6px;text-align:center}
+  .smc-cnt-row b{font-size:15px}
+  .smc-months{font-weight:600;color:var(--muted)}
+  #s-submit{font-size:16px;height:40px;font-weight:800;letter-spacing:.5px}
   /* 修改明细：改全部日期 */
   .es-batch-box{margin:10px 0 4px;padding:10px 12px;border:1px dashed var(--accent);border-radius:10px;background:var(--accent-soft)}
   .es-batch-lab{display:flex;align-items:flex-start;gap:8px;cursor:pointer;font-size:13px;font-weight:700;color:var(--ink);line-height:1.5}
@@ -4079,7 +4082,7 @@ function schedPickInnerHTML(){
     var ds=y+'-'+pad2(m+1)+'-'+pad2(d);
     h+='<div class="d'+(schedPickDates.indexOf(ds)>=0?' pick':'')+'" onclick="schedPickToggle(\''+ds+'\')">'+d+'</div>';
   }
-  h+='</div><div class="smc-cnt-row">已选 <b>'+schedPickDates.length+'</b> 天</div></div>';
+  h+='</div><div class="smc-cnt-row">已选 <b>'+schedPickDates.length+'</b> 天'+schedMonthSummary()+'</div></div>';
   return h;
 }
 function renderSchedPickBlock(){
@@ -4102,11 +4105,29 @@ function schedCalMove(delta){
 function schedPickQuick(kind){
   var y=schedPickY, m=schedPickM, arr=[];
   var days=new Date(y,m+1,0).getDate();
+  if(kind==='clear'){ schedPickDates=[]; renderSchedPickBlock(); return; }
   if(kind==='today'){ arr=[today()]; }
   else if(kind==='all'){ for(var d=1;d<=days;d++) arr.push(y+'-'+pad2(m+1)+'-'+pad2(d)); }
   else if(kind==='weekday'){ for(var d=1;d<=days;d++){ var w=new Date(y,m,d).getDay(); if(w!==0&&w!==6) arr.push(y+'-'+pad2(m+1)+'-'+pad2(d)); } }
   else if(kind==='weekend'){ for(var d=1;d<=days;d++){ var w=new Date(y,m,d).getDay(); if(w===0||w===6) arr.push(y+'-'+pad2(m+1)+'-'+pad2(d)); } }
-  schedPickDates=arr; renderSchedPickBlock();
+  /* R40: 快捷按钮改为「并入本月」——可跨月累加多月；若本月该组已全选，再点一次即整体取消该月该组 */
+  var allIn = arr.length>0 && arr.every(function(ds){ return schedPickDates.indexOf(ds)>=0; });
+  if(allIn){
+    schedPickDates = schedPickDates.filter(function(ds){ return arr.indexOf(ds)<0; });
+  }else{
+    var seen={}; schedPickDates.forEach(function(ds){ seen[ds]=1; });
+    arr.forEach(function(ds){ if(!seen[ds]){ seen[ds]=1; schedPickDates.push(ds); } });
+  }
+  schedPickDates.sort(); renderSchedPickBlock();
+}
+function schedMonthSummary(){
+  /* R40: 已选跨多个月时给出各月分布，如（10月×8 · 11月×5） */
+  if(schedPickDates.length<2) return '';
+  var m={}; schedPickDates.forEach(function(ds){ var k=ds.slice(0,7); m[k]=(m[k]||0)+1; });
+  var ks=Object.keys(m).sort();
+  if(ks.length<2) return '';
+  var parts=ks.map(function(k){ return (Number(k.slice(5,7))+'月')+'×'+m[k]; });
+  return '<span class="smc-months">（'+parts.join(' · ')+'）</span>';
 }
 function schedFormHTML(){
   return '<div class="form sched-form-compact sched-form-narrow">'+
@@ -4115,7 +4136,7 @@ function schedFormHTML(){
         /* ---- 左列：事项 → 日期选项 → 快捷/工具按钮 → 操作按钮 ---- */
         '<div class="sa-cal">'+
           '<div class="fld"><label>事项</label><input id="s-title" placeholder="要做什么？"></div>'+
-          '<div class="fld sched-dates-fld"><label>日期 · 点日期可多选（一次添加到多个日程）</label>'+
+          '<div class="fld sched-dates-fld"><label>日期 · 点日期多选，可跨月累加（全月/工作日/周末 可叠加多个月）</label>'+
             '<div id="s-dates-block">'+schedPickInnerHTML()+'</div>'+
             '<div class="sa-quick">'+
               '<button type="button" class="btn sm" onclick="schedPickQuick(&quot;all&quot;)">全月</button>'+

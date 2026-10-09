@@ -574,11 +574,11 @@ setTimeout(()=>{
 
 
 
-  T('快捷「本月工作日」→ 全为周一~周五',()=>{ w.schedPickQuick('weekday'); const ok=w.schedPickDates.length>0 && w.schedPickDates.every(ds=>{ const wd=new Date(Number(ds.slice(0,4)),Number(ds.slice(5,7))-1,Number(ds.slice(8,10))).getDay(); return wd>=1&&wd<=5; }); return ok ? w.schedPickDates.length+' 天' : false; });
+  T('快捷「本月工作日」→ 全为周一~周五',()=>{ w.schedPickDates=[]; w.schedPickQuick('weekday'); const ok=w.schedPickDates.length>0 && w.schedPickDates.every(ds=>{ const wd=new Date(Number(ds.slice(0,4)),Number(ds.slice(5,7))-1,Number(ds.slice(8,10))).getDay(); return wd>=1&&wd<=5; }); return ok ? w.schedPickDates.length+' 天' : false; });
 
 
 
-  T('快捷「本月周末」→ 全为周六/周日',()=>{ w.schedPickQuick('weekend'); return w.schedPickDates.every(ds=>{ const wd=new Date(Number(ds.slice(0,4)),Number(ds.slice(5,7))-1,Number(ds.slice(8,10))).getDay(); return wd===0||wd===6; }); });
+  T('快捷「本月周末」→ 全为周六/周日',()=>{ w.schedPickDates=[]; w.schedPickQuick('weekend'); return w.schedPickDates.every(ds=>{ const wd=new Date(Number(ds.slice(0,4)),Number(ds.slice(5,7))-1,Number(ds.slice(8,10))).getDay(); return wd===0||wd===6; }); });
 
 
 
@@ -594,7 +594,43 @@ setTimeout(()=>{
 
 
 
-  T('切到下月后「全月」= 该月天数',()=>{ w.schedCalMove(1); w.schedPickQuick('all'); const days=new Date(w.schedPickY,w.schedPickM+1,0).getDate(); const ok=w.schedPickDates.length===days; w.schedCalMove(-1); return ok; });
+  T('切到下月后「全月」= 该月天数',()=>{ w.schedPickDates=[]; w.schedCalMove(1); w.schedPickQuick('all'); const days=new Date(w.schedPickY,w.schedPickM+1,0).getDate(); const ok=w.schedPickDates.length===days; w.schedCalMove(-1); w.schedPickDates=[]; return ok; });
+
+  /* ===== R40：本月事项「跨月累加」选择 ===== */
+  T('R40-1 快捷按钮跨月累加：本月工作日 + 下月工作日 都在',()=>{
+    w.schedPickDates=[]; w.schedPickY=Number(w.today().slice(0,4)); w.schedPickM=Number(w.today().slice(5,7))-1;
+    w.schedPickQuick('weekday'); const c1=w.schedPickDates.length;
+    w.schedCalMove(1); w.schedPickQuick('weekday'); const c2=w.schedPickDates.length;
+    const ms={}; w.schedPickDates.forEach(ds=>{ ms[ds.slice(0,7)]=1; });
+    w.schedCalMove(-1);
+    return c1>0 && c2>c1 && Object.keys(ms).length===2 ? (c1+'+'+(c2-c1)+'='+c2) : false;
+  });
+
+  T('R40-2 同一月再点一次「工作日」→ 该月工作日整体取消',()=>{
+    w.schedPickDates=[]; w.schedPickY=Number(w.today().slice(0,4)); w.schedPickM=Number(w.today().slice(5,7))-1;
+    w.schedPickQuick('weekday'); const c1=w.schedPickDates.length;
+    w.schedPickQuick('weekday'); const c2=w.schedPickDates.length;
+    return c1>0 && c2===0;
+  });
+
+  T('R40-3 跨月时计数行显示各月分布（含 ×N 与 月）',()=>{
+    w.schedPickDates=[]; w.schedPickY=Number(w.today().slice(0,4)); w.schedPickM=Number(w.today().slice(5,7))-1;
+    w.schedPickQuick('weekday'); w.schedCalMove(1); w.schedPickQuick('weekday'); w.schedCalMove(-1);
+    const el=d.getElementById('s-dates-block');
+    return el.innerHTML.includes('smc-months') && el.innerHTML.includes('×') && el.innerHTML.includes('月');
+  });
+
+  T('R40-4 「添加 N 天」按钮字号明显放大（#s-submit >=14px）',()=>{
+    return /#s-submit\{[^}]*font-size:1[4-9]px/.test(html);
+  });
+
+  T('R40-5 「清空」跨月也全清，按钮回到「添加」',()=>{
+    w.schedPickDates=[]; w.schedPickY=Number(w.today().slice(0,4)); w.schedPickM=Number(w.today().slice(5,7))-1;
+    w.schedPickQuick('weekday'); w.schedCalMove(1); w.schedPickQuick('weekday'); w.schedCalMove(-1);
+    w.schedPickQuick('clear');
+    const b=d.getElementById('s-submit');
+    return w.schedPickDates.length===0 && b.textContent==='添加';
+  });
 
 
 

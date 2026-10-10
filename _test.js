@@ -802,7 +802,7 @@ setTimeout(()=>{
 
 
 
-    return txts.indexOf('✓')>=0 && txts.indexOf('↺')>=0 && txts.indexOf('✗')>=0 && titles.some(t=>t==='已完成') && titles.some(t=>t.indexOf('未完成')===0);
+    return txts.indexOf('✓')>=0 && txts.indexOf('↺')>=0 && txts.indexOf('✗')>=0 && titles.some(t=>t.indexOf('点击标记完成')>=0) && titles.some(t=>t.indexOf('未完成')===0);
 
 
 
@@ -2862,7 +2862,7 @@ setTimeout(()=>{
 
 
 
-  T('R22-F: 事项明细表头"全选"勾选框+计数右对齐（R23 二.6）',()=> html.indexOf('id="s-sel-all" class="s-sel-all-cb"')>=0 && html.indexOf('id="s-sel-cnt" style="margin-left:auto"')>=0);
+  T('R22-F: 事项明细表头 共N项在前+全选勾选框（R23 二.6 / R42b 调序）',()=> html.indexOf('id="s-sel-all" class="s-sel-all-cb"')>=0 && html.indexOf('id="s-sel-cnt"')>=0 && html.indexOf('id="s-total"')<html.indexOf('id="s-sel-all" class="s-sel-all-cb"'));
 
 
 
@@ -2940,7 +2940,7 @@ console.log('--- 回归 ---');
   T('R23-二.5: 筛选谓词支持 range(today/month/year)',()=> html.indexOf('schedRange===null')>=0 && html.indexOf("schedRange==='today'?dateSub")>=0 && html.indexOf("schedRange==='month'?dateSub")>=0 && html.indexOf("td.substring(0,4))===0")>=0);
 
 
-  T('R23-二.6: 全选勾选框(s-sel-all-cb)+计数右对齐+toggleSelAll',()=> html.indexOf('id="s-sel-all" class="s-sel-all-cb"')>=0 && html.indexOf('id="s-sel-cnt" style="margin-left:auto"')>=0 && html.indexOf('function toggleSelAll')>=0);
+  T('R23-二.6: 全选勾选框(s-sel-all-cb)+全选推到右侧(margin-left:auto)+toggleSelAll',()=> html.indexOf('id="s-sel-all" class="s-sel-all-cb" style="margin-left:auto"')>=0 && html.indexOf('id="s-sel-cnt"')>=0 && html.indexOf('function toggleSelAll')>=0);
 
 
 
@@ -3140,6 +3140,7 @@ console.log('--- 回归 ---');
     return got===days ? (got+'/'+days) : false; });
   T('R30-3: 复盘卡片样式类已注入',()=> html.indexOf('.rev-card{')>=0 && html.indexOf('.rev-card .rv-done{')>=0);
   T('R30-4: 复盘 只列未完成事项，且 ✓ / 修改 带真实 id',()=>{
+    w.REV_RANGE='全部';
     w.__sched=[
       {id:'RS_A',标题:'未完成甲',分类:'工作',日期:w.today(),完成:'否'},
       {id:'RS_B',标题:'已完成乙',分类:'学习',日期:w.today(),完成:'是'}
@@ -3156,7 +3157,7 @@ console.log('--- 回归 ---');
       {id:'Y2',标题:'今年一月',分类:'工作',日期:'2026-01-20',完成:'否'},
       {id:'Y3',标题:'今年七月',分类:'工作',日期:'2026-07-20',完成:'否'}
     ];
-    w.REV_YEAR='全部'; w.REV_MONTH='全部';
+    w.REV_RANGE='全部'; w.REV_YEAR='全部'; w.REV_MONTH='全部';
     const all=w.revPanelHTML();
     w.REV_YEAR='2026'; w.REV_MONTH='全部';
     const y26=w.revPanelHTML();
@@ -3165,13 +3166,15 @@ console.log('--- 回归 ---');
     const ok=(all.indexOf('去年十二月')>=0 && all.indexOf('今年一月')>=0)
       && (y26.indexOf('去年十二月')<0 && y26.indexOf('今年一月')>=0 && y26.indexOf('今年七月')>=0)
       && (y26m1.indexOf('今年一月')>=0 && y26m1.indexOf('今年七月')<0);
-    w.REV_YEAR='全部'; w.REV_MONTH='全部'; w.__sched=[];
+    w.REV_RANGE='昨日'; w.REV_YEAR='全部'; w.REV_MONTH='全部'; w.__sched=[];
     return ok?'ok':false; });
   T('R30-6: 复盘 空数据提示语',()=>{
-    w.__sched=[]; w.REV_YEAR='全部'; w.REV_MONTH='全部';
+    w.__sched=[]; w.REV_RANGE='全部'; w.REV_YEAR='全部'; w.REV_MONTH='全部';
     const h=w.revPanelHTML();
+    w.REV_RANGE='昨日';
     return h.indexOf('这个范围内还没有安排')>=0 ? 'empty-ok' : false; });
   T('R30-7: 复盘 行内 onclick 表达式全部可解析',()=>{
+    w.REV_RANGE='全部';
     w.__sched=[{id:'RS_X',标题:'校验项',分类:'工作',日期:w.today(),完成:'否'}];
     const h=w.revPanelHTML();
     const m=h.match(/onclick="([^"]*)"/g)||[];
@@ -3201,7 +3204,7 @@ console.log('--- 回归 ---');
       {id:'P1',标题:'甲',分类:'工作',日期:w.today(),完成:'是'},
       {id:'P2',标题:'乙',分类:'工作',日期:w.today(),完成:'否'}
     ];
-    w.REV_YEAR='全部'; w.REV_MONTH='全部';
+    w.REV_RANGE='全部'; w.REV_YEAR='全部'; w.REV_MONTH='全部';
     const h=w.revPanelHTML();
     const ok=h.indexOf('--p:50')>=0 && h.indexOf('共 <b>2</b> 项，完成 <b>1</b> 项')>=0;
     w.__sched=[];
@@ -3264,7 +3267,7 @@ console.log('--- 回归 ---');
     return ok?dbg:false; });
 
   /* ===== R32：事项明细撤销入口 / 按钮文案 / 信纸划线对齐 / 笔记图片 ===== */
-  T('R32-1: 事项明细批量条新增「撤销上次批量修改」入口',()=> html.indexOf('s-sel-cnt" style="margin-left:auto"></span><button class="btn sm" onclick="schedUndoLast()"')>=0);
+  T('R32-1: 事项明细批量条新增「撤销上次批量修改」入口',()=> html.indexOf('id="s-sel-cnt"></span><button class="btn sm" onclick="schedUndoLast()"')>=0);
   T('R32-2: 添加事项弹窗按钮文案改为「撤销上次批量修改」',()=> html.indexOf('white-space:nowrap">撤销上次批量修改</button>')>=0);
   T('R32-3: 信纸文字在划线上方(内容盒起算 + 行高=线距)',()=> (html.indexOf('background-origin:content-box;line-height:32px;')>=0)?'ok':false);
   T('R32-4: 笔记弹窗含图片按钮/图片区/文件选择器',()=>{
@@ -3407,6 +3410,111 @@ console.log('--- 回归 ---');
     return s.indexOf('wrk-')<0 && s.indexOf('WEREAD_API_KEY')<0;
   });
 
+  /* ===== R41：复盘(未完成事项) 昨日/本周筛选 + 幸福历前导空白格可自定义 ===== */
+  T('R41-1: 复盘默认区间=昨日(source)',()=> html.indexOf("var REV_YEAR='全部', REV_MONTH='全部', REV_RANGE='昨日';")>=0);
+  T('R41-2: 复盘「昨日」只列昨日未完成，今日/昨日已完成不出现',()=>{
+    var t=w.today(), y=w.addDays(t,-1);
+    w.__sched=[
+      {id:'R41A',标题:'昨日未完成甲',分类:'工作',日期:y,完成:'否'},
+      {id:'R41B',标题:'昨日已完成乙',分类:'工作',日期:y,完成:'是'},
+      {id:'R41C',标题:'今日未完成丙',分类:'工作',日期:t,完成:'否'}
+    ];
+    w.REV_RANGE='昨日';
+    var h=w.revPanelHTML();
+    var ok=(h.indexOf('昨日未完成甲')>=0) && (h.indexOf('昨日已完成乙')<0) && (h.indexOf('今日未完成丙')<0) && (h.indexOf("revSetRange('昨日')")>=0);
+    w.__sched=[]; w.REV_RANGE='昨日';
+    return ok?'ok':false; });
+  T('R41-3: 复盘「本周」按周一~周日筛选',()=>{
+    var wk=w.revWeekStrs();
+    var inW=w.addDays(wk[0],1), outW=w.addDays(wk[0],-1);
+    w.__sched=[
+      {id:'R41D',标题:'本周内事项',分类:'工作',日期:inW,完成:'否'},
+      {id:'R41E',标题:'上周日事项',分类:'工作',日期:outW,完成:'否'}
+    ];
+    w.REV_RANGE='本周';
+    var h=w.revPanelHTML();
+    var ok=(h.indexOf('本周内事项')>=0) && (h.indexOf('上周日事项')<0) && (h.indexOf(wk[0].substring(5)+'~'+wk[1].substring(5))>=0);
+    w.__sched=[]; w.REV_RANGE='昨日';
+    return ok?'ok':false; });
+  T('R41-4: 年份/月份下拉仅「全部」区间出现',()=>{
+    w.REV_RANGE='本周'; var h1=w.revPanelHTML();
+    w.REV_RANGE='全部'; var h2=w.revPanelHTML();
+    w.REV_RANGE='昨日';
+    return ((h1.indexOf('id="rev-year"')<0) && (h2.indexOf('id="rev-year"')>=0)) ? 'ok':false; });
+  T('R41-5: 幸福历前导空白格改为可自定义(与末尾同款 diy-cell)',()=>{
+    var ok=false, dbg='';
+    try{
+      w.showModule('schedule');
+      w.renderSchedule([]);
+      var g=w.document.getElementById('act-grid');
+      var h=g?g.innerHTML:'';
+      var lead=(h.indexOf('data-e="b0"')>=0);
+      var diy=(h.indexOf('doodle-cell')>=0) && (h.indexOf('diy-cell')>=0);
+      ok=lead&&diy;
+      dbg='lead='+lead+' diy='+diy;
+    }catch(e){ dbg='ERR:'+e.message; }
+    w.__sched=[];
+    return ok?dbg:false; });
+  T('R41-6: 前导/末尾 DIY 存储键互不冲突',()=>{
+    return (w.doodleKey('b0')!==w.doodleKey('0')) && (w.doodleKey('b0').indexOf('_b0')>=0) ? 'ok':false; });
+
+  T('R42-1: 四象限色圈映射(红/黄/橙/绿)',()=>{
+    return (w.QUAD_ORDER.Q1===1 && w.QUAD_ORDER.Q2===2 && w.QUAD_ORDER.Q3===3 && w.QUAD_ORDER.Q4===4
+      && w.QUAD_LABELS.Q1==='重要且紧急' && w.QUAD_LABELS.Q2==='重要不紧急'
+      && w.QUAD_LABELS.Q3==='紧急不重要' && w.QUAD_LABELS.Q4==='不紧急不重要') ? 'ok' : false; });
+  T('R42-2: 事项明细未完成项渲染四象限色圈按钮(q1..q4)',()=>{
+    var td=w.today();
+    w.schedSelDate=null; w.schedRange=null; w.schedFilter='全部';
+    w.renderSchedule([
+      {_id:'q1','标题':'甲','分类':'工作','日期':td,'象限':'Q1','完成':'否'},
+      {_id:'q2','标题':'乙','分类':'工作','日期':td,'象限':'Q2','完成':'否'},
+      {_id:'q3','标题':'丙','分类':'工作','日期':td,'象限':'Q3','完成':'否'},
+      {_id:'q4','标题':'丁','分类':'工作','日期':td,'象限':'Q4','完成':'否'}
+    ]);
+    var h=(d.getElementById('schedule-body')||{innerHTML:''}).innerHTML;
+    var ok=(h.indexOf('s-act-btn quad ico q1')>=0) && (h.indexOf('s-act-btn quad ico q2')>=0) && (h.indexOf('s-act-btn quad ico q3')>=0) && (h.indexOf('s-act-btn quad ico q4')>=0) && (h.indexOf('qdot')>=0) && (h.indexOf('点击标记完成')>=0) && (h.indexOf('markSchedDoneQuick')>=0);
+    w.__sched=[];
+    return ok?'ok':false; });
+  T('R42-3: 事项明细抬头显示「共 N 项」且计数正确',()=>{
+    var td=w.today();
+    w.schedSelDate=null; w.schedRange=null; w.schedFilter='全部';
+    w.renderSchedule([{_id:'a','标题':'甲','分类':'工作','日期':td,'象限':'Q1','完成':'否'},{_id:'b','标题':'乙','分类':'工作','日期':td,'象限':'Q2','完成':'否'}]);
+    var e=d.getElementById('s-total'); var txt=e?e.textContent:'';
+    var has=(d.getElementById('schedule-body')||{innerHTML:''}).innerHTML.indexOf('id="s-total"')>=0;
+    w.__sched=[];
+    return (has && /共\s*2\s*项/.test(txt)) ? txt : false; });
+  T('R42-4: 幸福历按月文案(2026-10 内置解读)',()=>{
+    var a=w.currentHappyTexts();
+    return (a && a.length>=31 && a[0].indexOf('值得期待')>=0) ? 'ok' : false; });
+  T('R42-5: 幸福历月度文案可覆盖/可恢复默认',()=>{
+    var k=w.happyMonthKey();
+    w.saveHappyMonth(['测试第一天','测试第二天']);
+    var raw=''; try{ raw=w.localStorage.getItem(k)||''; }catch(e){}
+    var a=w.currentHappyTexts(); var ok1=(a && a[0]==='测试第一天');
+    try{ w.localStorage.removeItem(k); }catch(e){}
+    var b=w.currentHappyTexts(); var ok2=(b && b[0].indexOf('值得期待')>=0);
+    if(!(ok1&&ok2)) console.log('   [dbg] k='+k+' raw='+raw+' a0='+(a?a[0]:'null')+' b0='+(b?b[0]:'null'));
+    return (ok1 && ok2) ? 'ok' : false; });
+  T('R42-6: 贴图板 存储键/容量上限助手',()=>{
+    var okw=(String(w.pbKey()).indexOf('lw_board_')===0);
+    var okf=(w.pbFit([], 'x'.repeat(1000))===true) && (w.pbFit([], 'x'.repeat(3200001))===false);
+    return (okw && okf) ? 'ok' : false; });
+  T('R42-7: 导入入口与贴图板已挂到 幸福历 区',()=>{
+    return (html.indexOf('openHappyImport()')>=0 && html.indexOf('导入本月解读')>=0
+      && html.indexOf('id="picboard"')>=0 && html.indexOf('pbRender')>=0) ? 'ok' : false; });
+  T('R42-8: 点色圈=一键完成(不弹窗)且保留 ✓ 详情入口',()=>{
+    return (typeof w.markSchedDoneQuick==='function' && /function markSchedDoneQuick/.test(html)
+      && html.indexOf('markSchedDoneQuick')>=0
+      && html.indexOf('openSchedDoneModal')>=0) ? 'ok' : false; });
+  /* ===== R42b：贴图板移位 + 批量条调序 ===== */
+  T('R42b-1: 灵感贴图板移到 Happier&Kinder 横幅(</aside>)之后',()=>{
+    var iAside=html.indexOf('</aside>'), iBoard=html.indexOf('id="picboard"');
+    return (iAside>=0 && iBoard>iAside) ? 'ok' : false; });
+  T('R42b-2: 批量条顺序 = 共N项 → 全选(右推 margin-left:auto) → 已选计数 → 撤销',()=>{
+    var it=html.indexOf('id="s-total"');
+    var ial=html.indexOf('id="s-sel-all" class="s-sel-all-cb" style="margin-left:auto"');
+    var ic=html.indexOf('id="s-sel-cnt"></span><button class="btn sm" onclick="schedUndoLast()"');
+    return (it>=0 && ial>=0 && ic>=0 && it<ial && ial<ic) ? 'ok' : false; });
   console.log('\n结果: '+pass+' 通过 / '+fail+' 失败');
 
 

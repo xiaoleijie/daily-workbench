@@ -492,6 +492,33 @@
   .actcal-note{font-size:12px;color:var(--ac-muted);line-height:1.6;max-width:600px}
   .actcal-reset{background:none;border:1px solid var(--ac-line);border-radius:10px;padding:7px 14px;font-size:12px;color:var(--ac-muted);cursor:pointer}
   .actcal-reset:hover{color:var(--ac-ink);border-color:var(--ac-muted)}
+  .actcal-acts{display:flex;align-items:center;gap:8px}
+  .actcal-imp{background:none;border:1px solid var(--ac-line);border-radius:10px;padding:7px 14px;font-size:12px;color:var(--ac-muted);cursor:pointer}
+  .actcal-imp:hover{color:var(--ac-ink);border-color:var(--ac-muted)}
+  .s-act-btn.quad{background:#fff;border-color:var(--line2)}
+  .s-act-btn.quad .qdot{width:13px;height:13px;border-radius:50%;display:block;box-sizing:border-box}
+  .s-act-btn.quad.q1 .qdot{border:2.5px solid #E0483E}
+  .s-act-btn.quad.q2 .qdot{border:2.5px solid #E8B93C}
+  .s-act-btn.quad.q3 .qdot{border:2.5px solid #EE8A34}
+  .s-act-btn.quad.q4 .qdot{border:2.5px solid #5FA85F}
+  .s-act-btn.quad.q1:hover .qdot{background:#E0483E}
+  .s-act-btn.quad.q2:hover .qdot{background:#E8B93C}
+  .s-act-btn.quad.q3:hover .qdot{background:#EE8A34}
+  .s-act-btn.quad.q4:hover .qdot{background:#5FA85F}
+  .s-batchbar .s-total{font-size:12.5px;color:var(--muted);white-space:nowrap;margin-left:8px}
+  .s-batchbar .s-total b{color:var(--ink);font-weight:800}
+  .picboard{margin-top:14px;border:1px dashed var(--ac-line);border-radius:16px;padding:12px;background:var(--ac-card)}
+  .picboard.pb-over{border-color:var(--ac-accent);background:#fff8f6}
+  .pb-head{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+  .pb-title{font-size:13px;font-weight:800;color:var(--ac-ink)}
+  .pb-hint{font-size:11.5px;color:var(--ac-muted);flex:1;min-width:0}
+  .pb-add{background:none;border:1px solid var(--ac-line);border-radius:10px;padding:6px 12px;font-size:12px;color:var(--ac-ink);cursor:pointer}
+  .pb-add:hover{border-color:var(--ac-muted)}
+  .pb-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:8px}
+  .pb-item{position:relative;border-radius:10px;overflow:hidden;border:1px solid var(--ac-line);background:#fff;aspect-ratio:1/1}
+  .pb-item img{width:100%;height:100%;object-fit:cover;cursor:zoom-in;display:block}
+  .pb-del{position:absolute;top:3px;right:3px;width:18px;height:18px;border:none;border-radius:50%;background:rgba(0,0,0,.5);color:#fff;font-size:12px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center}
+  .pb-empty{grid-column:1/-1;color:var(--ac-muted);font-size:12px;text-align:center;padding:16px 0}
   .actfx{position:fixed;inset:0;pointer-events:none;z-index:60}
   .toast.sp{background:#C25B4E;font-weight:700;font-size:15px;padding:15px 26px;box-shadow:0 12px 40px rgba(194,91,78,.45)}
   /* 窄屏兜底：右列变窄时句子放不下，允许 tag 换行、已践行掉到下一行靠右，避免被切字 */
@@ -1299,7 +1326,11 @@
 .m-rev-todo .m-it{display:block;padding:2px 0;border-top:1px dashed var(--line)}
 /* ===== R30 复盘卡片（沿用「昨日复盘」风格）：挂在「本月安排」下方，自动汇总未完成事项 ===== */
 .rev-card{margin-top:10px}
-.rev-card .rv-filters{display:flex;gap:8px;margin:0 0 9px}
+.rev-card .rv-filters{display:flex;gap:8px;margin:0 0 9px;flex-wrap:wrap;align-items:center}
+.rev-card .rv-ranges{display:flex;gap:5px;flex:1 1 auto}
+.rev-card .rv-range-btn{flex:1 1 0;min-width:0;font-size:12.5px;padding:5px 4px;border:1px solid var(--line2);border-radius:8px;background:var(--paper);color:var(--muted);cursor:pointer;white-space:nowrap}
+.rev-card .rv-range-btn.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700}
+.rev-card .m-ttl .rev-scope{font-size:11px;font-weight:400;color:var(--muted);margin-left:6px}
 .rev-card .rv-filters select{flex:1 1 0;min-width:0;font-size:12.5px;padding:5px 7px;border:1px solid var(--line2);border-radius:8px;background:var(--paper);color:var(--ink)}
 .rev-card .m-rev-todo{margin-top:7px}
 .rev-card .m-rev-todo .m-it.rv-it{display:flex;align-items:center;gap:7px;padding:4px 3px;cursor:pointer;border-radius:6px}
@@ -3882,7 +3913,9 @@ function dpClear(){ schedSelDate=null; schedRange=null; renderSchedule(window.__
 function dpRange(el){ setSchedRange(el&&el.getAttribute('data-r')); }
 function setSchedRange(v){ schedRange=(schedRange===v)?null:v; schedSelDate=null; renderSchedule(window.__sched); }
 /* ===== R30 复盘：自动汇总「未完成事项」，可按年份 / 月份筛选；风格沿用「昨日复盘」 ===== */
-var REV_YEAR='全部', REV_MONTH='全部';
+var REV_YEAR='全部', REV_MONTH='全部', REV_RANGE='昨日';
+function revSetRange(v){ REV_RANGE=v; renderSchedule(window.__sched); }
+function revWeekStrs(){ var p=today().split('-'); var d=new Date(+p[0],+p[1]-1,+p[2]); var dow=(d.getDay()+6)%7; var mon=new Date(d); mon.setDate(d.getDate()-dow); var sun=new Date(mon); sun.setDate(mon.getDate()+6); return [fmtDate(mon),fmtDate(sun)]; }
 function revSetYear(v){ REV_YEAR=v; renderSchedule(window.__sched); }
 function revSetMonth(v){ REV_MONTH=v; renderSchedule(window.__sched); }
 function revPanelHTML(){
@@ -3895,10 +3928,13 @@ function revPanelHTML(){
     ylist.map(function(y){ return '<option value="'+y+'"'+(REV_YEAR===y?' selected':'')+'>'+y+' 年</option>'; }).join('');
   var mOpts='<option value="全部"'+(REV_MONTH==='全部'?' selected':'')+'>全部月份</option>';
   for(var i=1;i<=12;i++){ var mm=('0'+i).slice(-2); mOpts+='<option value="'+mm+'"'+(REV_MONTH===mm?' selected':'')+'>'+i+' 月</option>'; }
+  var _td=today(), _yest=addDays(_td,-1), _wk=revWeekStrs();
   var sel=rows.filter(function(r){
     var d=dateSub(r['日期']);
-    if(REV_YEAR!=='全部' && d.substring(0,4)!==REV_YEAR) return false;
-    if(REV_MONTH!=='全部' && d.substring(5,7)!==REV_MONTH) return false;
+    if(REV_RANGE==='昨日'){ if(d!==_yest) return false; }
+    else if(REV_RANGE==='本周'){ if(d<_wk[0]||d>_wk[1]) return false; }
+    else if(REV_RANGE==='本月'){ if(d.substring(0,7)!==_td.substring(0,7)) return false; }
+    else { if(REV_YEAR!=='全部' && d.substring(0,4)!==REV_YEAR) return false; if(REV_MONTH!=='全部' && d.substring(5,7)!==REV_MONTH) return false; }
     return true;
   });
   var total=sel.length;
@@ -3908,7 +3944,8 @@ function revPanelHTML(){
   var pct=total?Math.round(doneN/total*100):0;
   var body;
   if(!undone.length){
-    body='<div class="m-rev-todo ok" onclick="celebrate()" title="点我鼓个掌 🎉">'+(total?'这段时间全部完成，给自己鼓个掌 👏':'这个范围内还没有安排')+'</div>';
+    var _emptyTxt=(REV_RANGE==='昨日')?'昨天没有安排 🍃':(REV_RANGE==='本周')?'本周还没有安排 🍃':(REV_RANGE==='本月')?'本月还没有安排 🍃':'这个范围内还没有安排';
+    body='<div class="m-rev-todo ok" onclick="celebrate()" title="点我鼓个掌 🎉">'+(total?'这段时间全部完成，给自己鼓个掌 👏':_emptyTxt)+'</div>';
   } else {
     body='<div class="m-rev-todo">未完成 <b>'+undone.length+'</b> 项：'+undone.map(function(r){
       var id=rid(r); var dt=dateSub(r['日期']); var short=(dt.length>=10)?dt.substring(5):dt;
@@ -3920,11 +3957,13 @@ function revPanelHTML(){
         '</span>';
     }).join('')+'</div>';
   }
+  var _scopeLbl=(REV_RANGE==='昨日')?('昨天 '+_yest.substring(5)):((REV_RANGE==='本周')?('本周 '+_wk[0].substring(5)+'~'+_wk[1].substring(5)):((REV_RANGE==='本月')?_td.substring(0,7):''));
+  var _rBtns=['昨日','本周','本月','全部'].map(function(v){ return '<button type="button" class="rv-range-btn'+(REV_RANGE===v?' on':'')+'" onclick="revSetRange(\''+v+'\')">'+v+'</button>'; }).join('');
+  var _ymSel=(REV_RANGE==='全部') ? ('<select id="rev-year" title="按年份筛选" onchange="revSetYear(this.value)">'+yOpts+'</select>'+'<select id="rev-month" title="按月份筛选" onchange="revSetMonth(this.value)">'+mOpts+'</select>') : '';
   return '<div class="m-card rev-card">'+
-    '<div class="m-ttl">未完成事项</div>'+
+    '<div class="m-ttl">未完成事项<span class="rev-scope">'+_scopeLbl+'</span></div>'+
     '<div class="rv-filters">'+
-      '<select id="rev-year" title="按年份筛选" onchange="revSetYear(this.value)">'+yOpts+'</select>'+
-      '<select id="rev-month" title="按月份筛选" onchange="revSetMonth(this.value)">'+mOpts+'</select>'+
+      '<div class="rv-ranges">'+_rBtns+'</div>'+_ymSel+
     '</div>'+
     '<div class="m-rev">'+
       '<div class="m-rev-sum"><div class="m-ring" style="--p:'+pct+'">'+pct+'%</div>'+
@@ -3981,7 +4020,7 @@ function renderSchedule(rows){
   var sticky='<div class="sticky-note"><div class="sticky-rule"></div><textarea class="sticky-area" id="month-note" onchange="saveMonthNote(this.value)" placeholder="还没定下日期的安排，先记在这里…">'+esc(getMonthNote())+'</textarea></div>';
   var shown=rows.filter(function(r){ var st=schedStatus(r); return (schedFilter==='全部'||r["分类"]===schedFilter) && (schedRange===null?(!schedSelDate||dateSub(r["日期"])===schedSelDate):(schedRange==='today'?dateSub(r["日期"])===td:(schedRange==='month'?dateSub(r["日期"]).indexOf(td.substring(0,7))===0:dateSub(r["日期"]).indexOf(td.substring(0,4))===0))) && (schedStatusF==='全部状态'||(schedStatusF==='待办'&&(st==='todo'||st==='overdue'))||(schedStatusF==='已完成'&&st==='done')); });
   shown.sort(function(a,b){ var da=dateSub(a["日期"])||'',db=dateSub(b["日期"])||''; if(da!==db) return da<db?-1:1; var ta=a["开始时间"]||'',tb=b["开始时间"]||''; return ta<tb?-1:(ta>tb?1:0); });
-  var list='<div class="panel sched-list-panel"><div class="s-batchbar"><input type="checkbox" id="s-sel-all" class="s-sel-all-cb" onclick="toggleSelAll(this.checked)"><label class="s-selall" for="s-sel-all">全选</label><span id="s-sel-cnt" style="margin-left:auto"></span><button class="btn sm" onclick="schedUndoLast()" title="撤销上一次批量修改（保留最近 5 次）" style="flex:0 0 auto">撤销上次批量修改</button></div><div class="list">';
+  var list='<div class="panel sched-list-panel"><div class="s-batchbar"><span class="s-total" id="s-total">共 '+shown.length+' 项</span><input type="checkbox" id="s-sel-all" class="s-sel-all-cb" style="margin-left:auto" onclick="toggleSelAll(this.checked)"><label class="s-selall" for="s-sel-all">全选</label><span id="s-sel-cnt"></span><button class="btn sm" onclick="schedUndoLast()" title="撤销上一次批量修改（保留最近 5 次）" style="flex:0 0 auto">撤销上次批量修改</button></div><div class="list">';
   if(!shown.length) list+='<div class="empty">这段时间还没有安排</div>';
   shown.forEach(function(r){
     var st=schedStatus(r);
@@ -3989,7 +4028,7 @@ function renderSchedule(rows){
     var cls='item'+(isDone?' s-done':'')+(isExp?' s-expired':'');
     var acts='<div class="s-acts">';
     if(st!=='done'){
-      acts+='<button class="s-act-btn done ico" title="已完成" onclick="openSchedDoneModal(\''+rid(r)+'\',__schedById(\''+rid(r)+'\'))">✓</button>';
+      acts+='<button class="s-act-btn quad ico q'+(QUAD_ORDER[r["象限"]]||1)+'" title="'+(QUAD_LABELS[r["象限"]]||'重要且紧急')+' · 点击标记完成" onclick="markSchedDoneQuick(\''+rid(r)+'\')"><span class="qdot"></span></button>';
       if(isExp) acts+='<span class="s-pill exp ico" title="未完成（已逾期）">✗</span>';
     } else {
       acts+='<span class="s-pill done ico" title="已完成（点击查看/编辑完成详情）" onclick="openSchedDoneModal(\''+rid(r)+'\',__schedById(\''+rid(r)+'\'))">✓</span>'+
@@ -4012,7 +4051,7 @@ function renderSchedule(rows){
   // ===== 右：先知先觉幸福行动历（整体缩小） =====
   var cal='<div class="actcal-wrap" style="margin-bottom:0">'+
     '<div class="actcal-head actcal-head2"><div class="actcal-title">先知先觉幸福行动历<span class="en">Do Good '+ACTION_MONTH_NAMES[mo]+'</span></div>'+
-    '<button class="actcal-reset" onclick="resetActionCal()">重置（一键清空）</button></div>'+
+    '<div class="actcal-acts"><button class="actcal-imp" onclick="openHappyImport()" title="把当月的日历解读粘贴进来（一行一天）">📥 导入本月解读</button><button class="actcal-reset" onclick="resetActionCal()">重置（一键清空）</button></div>'+
     '<div class="actcal-subrow"><div class="actcal-tag" id="act-tag" onclick="advanceActionFromTag()" title="点一点，记录今天也好好照顾了自己">每天点一点，就是对自己的小鼓励，不惩罚不考核不清零，只要愿意，随时回来</div>'+
     '<div class="actcal-cnt">本月已践行 <b id="act-cnt">0</b> 天</div></div>'+
     '<div class="actcal-layout"><div class="actcal-left"><div class="actcal-grid" id="act-grid"></div></div></div>'+
@@ -4022,7 +4061,7 @@ function renderSchedule(rows){
         '<span class="m1 diy" contenteditable="true" data-diy="m1" oninput="saveDIY(\'m1\',this.innerHTML)">'+getDIY('m1','更快乐，更美好 ｜ Action for Happiness 的信条。')+'</span>'+
         '<span class="m2 diy" contenteditable="true" data-diy="m2" oninput="saveDIY(\'m2\',this.innerHTML)">'+getDIY('m2','每日一践，慢慢把自己照顾好——你先觉知到的小行动，会汇成幸福。')+'</span>'+
       '</div>'+
-    '</aside></div>';
+    '</aside>'+'<div class="picboard" id="picboard"><div class="pb-head"><span class="pb-title">🖼 灵感贴图板</span><span class="pb-hint">点「＋ 贴图」/ Ctrl+V 粘贴 / 拖入图片</span><button class="pb-add" onclick="pbPick()">＋ 贴图</button></div><div class="pb-grid" id="pb-grid"></div><input type="file" id="pb-file" accept="image/*" multiple style="display:none"></div>'+'</div>';
 
   // ===== 四大模块（本月日程 / 便签 / 筛选 / 明细）统一进可拖动栈，顺序由用户决定 =====
   var MOD_META={ mini:'📅 本月日程', sticky:'📌 本月安排', review:'📊 复盘', filters:'🔎 筛选', list:'📋 事项明细' };
@@ -4041,7 +4080,8 @@ function renderSchedule(rows){
   setBody('schedule', topBlock);
   try{ bindSchedModDnD(); }catch(e){ console.error('模块拖拽绑定失败',e); }
   try{ bindSchedFilterDnD(); }catch(e){ console.error('筛选控件拖拽绑定失败',e); }
-  try{ renderActionCal(haveDates); }catch(e){ console.error('行动历渲染失败',e); }
+  try{ window.__haveDates=haveDates||{}; renderActionCal(haveDates); }catch(e){ console.error('行动历渲染失败',e); }
+  try{ pbRender(); pbBindDrop(); }catch(e){ console.error('贴图板渲染失败',e); }
   /* 表单改为弹窗渲染：草稿绑定 / 分类联动在 openSchedAddModal() 内进行 */
 }
 function submitSched(){
@@ -4400,6 +4440,12 @@ function revertSched(id){
   var _ops=[ updRec(DB.schedule, id, {"完成":{select:'否'}}) ];
   if(_tid) _ops.push(updRec(DB.tasks, _tid, {"完成":{select:'否'}}));
   Promise.all(_ops).then(function(){ LOADERS.tasks(); LOADERS.schedule(); toast('已恢复为待办 ↩'); }).catch(function(e){ toast('更新失败：'+((e&&e.message)||'错误'),true); });
+}
+function markSchedDoneQuick(id){
+  var _tid=mirrorTaskOfSched(id, __schedById(id));
+  var _ops=[ updRec(DB.schedule, id, {"完成":{select:'是'}}) ];
+  if(_tid) _ops.push(updRec(DB.tasks, _tid, {"完成":{select:'是'}}));
+  Promise.all(_ops).then(function(){ LOADERS.tasks(); LOADERS.schedule(); toast('已完成 ✓（可点绿色 ✓ 补写完成详情）'); }).catch(function(e){ toast('更新失败：'+((e&&e.message)||'错误'),true); });
 }
 function openSchedDoneModal(id, rec){
   var m=document.getElementById('sched-done-modal');
@@ -5750,6 +5796,8 @@ LOADERS.pomodoro=function(){ loadPomoCfg(); loadPomoSfx(); loadPomoVol(); buildP
 
 /* ============ 先知先觉幸福行动历 ============ */
 var ACTION_MONTH_NAMES=['January','February','March','April','May','June','July','August','September','October','November','December'];
+var QUAD_ORDER={Q1:1,Q2:2,Q3:3,Q4:4};
+var QUAD_LABELS={Q1:'重要且紧急',Q2:'重要不紧急',Q3:'紧急不重要',Q4:'不紧急不重要'};
 var ACTION_PALETTE=['#F6C9C9','#F8D9A6','#F2E6A0','#BFE3B0','#A9D8DE','#C3C2EA','#E5BDD9'];
 function _mixWhite(hex,amt){var n=parseInt(hex.slice(1),16),r=(n>>16)&255,g=(n>>8)&255,b=n&255;r=Math.round(r*(1-amt)+255*amt);g=Math.round(g*(1-amt)+255*amt);b=Math.round(b*(1-amt)+255*amt);return '#'+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1);}
 var ACTION_PALETTE_TINT=ACTION_PALETTE.map(function(c){return _mixWhite(c,0.5);});
@@ -5787,6 +5835,105 @@ var ACTION_ACTIONS=[
  "提醒自己：现在的你，已经足够好了。",
  "今天，也为别人做一件小小的好事。"
 ];
+var ACTION_MONTHLY_BUILTIN={'2026-10':[
+ "写下这个月值得期待的三件事",
+ "即使在困难时，仍要找到一件让你感到乐观的事",
+ "朝着一个对你真正重要的目标，迈出一小步",
+ "从待办事项里最重要的一件事，开启新的一天",
+ "做个现实的乐观主义者：正视生活的真相，但选择关注其美好的一面",
+ "用它提醒自己，事情会向好的方面发展",
+ "今天发掘一下身边人们的优点",
+ "在一项拖着没做的项目或任务上，努力取得进展",
+ "和你信任的人分享一个重要目标",
+ "花点时间回顾一下你最近取得的成就",
+ "无需责怪自己或他人，尝试寻找方法来解决问题",
+ "多留意正面的新闻，找个理由让今天开心起来",
+ "寻求帮助，来解决一个正面对的困难",
+ "做一件建设性的事，让困境有所改变",
+ "感激自己完成了那些平时被视作理所当然的事情",
+ "暂时放下待办事项，做点有趣的或能令人振奋的事",
+ "为你希望在社会中看到的积极改变，迈出一小步",
+ "为未来的日子定下充满希望又切合实际的目标",
+ "找出你的一个优点，想想它将来能怎样帮助你",
+ "处理一件拖延已久的事，从中找到完成任务的乐趣",
+ "放下别人的看法，把注意力放在对你真正重要的事情上",
+ "与朋友或同事分享能鼓舞人心的话语、图片或视频",
+ "意识到你有权选择什么最值得优先做",
+ "写下最近进展顺利的三件具体的事情",
+ "人不可能事事兼顾，你当下最重要的三个任务是什么",
+ "换一个新的视角来看待面对的问题",
+ "对自己温柔一些，记住事情的进展是需要时间的",
+ "问问自己，一年后的今天，这事还那么重要吗",
+ "安排一项有趣或令人兴奋的活动，让自己有所期待",
+ "找出三件让你对未来充满希望的事情",
+ "为下个月设定一个有意义的目标"
+]};
+function happyMonthKey(){ return 'lw_happy_'+today().substring(0,7); }
+function loadHappyMonth(){ try{ var a=JSON.parse(localStorage.getItem(happyMonthKey())||'null'); return (a&&a.length)?a:null; }catch(e){ return null; } }
+function saveHappyMonth(a){ try{ localStorage.setItem(happyMonthKey(), JSON.stringify(a)); }catch(e){} }
+function currentHappyTexts(){ return loadHappyMonth() || ACTION_MONTHLY_BUILTIN[today().substring(0,7)] || ACTION_ACTIONS; }
+function openHappyImport(){
+  var id='happy-imp-modal'; var m=document.getElementById(id);
+  if(!m){ m=document.createElement('div'); m.id=id; m.className='imp-modal-mask'; document.body.appendChild(m); }
+  var cur=currentHappyTexts()||[];
+  m.innerHTML='<div class="imp-modal-card" style="width:560px" onclick="event.stopPropagation()">'+
+    '<h3>📥 导入本月解读</h3>'+
+    '<div class="imp-sub">把当月日历解读<b>一行一条</b>贴进来（第 1 行 = 1 号，依次类推，最多 31 行）。少于 31 行时，后面几天沿用默认文案。</div>'+
+    '<textarea id="happy-imp-text" style="width:100%;min-height:280px;box-sizing:border-box;border:1px solid var(--line2);border-radius:10px;padding:10px;font-size:13px;line-height:1.7;font-family:inherit">'+esc(cur.join('\n'))+'</textarea>'+
+    '<div class="imp-foot"><button class="btn" onclick="resetHappyMonth()">恢复默认</button><span style="flex:1"></span>'+
+      '<button class="btn" onclick="closeHappyImport()">取消</button>'+
+      '<button class="btn primary" onclick="saveHappyImport()">保存并应用</button></div>'+
+  '</div>';
+  m.onclick=function(e){ if(e.target===m) closeHappyImport(); };
+  m.style.display='flex';
+  var ta=document.getElementById('happy-imp-text'); if(ta) ta.focus();
+}
+function closeHappyImport(){ var m=document.getElementById('happy-imp-modal'); if(m) m.style.display='none'; }
+function refreshActionCal(){ try{ renderActionCal(window.__haveDates||{}); }catch(e){} }
+function saveHappyImport(){
+  var ta=document.getElementById('happy-imp-text'); if(!ta) return;
+  var lines=(ta.value||'').split(/\r?\n/).map(function(x){ return x.replace(/^\s*\d+\s*[.、,，:：\)]\s*/,'').trim(); }).filter(function(x){ return x.length>0; });
+  if(!lines.length){ toast('还没贴内容哦',true); return; }
+  saveHappyMonth(lines); closeHappyImport(); refreshActionCal();
+  toast('已应用本月解读 · 共 '+lines.length+' 条');
+}
+function resetHappyMonth(){
+  try{ localStorage.removeItem(happyMonthKey()); }catch(e){}
+  closeHappyImport(); refreshActionCal(); toast('已恢复默认文案');
+}
+function pbKey(){ return 'lw_board_'+today().substring(0,7); }
+function pbLoad(){ try{ var a=JSON.parse(localStorage.getItem(pbKey())||'[]'); return Array.isArray(a)?a:[]; }catch(e){ return []; } }
+function pbSave(a){ try{ localStorage.setItem(pbKey(), JSON.stringify(a)); }catch(e){ toast('图片太多，空间不足，先删几张吧',true); } }
+function pbFit(arr,add){ var t=add?add.length:0; for(var i=0;i<(arr||[]).length;i++) t+=arr[i].length; return t<3200000; }
+function pbRender(){
+  var host=document.getElementById('pb-grid'); if(!host) return;
+  var arr=pbLoad();
+  if(!arr.length){ host.innerHTML='<div class="pb-empty">还没有贴图 —— 点「＋ 贴图」、Ctrl+V 粘贴、或把图片拖进来</div>'; return; }
+  host.innerHTML=arr.map(function(src,i){ return '<div class="pb-item"><img src="'+src+'" draggable="false" onclick="pbView('+i+')" alt="贴图"><button class="pb-del" onclick="pbDel('+i+')" title="删除这张">×</button></div>'; }).join('');
+}
+function pbPick(){ var f=document.getElementById('pb-file'); if(f){ f.value=''; f.click(); } }
+function pbView(i){ var src=(pbLoad()||[])[i]; if(!src) return; var v=document.getElementById('pb-viewer'); if(!v){ v=document.createElement('div'); v.id='pb-viewer'; v.className='note-viewer'; v.onclick=function(){ v.style.display='none'; }; document.body.appendChild(v); } v.innerHTML='<img src="'+src+'" alt="">'; v.style.display='flex'; }
+function pbDel(i){ myConfirm('删除这张贴图？', function(){ var a=pbLoad(); a.splice(i,1); pbSave(a); pbRender(); }); }
+function pbAdd(files){
+  var list=[]; try{ list=Array.prototype.slice.call(files||[]).filter(function(f){ return f&&/^image\//.test(f.type||''); }); }catch(e){}
+  if(!list.length){ toast('没识别到图片'); return; }
+  var arr=pbLoad(), idx=0, added=0, skip=0;
+  function next(){
+    if(idx>=list.length){ if(added) pbSave(arr); pbRender(); toast(added?('已贴上 '+added+' 张'+(skip?('，'+skip+' 张略过（过大或超上限）'):'')):'没有可加入的图片', added?false:true); return; }
+    var f=list[idx++];
+    if(arr.length>=12){ skip++; next(); return; }
+    compressImg(f, function(durl){ if(durl && pbFit(arr,durl)){ arr.push(durl); added++; } else { skip++; } next(); });
+  }
+  next();
+}
+function pbBindDrop(){
+  var box=document.getElementById('picboard'); if(!box || box._pbBound) return; box._pbBound=true;
+  box.addEventListener('paste', function(e){ if(!e.clipboardData) return; var fs=[]; for(var i=0;i<e.clipboardData.items.length;i++){ var it=e.clipboardData.items[i]; if(it.kind==='file'&&/^image\//.test(it.type)) fs.push(it.getAsFile()); } if(fs.length){ e.preventDefault(); pbAdd(fs); } });
+  box.addEventListener('dragover', function(e){ e.preventDefault(); box.classList.add('pb-over'); });
+  box.addEventListener('dragleave', function(){ box.classList.remove('pb-over'); });
+  box.addEventListener('drop', function(e){ e.preventDefault(); box.classList.remove('pb-over'); if(e.dataTransfer){ var fs=[]; for(var i=0;i<e.dataTransfer.files.length;i++) fs.push(e.dataTransfer.files[i]); if(fs.length) pbAdd(fs); } });
+  var fi=document.getElementById('pb-file'); if(fi && !fi._pbB){ fi._pbB=true; fi.addEventListener('change', function(){ pbAdd(fi.files); fi.value=''; }); }
+}
 var ACTION_DOODLES=
  '<div class="actcal-doodle" style="left:16px;top:18px;--r:-6deg"><svg viewBox="0 0 40 40" width="38" height="38"><circle cx="20" cy="20" r="8" fill="none" stroke="#E0A23C" stroke-width="2"/><g stroke="#E0A23C" stroke-width="2" stroke-linecap="round"><line x1="20" y1="4" x2="20" y2="9"/><line x1="20" y1="31" x2="20" y2="36"/><line x1="4" y1="20" x2="9" y2="20"/><line x1="31" y1="20" x2="36" y2="20"/><line x1="9" y1="9" x2="12" y2="12"/><line x1="28" y1="28" x2="31" y2="31"/><line x1="31" y1="9" x2="28" y2="12"/><line x1="12" y1="28" x2="9" y2="31"/></g></svg></div>'+
  '<div class="actcal-doodle" style="right:14px;top:24px;--r:8deg"><svg viewBox="0 0 36 36" width="32" height="32"><path d="M18 4 L22 14 L33 15 L24 22 L27 33 L18 26 L9 33 L12 22 L3 15 L14 14 Z" fill="none" stroke="#E0B23C" stroke-width="2" stroke-linejoin="round"/></svg></div>'+
@@ -5810,6 +5957,7 @@ function actionStreak(checked){ var d=new Date().getDate(); if(!checked.has(d)) 
 function actionTodayDate(){ return new Date().getDate(); }
 
 function renderActionCal(haveDates){
+  var HAPPY=currentHappyTexts();
   ensureActionCanvas();
   haveDates=haveDates||{};
   var t=new Date();
@@ -5821,7 +5969,7 @@ function renderActionCal(haveDates){
   var checked=loadActionChecked();
   var td=actionTodayDate();
   var html='<div class="actcal-wd">一</div><div class="actcal-wd">二</div><div class="actcal-wd">三</div><div class="actcal-wd">四</div><div class="actcal-wd">五</div><div class="actcal-wd">六</div><div class="actcal-wd">日</div>';
-  for(var i=0;i<startDay;i++) html+='<div class="actcal-cell empty"></div>';
+  for(var i=0;i<startDay;i++){ var _db=loadDoodle('b'+i); var _bstyle=''; if(_db.c) _bstyle+='color:'+_db.c+';'; if(_db.s){ var _bs=''+_db.s; if(!/[a-zA-Z%]/.test(_bs)) _bs+='px'; _bstyle+='font-size:'+_bs+';'; } html+='<div class="actcal-cell empty doodle-cell diy-cell" data-e="b'+i+'" contenteditable="true" onfocus="doodleFocus(this)" onblur="doodleBlur(this)" oninput="saveDoodle(this.getAttribute(\'data-e\'),this.innerHTML)" style="'+_bstyle+'">'+_db.h+'</div>'; }
   for(var d=1;d<=days;d++){
     var color=ACTION_PALETTE[(d-1)%7];
     var cls=['actcal-cell'];
@@ -5829,7 +5977,7 @@ function renderActionCal(haveDates){
     if(d===td) cls.push('today');
     var ds=y+'-'+('0'+(m+1)).slice(-2)+'-'+('0'+d).slice(-2);
     if(haveDates[ds]) cls.push('hasevt');
-    var actText=(ACTION_ACTIONS[d-1]||'今天，也为自己留一点善意').replace(/。/g,'');
+    var actText=(HAPPY[d-1]||'今天，也为自己留一点善意').replace(/。/g,'');
     html+='<div class="'+cls.join(' ')+'" data-d="'+d+'" style="--c:'+color+'" title="'+esc(actText)+'" onclick="toggleAction('+d+',this)">'+
       '<div class="num">'+d+'</div><div class="act">'+actText+'</div><div class="chk">✓</div><div class="evt"></div></div>';
   }

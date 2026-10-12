@@ -906,7 +906,6 @@ setTimeout(()=>{
 
 
 
-    d.getElementById('es-date').value='2026-10-01';
 
 
 
@@ -1162,7 +1161,7 @@ setTimeout(()=>{
 
 
 
-    return /p\["日期"\]=\{date:newDate\}/.test(seg);
+    return /p\["日期"\]=\{date:_esDates\[0\]/.test(seg);
 
 
 
@@ -2988,7 +2987,7 @@ console.log('--- 回归 ---');
   T('R26-10: 便利贴(仅有「时间」)→ 修改日程弹窗读回同一时间',()=>{ w.__sched=[]; w.openEditSchedModal({'标题':'X','日期':'2026-09-25','时间':'09:05','分类':'工作','象限':'Q1'}); const st=d.getElementById('es-st'); const v=st?st.getAttribute('value'):null; w.closeEditSchedModal(); return v==='09:05'?'09:05':false; });
   T('R26-11: 完成四象限便利贴→mirror日程同步标记完成',()=>{ const calls=[]; const oU=w.updRec, oT=w.LOADERS.tasks, oS=w.LOADERS.schedule; w.updRec=(db,id,p)=>{ calls.push([db,id,p]); return Promise.resolve({}); }; w.LOADERS.tasks=()=>{}; w.LOADERS.schedule=()=>{}; w.__lastTasks=[{id:'T1','_sched':null,'完成':'否'}]; w.__lastWorks=[{id:'S1','_fromTask':'T1','完成':'否'}]; let ok=false; try{ w.completeItem('task','T1','否'); ok=!!(calls.filter(c=>c[0]===w.DB.tasks&&c[1]==='T1'&&c[2]['完成'].select==='是')[0] && calls.filter(c=>c[0]===w.DB.schedule&&c[1]==='S1'&&c[2]['完成'].select==='是')[0]); }catch(e){} w.updRec=oU; w.LOADERS.tasks=oT; w.LOADERS.schedule=oS; return ok; });
   T('R26-12: 完成日程→反向同步 task 完成',()=>{ const calls=[]; const oU=w.updRec, oT=w.LOADERS.tasks, oS=w.LOADERS.schedule; w.updRec=(db,id,p)=>{ calls.push([db,id,p]); return Promise.resolve({}); }; w.LOADERS.tasks=()=>{}; w.LOADERS.schedule=()=>{}; w.__lastTasks=[{id:'T9','_sched':'S9','完成':'否'}]; w.__lastWorks=[{id:'S9','_fromTask':'T9','完成':'否'}]; let ok=false; try{ w.completeItem('sched','S9','否'); ok=!!(calls.filter(c=>c[0]===w.DB.schedule&&c[1]==='S9')[0] && calls.filter(c=>c[0]===w.DB.tasks&&c[1]==='T9'&&c[2]['完成'].select==='是')[0]); }catch(e){} w.updRec=oU; w.LOADERS.tasks=oT; w.LOADERS.schedule=oS; return ok; });
-  T('R26-13: 修改日程保存→回写 task 全字段(截止日期/时间/分类/象限)',()=>{ const calls=[]; const oU=w.updRec, oT=w.LOADERS.tasks, oS=w.LOADERS.schedule; w.updRec=(db,id,p)=>{ calls.push([db,id,p]); return Promise.resolve({}); }; w.LOADERS.tasks=()=>{}; w.LOADERS.schedule=()=>{}; w.__sched=[{id:'S1','标题':'X','日期':'2026-09-25','_fromTask':'T1','完成':'否'}]; let ok=false, dbg=''; try{ w.openEditSchedModal({'标题':'X','日期':'2026-09-25','开始时间':'08:00','结束时间':'09:00','分类':'工作','象限':'Q1','_fromTask':'T1'}); d.getElementById('es-st').value='08:30'; d.getElementById('es-en').value='09:30'; d.getElementById('es-date').value='2026-09-27'; w.saveEditSchedItem('S1'); const t=calls.filter(c=>c[0]===w.DB.tasks&&c[1]==='T1')[0]; ok=!!(t && t[2]['截止日期'] && t[2]['截止日期'].date==='2026-09-27' && t[2]['时间'] && t[2]['时间'].text==='08:30' && t[2]['分类'] && t[2]['象限']); dbg=t?('task:'+t[2]['截止日期'].date+' '+t[2]['时间'].text):'no-task-call'; }catch(e){ dbg='ERR:'+e.message; } w.updRec=oU; w.LOADERS.tasks=oT; w.LOADERS.schedule=oS; w.closeEditSchedModal(); w.__sched=[]; return ok?dbg:false; });
+  T('R26-13: 修改日程保存→回写 task 全字段(截止日期/时间/分类/象限)',()=>{ const calls=[]; const oU=w.updRec, oT=w.LOADERS.tasks, oS=w.LOADERS.schedule; w.updRec=(db,id,p)=>{ calls.push([db,id,p]); return Promise.resolve({}); }; w.LOADERS.tasks=()=>{}; w.LOADERS.schedule=()=>{}; w.__sched=[{id:'S1','标题':'X','日期':'2026-09-25','_fromTask':'T1','完成':'否'}]; let ok=false, dbg=''; try{ w.openEditSchedModal({'标题':'X','日期':'2026-09-25','开始时间':'08:00','结束时间':'09:00','分类':'工作','象限':'Q1','_fromTask':'T1'}); d.getElementById('es-st').value='08:30'; d.getElementById('es-en').value='09:30'; w.esPickDates=['2026-09-27']; w.saveEditSchedItem('S1'); const t=calls.filter(c=>c[0]===w.DB.tasks&&c[1]==='T1')[0]; ok=!!(t && t[2]['截止日期'] && t[2]['截止日期'].date==='2026-09-27' && t[2]['时间'] && t[2]['时间'].text==='08:30' && t[2]['分类'] && t[2]['象限']); dbg=t?('task:'+t[2]['截止日期'].date+' '+t[2]['时间'].text):'no-task-call'; }catch(e){ dbg='ERR:'+e.message; } w.updRec=oU; w.LOADERS.tasks=oT; w.LOADERS.schedule=oS; w.closeEditSchedModal(); w.__sched=[]; return ok?dbg:false; });
   /* ===== R27：便利贴「修改」弹窗化 + 镜像回写「反向兜底」 ===== */
   T('R27-1: 便利贴卡片「修改」改为弹窗 editWorkItem(task)',()=> html.indexOf('? "editWorkItem(\'task\',\'"+id+"\')"')>=0 && html.indexOf('? "editTask(\'"')<0);
   T('R27-2: 非便利贴卡片「修改」用 editSchedItem(forceOne)',()=> html.indexOf('"editSchedItem(\'"+id+"\',true)"')>=0);
@@ -3515,6 +3514,82 @@ console.log('--- 回归 ---');
     var ial=html.indexOf('id="s-sel-all" class="s-sel-all-cb" style="margin-left:auto"');
     var ic=html.indexOf('id="s-sel-cnt"></span><button class="btn sm" onclick="schedUndoLast()"');
     return (it>=0 && ial>=0 && ic>=0 && it<ial && ial<ic) ? 'ok' : false; });
+  /* ===== R43：复盘 某月/某年 筛选 + 修改日程多选日期 ===== */
+  T('R43-A1: 复盘快捷筛选新增 某月/某年 按钮',()=> html.indexOf("['昨日','本周','本月','全部','某月','某年']")>=0);
+  T('R43-A2: 复盘筛选新增 某月/某年 分支',()=> html.indexOf("REV_RANGE==='某月'")>=0 && html.indexOf("REV_RANGE==='某年'")>=0);
+  T('R43-A3: 复盘 某月 作用域标签 = 年-月',()=> html.indexOf("REV_YEAR+'-'+REV_MONTH")>=0);
+  T('R43-A4: 复盘 某年 作用域标签 = 年',()=> html.indexOf("REV_YEAR+' 年'")>=0);
+  T('R43-A5: revSetRange 切到 某月/某年 自动补当前年/月',()=>{
+    const oR=w.renderSchedule; w.renderSchedule=()=>{};
+    w.REV_YEAR='全部'; w.REV_MONTH='全部'; w.REV_RANGE='昨日';
+    w.revSetRange('某月');
+    const okM=(w.REV_RANGE==='某月') && w.REV_YEAR!=='全部' && w.REV_MONTH!=='全部';
+    w.REV_YEAR='全部'; w.REV_MONTH='全部';
+    w.revSetRange('某年');
+    const okY=(w.REV_RANGE==='某年') && w.REV_YEAR!=='全部';
+    w.renderSchedule=oR; w.REV_RANGE='昨日'; w.REV_YEAR='全部'; w.REV_MONTH='全部';
+    return (okM && okY)?'ok':false; });
+  T('R43-A6: 复盘 某月 筛选只留该月',()=>{
+    w.__sched=[
+      {id:'M1',标题:'十月甲',分类:'工作',日期:'2026-10-12',完成:'否'},
+      {id:'M2',标题:'十月乙',分类:'工作',日期:'2026-10-20',完成:'否'},
+      {id:'M3',标题:'九月丙',分类:'工作',日期:'2026-09-15',完成:'否'},
+      {id:'M4',标题:'二五丁',分类:'工作',日期:'2025-10-01',完成:'否'}
+    ];
+    w.REV_RANGE='某月'; w.REV_YEAR='2026'; w.REV_MONTH='10';
+    const h=w.revPanelHTML();
+    const ok=(h.indexOf('十月甲')>=0 && h.indexOf('十月乙')>=0 && h.indexOf('九月丙')<0 && h.indexOf('二五丁')<0);
+    w.REV_RANGE='昨日'; w.REV_YEAR='全部'; w.REV_MONTH='全部'; w.__sched=[];
+    return ok?'ok':false; });
+  T('R43-A7: 复盘 某年 筛选只留该年',()=>{
+    w.__sched=[
+      {id:'Y1',标题:'二六甲',分类:'工作',日期:'2026-03-03',完成:'否'},
+      {id:'Y2',标题:'二五乙',分类:'工作',日期:'2025-03-03',完成:'否'}
+    ];
+    w.REV_RANGE='某年'; w.REV_YEAR='2026'; w.REV_MONTH='全部';
+    const h=w.revPanelHTML();
+    const ok=(h.indexOf('二六甲')>=0 && h.indexOf('二五乙')<0);
+    w.REV_RANGE='昨日'; w.REV_YEAR='全部'; w.REV_MONTH='全部'; w.__sched=[];
+    return ok?'ok':false; });
+  T('R43-B1: 修改日程弹窗 初始化 esPickDates 并渲染日历块',()=>{
+    w.__sched=[]; w.openEditSchedModal({'id':'EB1','标题':'X','日期':'2026-10-05','开始时间':'08:00','结束时间':'09:00','分类':'工作','象限':'Q1'});
+    const init=(w.esPickDates||[]).join(',')==='2026-10-05';
+    const blk=d.getElementById('es-dates-block');
+    w.esRenderPickBlock();
+    const html2=blk?blk.innerHTML:'';
+    w.closeEditSchedModal();
+    return (init && blk && html2.indexOf('class="d')>=0)?'ok':false; });
+  T('R43-B2: esPickToggle 增删日期',()=>{
+    w.esPickDates=['2026-10-05']; w.esPickY=2026; w.esPickM=9;
+    w.esPickToggle('2026-10-15');
+    const a=w.esPickDates.length===2;
+    w.esPickToggle('2026-10-15');
+    const b=w.esPickDates.length===1 && w.esPickDates[0]==='2026-10-05';
+    return (a && b)?'ok':false; });
+  T('R43-B3: esPickQuick(all/clear) 全月/清空',()=>{
+    const t=w.today(); const y=+t.slice(0,4), m=+t.slice(5,7)-1;
+    w.esPickDates=[]; w.esPickY=y; w.esPickM=m;
+    w.esPickQuick('all');
+    const days=new Date(y,m+1,0).getDate();
+    const a=w.esPickDates.length===days;
+    w.esPickQuick('clear');
+    const b=w.esPickDates.length===0;
+    return (a && b)?(a+'/'+days):false; });
+  T('R43-B4: 修改日程多选日期保存 原记录留首日期 + 其余各新增一条',()=>{
+    const calls=[];
+    const oU=w.updRec, oA=w.addRec, oTs=w.LOADERS.tasks, oS=w.LOADERS.schedule;
+    w.updRec=(db,id,p)=>{ calls.push([db,id,p]); return Promise.resolve({}); };
+    w.addRec=(db,rec)=>{ calls.push([db,'ADD',rec]); return Promise.resolve({id:'NEW'}); };
+    w.LOADERS.tasks=()=>{}; w.LOADERS.schedule=()=>{};
+    w.__sched=[{id:'EB4',标题:'多选',日期:'2026-10-01',开始时间:'08:00',结束时间:'09:00',分类:'工作',象限:'Q1'}];
+    w.openEditSchedModal({'id':'EB4','标题':'多选','日期':'2026-10-01','开始时间':'08:00','结束时间':'09:00','分类':'工作','象限':'Q1'});
+    w.esPickDates=['2026-10-01','2026-10-02','2026-10-03'];
+    try{ w.saveEditSchedItem('EB4'); }catch(e){}
+    const nUpd=calls.filter(c=>c[0]===w.DB.schedule&&c[1]==='EB4').length;
+    const nAdd=calls.filter(c=>c[1]==='ADD').length;
+    const addDates=calls.filter(c=>c[1]==='ADD').map(c=>c[2]['日期'].date).sort().join(',');
+    w.updRec=oU; w.addRec=oA; w.LOADERS.tasks=oTs; w.LOADERS.schedule=oS; w.closeEditSchedModal(); w.esPickDates=[]; w.__sched=[];
+    return (nUpd===1 && nAdd===2 && addDates==='2026-10-02,2026-10-03')?(nUpd+'+'+nAdd):false; });
   console.log('\n结果: '+pass+' 通过 / '+fail+' 失败');
 
 

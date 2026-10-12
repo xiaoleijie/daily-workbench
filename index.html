@@ -3914,7 +3914,12 @@ function dpRange(el){ setSchedRange(el&&el.getAttribute('data-r')); }
 function setSchedRange(v){ schedRange=(schedRange===v)?null:v; schedSelDate=null; renderSchedule(window.__sched); }
 /* ===== R30 复盘：自动汇总「未完成事项」，可按年份 / 月份筛选；风格沿用「昨日复盘」 ===== */
 var REV_YEAR='全部', REV_MONTH='全部', REV_RANGE='昨日';
-function revSetRange(v){ REV_RANGE=v; renderSchedule(window.__sched); }
+function revSetRange(v){
+  if((v==='某月'||v==='某年')){
+    if(REV_YEAR==='全部') REV_YEAR=String(new Date().getFullYear());
+    if(v==='某月' && REV_MONTH==='全部') REV_MONTH=pad2(new Date().getMonth()+1);
+  }
+  REV_RANGE=v; renderSchedule(window.__sched); }
 function revWeekStrs(){ var p=today().split('-'); var d=new Date(+p[0],+p[1]-1,+p[2]); var dow=(d.getDay()+6)%7; var mon=new Date(d); mon.setDate(d.getDate()-dow); var sun=new Date(mon); sun.setDate(mon.getDate()+6); return [fmtDate(mon),fmtDate(sun)]; }
 function revSetYear(v){ REV_YEAR=v; renderSchedule(window.__sched); }
 function revSetMonth(v){ REV_MONTH=v; renderSchedule(window.__sched); }
@@ -3924,16 +3929,23 @@ function revPanelHTML(){
   rows.forEach(function(r){ var d=dateSub(r['日期']); if(d.length>=4) years[d.substring(0,4)]=1; });
   years[String(new Date().getFullYear())]=1;
   var ylist=Object.keys(years).sort().reverse();
-  var yOpts='<option value="全部"'+(REV_YEAR==='全部'?' selected':'')+'>全部年份</option>'+
+  var _showAllOpt=(REV_RANGE==='全部');
+  var yOpts=(_showAllOpt?'<option value="全部"'+(REV_YEAR==='全部'?' selected':'')+'>全部年份</option>':'')+
     ylist.map(function(y){ return '<option value="'+y+'"'+(REV_YEAR===y?' selected':'')+'>'+y+' 年</option>'; }).join('');
-  var mOpts='<option value="全部"'+(REV_MONTH==='全部'?' selected':'')+'>全部月份</option>';
-  for(var i=1;i<=12;i++){ var mm=('0'+i).slice(-2); mOpts+='<option value="'+mm+'"'+(REV_MONTH===mm?' selected':'')+'>'+i+' 月</option>'; }
+  var mOpts;
+  if(REV_RANGE==='某年'){ mOpts=''; }
+  else {
+    mOpts=(_showAllOpt?'<option value="全部"'+(REV_MONTH==='全部'?' selected':'')+'>全部月份</option>':'');
+    for(var i=1;i<=12;i++){ var mm=('0'+i).slice(-2); mOpts+='<option value="'+mm+'"'+(REV_MONTH===mm?' selected':'')+'>'+i+' 月</option>'; }
+  }
   var _td=today(), _yest=addDays(_td,-1), _wk=revWeekStrs();
   var sel=rows.filter(function(r){
     var d=dateSub(r['日期']);
     if(REV_RANGE==='昨日'){ if(d!==_yest) return false; }
     else if(REV_RANGE==='本周'){ if(d<_wk[0]||d>_wk[1]) return false; }
     else if(REV_RANGE==='本月'){ if(d.substring(0,7)!==_td.substring(0,7)) return false; }
+    else if(REV_RANGE==='某月'){ if(d.substring(0,7)!==REV_YEAR+'-'+REV_MONTH) return false; }
+    else if(REV_RANGE==='某年'){ if(d.substring(0,4)!==REV_YEAR) return false; }
     else { if(REV_YEAR!=='全部' && d.substring(0,4)!==REV_YEAR) return false; if(REV_MONTH!=='全部' && d.substring(5,7)!==REV_MONTH) return false; }
     return true;
   });
@@ -3957,9 +3969,9 @@ function revPanelHTML(){
         '</span>';
     }).join('')+'</div>';
   }
-  var _scopeLbl=(REV_RANGE==='昨日')?('昨天 '+_yest.substring(5)):((REV_RANGE==='本周')?('本周 '+_wk[0].substring(5)+'~'+_wk[1].substring(5)):((REV_RANGE==='本月')?_td.substring(0,7):''));
-  var _rBtns=['昨日','本周','本月','全部'].map(function(v){ return '<button type="button" class="rv-range-btn'+(REV_RANGE===v?' on':'')+'" onclick="revSetRange(\''+v+'\')">'+v+'</button>'; }).join('');
-  var _ymSel=(REV_RANGE==='全部') ? ('<select id="rev-year" title="按年份筛选" onchange="revSetYear(this.value)">'+yOpts+'</select>'+'<select id="rev-month" title="按月份筛选" onchange="revSetMonth(this.value)">'+mOpts+'</select>') : '';
+  var _scopeLbl=(REV_RANGE==='昨日')?('昨天 '+_yest.substring(5)):((REV_RANGE==='本周')?('本周 '+_wk[0].substring(5)+'~'+_wk[1].substring(5)):((REV_RANGE==='本月')?_td.substring(0,7):((REV_RANGE==='某月')?(REV_YEAR+'-'+REV_MONTH):((REV_RANGE==='某年')?(REV_YEAR+' 年'):''))));
+  var _rBtns=['昨日','本周','本月','全部','某月','某年'].map(function(v){ return '<button type="button" class="rv-range-btn'+(REV_RANGE===v?' on':'')+'" onclick="revSetRange(\''+v+'\')">'+v+'</button>'; }).join('');
+  var _ymSel=(REV_RANGE==='全部'||REV_RANGE==='某月'||REV_RANGE==='某年') ? ('<select id="rev-year" title="按年份筛选" onchange="revSetYear(this.value)">'+yOpts+'</select>'+(REV_RANGE!=='某年'?'<select id="rev-month" title="按月份筛选" onchange="revSetMonth(this.value)">'+mOpts+'</select>':'')) : '';
   return '<div class="m-card rev-card">'+
     '<div class="m-ttl">未完成事项<span class="rev-scope">'+_scopeLbl+'</span></div>'+
     '<div class="rv-filters">'+
@@ -4531,14 +4543,23 @@ function openEditSchedModal(rec){
   var m=document.getElementById('editsched-modal');
   if(!m){ m=document.createElement('div'); m.id='editsched-modal'; m.className='imp-modal-mask'; document.body.appendChild(m); }
   var d=dateSub(rec['日期']||'');
+  esPickDates=[d]; esPickY=Number(d.substring(0,4)); esPickM=Number(d.substring(5,7))-1;
   m.innerHTML='<div class="imp-modal-card narrow" onclick="event.stopPropagation()">'+
     '<h3>修改日程</h3>'+
     '<div class="imp-sub">改完点保存即可，已完成的事项也能直接修改。</div>'+
     '<div class="fld"><label>事项</label><input id="es-title" value="'+esc(rec['标题']||'')+'"></div>'+
-    '<div class="es-row es-row-3">'+
-      '<div class="fld"><label>日期</label><input id="es-date" type="date" value="'+esc(d)+'"></div>'+
+    '<div class="es-row es-row-2">'+
       '<div class="fld"><label>开始</label><input id="es-st" type="time" class="time-input" value="'+esc(hm24(rec['开始时间']||rec['时间']))+'"></div>'+
       '<div class="fld"><label>结束</label><input id="es-en" type="time" class="time-input" value="'+esc(hm24(rec['结束时间']))+'"></div>'+
+    '</div>'+
+    '<div class="fld es-dates-fld"><label>日期（可多选 · 点日期，或按 全月/工作日/周末 批量选；所选日期会各生成一条日程）</label>'+
+      '<div id="es-dates-block">'+esPickInnerHTML()+'</div>'+
+      '<div class="sa-quick" style="margin-top:6px">'+
+        '<button type="button" class="btn sm" onclick="esPickQuick(&quot;all&quot;)">全月</button>'+
+        '<button type="button" class="btn sm" onclick="esPickQuick(&quot;weekday&quot;)">工作日</button>'+
+        '<button type="button" class="btn sm" onclick="esPickQuick(&quot;weekend&quot;)">周末</button>'+
+        '<button type="button" class="btn sm" onclick="esPickQuick(&quot;clear&quot;)">清空</button>'+
+      '</div>'+
     '</div>'+
     '<div class="es-row es-row-2">'+
       '<div class="fld"><label>分类</label><select id="es-cat" onfocus="this._cp=this.value" onchange="catSelectChanged(this)">'+catSelectHTML(rec['分类'])+'</select></div>'+
@@ -4561,6 +4582,63 @@ function openEditSchedModal(rec){
   m.style.display='flex';
 }
 function closeEditSchedModal(){ var m=document.getElementById('editsched-modal'); if(m) m.style.display='none'; }
+/* R43：修改日程弹窗多选日期（复用 +本月事项 日历交互，独立状态避免冲突） */
+var esPickDates=[], esPickY=null, esPickM=null;
+function esPickInnerHTML(){
+  var d0=esPickDates[0]||today();
+  if(esPickY==null){ esPickY=Number(d0.substring(0,4)); esPickM=Number(d0.substring(5,7))-1; }
+  var y=esPickY, m=esPickM;
+  var days=new Date(y,m+1,0).getDate();
+  var startDay=(new Date(y,m,1).getDay()+6)%7;
+  var h='<div class="smc"><div class="smc-head">'+
+      '<button type="button" class="smc-nav" onclick="esCalMove(-1)" title="上个月">‹</button>'+
+      '<span class="smc-title">'+y+' 年 '+pad2(m+1)+' 月</span>'+
+      '<button type="button" class="smc-nav" onclick="esCalMove(1)" title="下个月">›</button>'+
+    '</div><div class="monthcal smc-grid">'+
+      '<div class="wd">一</div><div class="wd">二</div><div class="wd">三</div><div class="wd">四</div><div class="wd">五</div><div class="wd">六</div><div class="wd">日</div>';
+  for(var i=0;i<startDay;i++) h+='<div class="d"></div>';
+  for(var d=1;d<=days;d++){
+    var ds=y+'-'+pad2(m+1)+'-'+pad2(d);
+    h+='<div class="d'+(esPickDates.indexOf(ds)>=0?' pick':'')+'" onclick="esPickToggle(\''+ds+'\')">'+d+'</div>';
+  }
+  h+='</div><div class="smc-cnt-row">已选 <b>'+esPickDates.length+'</b> 天'+esMonthSummary()+'</div></div>';
+  return h;
+}
+function esRenderPickBlock(){
+  var el=document.getElementById('es-dates-block'); if(!el) return;
+  el.innerHTML=esPickInnerHTML();
+}
+function esPickToggle(ds){
+  var i=esPickDates.indexOf(ds);
+  if(i>=0) esPickDates.splice(i,1); else esPickDates.push(ds);
+  esPickDates.sort(); esRenderPickBlock();
+}
+function esCalMove(delta){
+  esPickM+=delta;
+  if(esPickM<0){ esPickM=11; esPickY--; }
+  else if(esPickM>11){ esPickM=0; esPickY++; }
+  esRenderPickBlock();
+}
+function esPickQuick(kind){
+  var y=esPickY, m=esPickM, arr=[];
+  var days=new Date(y,m+1,0).getDate();
+  if(kind==='clear'){ esPickDates=[]; esRenderPickBlock(); return; }
+  if(kind==='all'){ for(var d=1;d<=days;d++) arr.push(y+'-'+pad2(m+1)+'-'+pad2(d)); }
+  else if(kind==='weekday'){ for(var d=1;d<=days;d++){ var w=new Date(y,m,d).getDay(); if(w!==0&&w!==6) arr.push(y+'-'+pad2(m+1)+'-'+pad2(d)); } }
+  else if(kind==='weekend'){ for(var d=1;d<=days;d++){ var w=new Date(y,m,d).getDay(); if(w===0||w===6) arr.push(y+'-'+pad2(m+1)+'-'+pad2(d)); } }
+  var allIn = arr.length>0 && arr.every(function(ds){ return esPickDates.indexOf(ds)>=0; });
+  if(allIn){ esPickDates = esPickDates.filter(function(ds){ return arr.indexOf(ds)<0; }); }
+  else { var seen={}; esPickDates.forEach(function(ds){ seen[ds]=1; }); arr.forEach(function(ds){ if(!seen[ds]){ seen[ds]=1; esPickDates.push(ds); } }); }
+  esPickDates.sort(); esRenderPickBlock();
+}
+function esMonthSummary(){
+  if(esPickDates.length<2) return '';
+  var mm={}; esPickDates.forEach(function(ds){ var k=ds.slice(0,7); mm[k]=(mm[k]||0)+1; });
+  var ks=Object.keys(mm).sort();
+  if(ks.length<2) return '';
+  var parts=ks.map(function(k){ return (Number(k.slice(5,7))+'月')+'×'+mm[k]; });
+  return '<span class="smc-months">（'+parts.join(' · ')+'）</span>';
+}
 /* ===== R38：修改日程弹窗里的笔记也能插图（与今日安排笔记同一份数据、同一个 key） ===== */
 function esNoteKey(){ var ta=document.getElementById('es-letter'); return ta?String(ta.getAttribute('data-notekey')||''):''; }
 function esNoteRead(){
@@ -4715,33 +4793,48 @@ function saveEditSchedItem(id){
     "开始时间":{text:st}, "结束时间":{text:en}, "时间":{text:st},
     "象限":{select:val('es-quad')||'Q1'},
     "地点":{text:val('es-place')}, "备注":{text:val('es-note')} };
-  var newDate=val('es-date');
+  var _esDates=(esPickDates||[]).slice().sort();
   var batch=document.getElementById('es-batch') && document.getElementById('es-batch').checked;
+  if(!batch && !_esDates.length){ toast('请至少选择一个日期',true); return; }
   var ops=[];
-  var _lkid=function(v){ return (v&&typeof v==='object'&&'text' in v)?v.text:v; };
   var _taskSync=function(_tid,_dstr){ return updRec(DB.tasks,_tid,{"标题":{text:ti},"截止日期":{date:_dstr},"时间":{text:st},"分类":{select:val('es-cat')||''},"象限":{select:val('es-quad')||'Q1'}}); };
+  var _okMsg='已保存修改';
   if(batch){
-    /* ⚠️ 批量改「内容」，日期各归各位 —— 绝不把当前那一个日期套给全部 */
     var ids=esBatchIds(rec);
-    esSnapshot(ids);                 /* 改前存快照，可撤销 */
+    esSnapshot(ids);
     ids.forEach(function(xid){
       var pp={}; for(var k in common) pp[k]=common[k];
       ops.push(updRec(DB.schedule, xid, pp));
       var _rr=__schedById(xid)||{};
       var _fid=mirrorTaskOfSched(xid, _rr);
-      if(_fid) ops.push(_taskSync(_fid, _rr['日期']||newDate));
+      if(_fid) ops.push(_taskSync(_fid, _rr['日期']||_esDates[0]));
     });
-  } else {
+    _okMsg='已批量改内容 '+(esBatchIds(rec).length)+' 条（日期未动）';
+  } else if(_esDates.length<=1){
     var p={}; for(var k2 in common) p[k2]=common[k2];
-    p["日期"]={date:newDate};
+    p["日期"]={date:_esDates[0]||''};
     ops.push(updRec(DB.schedule, id, p));
     var _fid2=mirrorTaskOfSched(rid(rec), rec);
-    if(_fid2) ops.push(_taskSync(_fid2, newDate));
+    if(_fid2) ops.push(_taskSync(_fid2, _esDates[0]||''));
+  } else {
+    var _origDate=dateSub(rec['日期']||'');
+    var _hasOrig=_esDates.indexOf(_origDate)>=0;
+    var _base=_hasOrig?_origDate:_esDates[0];
+    var p0={}; for(var k3 in common) p0[k3]=common[k3];
+    p0["日期"]={date:_base};
+    ops.push(updRec(DB.schedule, id, p0));
+    var _fid0=mirrorTaskOfSched(rid(rec), rec);
+    if(_fid0) ops.push(_taskSync(_fid0, _base));
+    _esDates.forEach(function(ds){
+      if(ds===_base) return;
+      ops.push(addRec(DB.schedule, { "标题":{text:ti}, "分类":{select:val('es-cat')||''}, "日期":{date:ds}, "开始时间":{text:st}, "结束时间":{text:en}, "时间":{text:st}, "象限":{select:val('es-quad')||'Q1'}, "地点":{text:val('es-place')}, "备注":{text:val('es-note')} }));
+    });
+    _okMsg='已保存：原记录留在 '+_base+'，并新增 '+(_esDates.length-1)+' 个日期';
   }
   var finish=function(){
     Promise.all(ops).then(function(){
       closeEditSchedModal(); LOADERS.schedule(); LOADERS.tasks();
-      toast(batch ? ('已批量改内容 '+(esBatchIds(rec).length)+' 条（日期未动）') : '已保存修改');
+      toast(_okMsg);
     }).catch(function(e){ toast('保存失败：'+((e&&e.message)||'错误'),true); });
   };
   if(batch){
@@ -4749,7 +4842,6 @@ function saveEditSchedItem(id){
       buttons:[{label:'取消'},{label:'确定修改', cls:'primary', onClick:finish}]});
   } else { finish(); }
 }
-
 /* ===== 多选批量修改日程（勾选多条后点任一「修改」触发） ===== */
 function openBatchEditModal(ids){
   var recs=ids.map(function(xid){ return (window.__sched||[]).filter(function(r){ return rid(r)===xid; })[0]; }).filter(Boolean);

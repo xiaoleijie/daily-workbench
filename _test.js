@@ -1429,7 +1429,7 @@ setTimeout(()=>{
 
 
 
-  T('R5① 迷你月历标题只留年月（无「本月日程」后缀）',()=>html.indexOf("td.substring(0,7)+'</h3>'")>=0 && html.indexOf("· 本月日程</h3>")<0);
+  T('R5① 迷你月历标题只留年月（无「本月日程」后缀）',()=>html.indexOf("td.substring(0,7)+'</h3></div>'")>=0 && html.indexOf("· 本月日程</h3>")<0);
 
 
 
@@ -3266,7 +3266,7 @@ console.log('--- 回归 ---');
     return ok?dbg:false; });
 
   /* ===== R32：事项明细撤销入口 / 按钮文案 / 信纸划线对齐 / 笔记图片 ===== */
-  T('R32-1: 事项明细批量条新增「撤销上次批量修改」入口',()=> html.indexOf('id="s-sel-cnt"></span><button class="btn sm" onclick="schedUndoLast()"')>=0);
+  T('R32-1: 事项明细批量条新增「撤销」入口(s-sel-cnt 后为批量操作组+撤销)',()=> html.indexOf('id="s-sel-cnt"></span><span id="s-sel-ops"')>=0 && html.indexOf('title="撤销上次批量修改" style="flex:0 0 auto">撤销</button>')>=0);
   T('R32-2: 添加事项弹窗按钮文案改为「撤销上次批量修改」',()=> html.indexOf('white-space:nowrap">撤销上次批量修改</button>')>=0);
   T('R32-3: 信纸文字在划线上方(内容盒起算 + 行高=线距)',()=> (html.indexOf('background-origin:content-box;line-height:32px;')>=0)?'ok':false);
   T('R32-4: 笔记弹窗含图片按钮/图片区/文件选择器',()=>{
@@ -3512,7 +3512,7 @@ console.log('--- 回归 ---');
   T('R42b-2: 批量条顺序 = 共N项 → 全选(右推 margin-left:auto) → 已选计数 → 撤销',()=>{
     var it=html.indexOf('id="s-total"');
     var ial=html.indexOf('id="s-sel-all" class="s-sel-all-cb" style="margin-left:auto"');
-    var ic=html.indexOf('id="s-sel-cnt"></span><button class="btn sm" onclick="schedUndoLast()"');
+    var ic=html.indexOf('onclick="schedUndoLast()"');
     return (it>=0 && ial>=0 && ic>=0 && it<ial && ial<ic) ? 'ok' : false; });
   /* ===== R43：复盘 某月/某年 筛选 + 修改日程多选日期 ===== */
   T('R43-A1: 复盘快捷筛选新增 某月/某年 按钮',()=> html.indexOf("['昨日','本周','本月','全部','某月','某年']")>=0);
@@ -3590,6 +3590,23 @@ console.log('--- 回归 ---');
     const addDates=calls.filter(c=>c[1]==='ADD').map(c=>c[2]['日期'].date).sort().join(',');
     w.updRec=oU; w.addRec=oA; w.LOADERS.tasks=oTs; w.LOADERS.schedule=oS; w.closeEditSchedModal(); w.esPickDates=[]; w.__sched=[];
     return (nUpd===1 && nAdd===2 && addDates==='2026-10-02,2026-10-03')?(nUpd+'+'+nAdd):false; });
+  /* ===== R44：事项明细 +事项/批量操作 + 撤销短文案 + 本月日程月份/按钮互换 ===== */
+  T('R44-1: 批量条「共N项」后新增 +事项 按钮(关联＋本月事项)',()=> html.indexOf('id="s-total">共 ')<html.indexOf('class="btn sm s-add-item"') && html.indexOf('>+事项</button>')>=0 && html.indexOf('s-add-item" onclick="openSchedAddModal()"')>=0);
+  T('R44-2: 批量条撤销按钮文案「撤销」+悬停 title「撤销上次批量修改」',()=> html.indexOf('title="撤销上次批量修改" style="flex:0 0 auto">撤销</button>')>=0);
+  T('R44-3: 批量操作组(完成/待办/删除)默认隐藏 + 三个 batch 函数齐全',()=> html.indexOf('id="s-sel-ops" style="display:none"')>=0 && /function batchSchedDone/.test(html) && /function batchSchedTodo/.test(html) && /function batchSchedDel/.test(html));
+  T('R44-4: schedSelCount 按勾选数切换 #s-sel-ops 显隐',()=> html.indexOf("var ops=document.getElementById('s-sel-ops')")>=0 && html.indexOf("ops.style.display=n>0?'inline-flex':'none'")>=0);
+  T('R44-5: 本月日程 mc-head 按钮与月份互换 + 月份字号 18px',()=>{ var iBtn=html.indexOf('mc-head"><button'), iH3=html.indexOf('<h3 style="font-size:18px">'); return (iBtn>=0 && iH3>iBtn) ? 'ok' : false; });
+  T('R44-6(功能): 全选后 #s-sel-ops 显示 且 getSchedSelIds 命中全部',()=>{
+    try{
+      var _t=w.today();
+      w.renderSchedule([{_id:'q1',标题:'甲',分类:'工作',日期:_t,象限:'Q1',完成:'否'},{_id:'q2',标题:'乙',分类:'工作',日期:_t,象限:'Q2',完成:'否'},{_id:'q3',标题:'丙',分类:'工作',日期:_t,象限:'Q1',完成:'否'}]);
+      var ops0=d.getElementById('s-sel-ops'); var hidden0=(ops0&&ops0.style.display==='none');
+      w.toggleSelAll(true);
+      var ops=d.getElementById('s-sel-ops'); var vis=(ops&&ops.style.display==='inline-flex');
+      var ids=w.getSchedSelIds();
+      return (hidden0 && vis && ids.length===3) ? 'ok' : ('h0='+hidden0+' vis='+vis+' n='+ids.length);
+    }catch(e){ return 'ERR:'+e.message; }
+  });
   console.log('\n结果: '+pass+' 通过 / '+fail+' 失败');
 
 

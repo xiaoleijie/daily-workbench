@@ -700,7 +700,8 @@
   .sa-right>.sched-grid{margin-bottom:0}
   .sa-cal>.fld{margin-bottom:11px}
   .sa-ops-2{display:grid;grid-template-columns:1fr 1fr;gap:6px;min-width:0}
-  .s-batchbar{display:flex;align-items:center;gap:10px;padding:7px 2px;font-size:12.5px;color:var(--muted);border-bottom:1px dashed var(--line)}
+  .s-batchbar{display:flex;align-items:center;gap:10px;padding:7px 2px;font-size:12.5px;color:var(--muted);border-bottom:1px dashed var(--line);flex-wrap:wrap;row-gap:6px}
+  .s-batchbar #s-sel-ops{gap:6px;align-items:center}
   .s-batchbar .s-selall{display:flex;flex-direction:row;align-items:center;gap:5px;cursor:pointer;font-weight:700;color:var(--ink);white-space:nowrap}
   .s-batchbar .s-sel-all-cb{flex:0 0 auto;width:16px;height:16px;accent-color:var(--accent);cursor:pointer;margin:0}
   .s-batchbar .btn[disabled]{opacity:.45;cursor:not-allowed}
@@ -3995,8 +3996,7 @@ function renderSchedule(rows){
   var days=new Date(y,mo+1,0).getDate();
   var first=new Date(y,mo,1); var startDay=(first.getDay()+6)%7;
   var mini='<div class="panel mini-cal-panel" style="padding:14px">'+
-    '<div class="mc-head"><h3>'+td.substring(0,7)+'</h3>'+
-    '<button class="btn sm primary sched-add-btn" onclick="openSchedAddModal()" title="添加事项，可一次选中多个日期">＋ 本月事项</button></div>'+
+    '<div class="mc-head"><button class="btn sm primary sched-add-btn" onclick="openSchedAddModal()" title="添加事项，可一次选中多个日期">＋ 本月事项</button><h3 style="font-size:18px">'+td.substring(0,7)+'</h3></div>'+
     '<div class="monthcal"><div class="wd">一</div><div class="wd">二</div><div class="wd">三</div><div class="wd">四</div><div class="wd">五</div><div class="wd">六</div><div class="wd">日</div>';
   for(var i=0;i<startDay;i++) mini+='<div class="d"></div>';
   for(var d=1;d<=days;d++){ var ds=y+'-'+('0'+(mo+1)).slice(-2)+'-'+('0'+d).slice(-2); var isPast=ds<td, isHave=!!haveDates[ds], isSel=schedSelDate===ds; var cls='d'+(isHave?' have':'')+(isSel?' sel':'')+(isPast?' past':''); var tint=(isPast)?ACTION_PALETTE_TINT[(d-1)%7]:''; var dc=dayCount[ds]||0; mini+='<div class="'+cls+'"'+(tint?' style="background:'+tint+'"':'')+' onclick="schedSelDate=\''+ds+'\';renderSchedule(window.__sched)">'+d+(dc?'<span class="d-cnt">'+dc+'</span>':'')+'</div>'; }
@@ -4032,7 +4032,7 @@ function renderSchedule(rows){
   var sticky='<div class="sticky-note"><div class="sticky-rule"></div><textarea class="sticky-area" id="month-note" onchange="saveMonthNote(this.value)" placeholder="还没定下日期的安排，先记在这里…">'+esc(getMonthNote())+'</textarea></div>';
   var shown=rows.filter(function(r){ var st=schedStatus(r); return (schedFilter==='全部'||r["分类"]===schedFilter) && (schedRange===null?(!schedSelDate||dateSub(r["日期"])===schedSelDate):(schedRange==='today'?dateSub(r["日期"])===td:(schedRange==='month'?dateSub(r["日期"]).indexOf(td.substring(0,7))===0:dateSub(r["日期"]).indexOf(td.substring(0,4))===0))) && (schedStatusF==='全部状态'||(schedStatusF==='待办'&&(st==='todo'||st==='overdue'))||(schedStatusF==='已完成'&&st==='done')); });
   shown.sort(function(a,b){ var da=dateSub(a["日期"])||'',db=dateSub(b["日期"])||''; if(da!==db) return da<db?-1:1; var ta=a["开始时间"]||'',tb=b["开始时间"]||''; return ta<tb?-1:(ta>tb?1:0); });
-  var list='<div class="panel sched-list-panel"><div class="s-batchbar"><span class="s-total" id="s-total">共 '+shown.length+' 项</span><input type="checkbox" id="s-sel-all" class="s-sel-all-cb" style="margin-left:auto" onclick="toggleSelAll(this.checked)"><label class="s-selall" for="s-sel-all">全选</label><span id="s-sel-cnt"></span><button class="btn sm" onclick="schedUndoLast()" title="撤销上一次批量修改（保留最近 5 次）" style="flex:0 0 auto">撤销上次批量修改</button></div><div class="list">';
+  var list='<div class="panel sched-list-panel"><div class="s-batchbar"><span class="s-total" id="s-total">共 '+shown.length+' 项</span><button class="btn sm s-add-item" onclick="openSchedAddModal()" title="添加事项，可一次选中多个日期">+事项</button><input type="checkbox" id="s-sel-all" class="s-sel-all-cb" style="margin-left:auto" onclick="toggleSelAll(this.checked)"><label class="s-selall" for="s-sel-all">全选</label><span id="s-sel-cnt"></span><span id="s-sel-ops" style="display:none"><button class="btn sm" onclick="batchSchedDone()" title="把勾选的事项标记为已完成">完成</button><button class="btn sm" onclick="batchSchedTodo()" title="把勾选的事项恢复为待办">待办</button><button class="btn sm danger" onclick="batchSchedDel()" title="删除勾选的事项">删除</button></span><button class="btn sm" onclick="schedUndoLast()" title="撤销上次批量修改" style="flex:0 0 auto">撤销</button></div><div class="list">';
   if(!shown.length) list+='<div class="empty">这段时间还没有安排</div>';
   shown.forEach(function(r){
     var st=schedStatus(r);
@@ -4519,6 +4519,8 @@ function schedSelCount(){
 
   var cnt=document.getElementById('s-sel-cnt');
   if(cnt){ cnt.textContent=n?('已选 '+n+' 条'):''; }
+  var ops=document.getElementById('s-sel-ops');
+  if(ops){ ops.style.display=n>0?'inline-flex':'none'; }
   var all=document.getElementById('s-sel-all');
   if(all){ all.checked=boxes.length>0 && n===boxes.length; }
 }
@@ -4526,6 +4528,45 @@ function getSchedSelIds(){
   var boxes=document.querySelectorAll('.sched-list-panel .s-sel:checked'), ids=[];
   for(var i=0;i<boxes.length;i++){ ids.push(boxes[i].getAttribute('data-id')); }
   return ids;
+}
+/* ===== R44 批量操作：勾选后 一并 完成 / 待办 / 删除 ===== */
+function batchSchedDone(){
+  var ids=getSchedSelIds();
+  if(!ids.length){ toast('先勾选要标记完成的事项'); return; }
+  var _ops=[];
+  ids.forEach(function(id){
+    var _tid=mirrorTaskOfSched(id, __schedById(id));
+    _ops.push(updRec(DB.schedule, id, {"完成":{select:'是'}}));
+    if(_tid) _ops.push(updRec(DB.tasks, _tid, {"完成":{select:'是'}}));
+  });
+  Promise.all(_ops).then(function(){ LOADERS.schedule(); LOADERS.tasks(); toast('已标记 '+ids.length+' 项为已完成 ✓'); }).catch(function(e){ toast('更新失败：'+((e&&e.message)||'错误'),true); });
+}
+function batchSchedTodo(){
+  var ids=getSchedSelIds();
+  if(!ids.length){ toast('先勾选要恢复为待办的事项'); return; }
+  var _ops=[];
+  ids.forEach(function(id){
+    var _tid=mirrorTaskOfSched(id, __schedById(id));
+    _ops.push(updRec(DB.schedule, id, {"完成":{select:'否'}}));
+    if(_tid) _ops.push(updRec(DB.tasks, _tid, {"完成":{select:'否'}}));
+  });
+  Promise.all(_ops).then(function(){ LOADERS.schedule(); LOADERS.tasks(); toast('已把 '+ids.length+' 项恢复为待办 ↩'); }).catch(function(e){ toast('更新失败：'+((e&&e.message)||'错误'),true); });
+}
+function batchSchedDel(){
+  var ids=getSchedSelIds();
+  if(!ids.length){ toast('先勾选要删除的事项'); return; }
+  var snap=[];
+  ids.forEach(function(xid){ var r=(window.__sched||[]).filter(function(x){ return rid(x)===xid; })[0]; if(r) snap.push(dfSnapRow(r)); });
+  if(snap.length) pushUndo('批量删除', snap);
+  appDialog({msg:('将删除选中的 '+ids.length+' 条日程，删错了可用「撤销」一键还原。'), buttons:[
+    {label:'取消'},
+    {label:'确认删除', cls:'primary', onClick:function(){
+      Promise.all(ids.map(function(xid){ return delRec(DB.schedule, xid); })).then(function(){
+        LOADERS.schedule(); LOADERS.tasks(); schedSelCount();
+        toast('已删除 '+ids.length+' 条，可用「撤销」还原');
+      }).catch(function(e){ toast('删除失败：'+((e&&e.message)||'错误'),true); });
+    }}
+  ]});
 }
 /* ===== 日程事项修改（已完成状态也可直接修改） ===== */
 function editSchedItem(id, forceOne){

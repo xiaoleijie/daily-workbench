@@ -412,6 +412,11 @@
 .mp-src-cur .mp-ico-emo{font-size:19px}
 .mp-ico-qqm{display:block;width:22px;height:22px;border-radius:50%}
 .mp-src-cur .mp-ico-qqm{width:26px;height:26px}
+.mp-ico-nem{display:block;width:22px;height:22px;border-radius:50%}
+.mp-src-cur .mp-ico-nem{width:26px;height:26px}
+/* R54：外链入口角标（提示点了会跳出去） */
+.mp-src-opt.ext{position:relative}
+.mp-src-opt.ext::after{content:'↗';position:absolute;right:-2px;top:-4px;font-size:9px;line-height:1;color:#b0a894;font-weight:700}
 .mp-src-opt:hover{background:#f6f4ec}
 .mp-src-opt.cur{border-color:#c9c1ab;background:#f2f6ee}
 /* B 行 */
@@ -1643,7 +1648,7 @@
         <div id="shopping-body" data-page-node-id="BubJXjwm5ya3Ps7wQaOf0l"></div>
       </section>
       <section class="module" id="mod-media" data-sp-bindable="database" data-sp-database-id="XwBGD3AthDZziupFstknF4" data-page-node-id="wmE0Ozv4VPOxb1QNG9Gq81">
-        <div class="mod-head" data-page-node-id="ww8NZJbJ993jpKKtV5WKns"><h2 data-page-node-id="12stfYH9V0UA46lU8o3M7i">书影音</h2><span class="desc" data-page-node-id="LH5Tx5hHfiLB9V60VgZUjH">收藏、评分与年度统计，记录看过的好东西</span><span class="build-ver" title="页面版本">R53</span></div>
+        <div class="mod-head" data-page-node-id="ww8NZJbJ993jpKKtV5WKns"><h2 data-page-node-id="12stfYH9V0UA46lU8o3M7i">书影音</h2><span class="desc" data-page-node-id="LH5Tx5hHfiLB9V60VgZUjH">收藏、评分与年度统计，记录看过的好东西</span><span class="build-ver" title="页面版本">R54</span></div>
         <div id="media-body" data-page-node-id="MvHLGITKcoHEoc4n5mYw56"></div>
       </section>
       <section class="module" id="mod-report" data-sp-bindable="database" data-sp-database-id="VDJ7npH13yRDIkMBUcnQO4" data-page-node-id="zEMiJyVPF1imOLfhLXwOHu">
@@ -7398,17 +7403,22 @@ if('serviceWorker' in navigator){
 /* 结构：歌单来源（本地 / QQ导入 / 网易云）→ 歌单 → 歌曲 */
 
 var MP_KEY = 'lw_musiclib_v1';
+/* R54：本地＝工作台内自己管的歌单；QQ / 网易云＝外链入口，点图标直接去官方「我的歌单」 */
 var MP_SRC = [
   { k: '本地', label: '本地音乐' },
-  { k: 'QQ导入', label: 'QQ 导入歌单' },
-  { k: '网易云', label: '网易云音乐歌单' }
+  { k: 'QQ导入', label: 'QQ 音乐', ext: 'https://y.qq.com/n/ryqq_v2/profile/like/playlist' },
+  { k: '网易云', label: '网易云音乐', ext: 'https://music.163.com/#/my/m/music/playlist?id=534839262' }
 ];
+var MP_LOCAL_SRC = '本地';
 /* QQ 音乐图标：用户提供的黄绿圆音符图（已裁掉白边并做圆形遮罩，59x59） */
 var MP_QQ_ICON = 'data:image/png;base64,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';
+/* 网易云音乐图标：用户提供红底音符图（已去掉黑底外框，圆形遮罩，59x59） */
+var MP_NE_ICON = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADsAAAA7CAYAAADFJfKzAAAWxElEQVR42uWbe5Rd9XXfP/t3fuee+5j3jGak0UgavbAQiLeNgkACC2wK+Inlx3KWcRMXr9U6Th+xm6apZaV1VoPTxqvxSozbJNA6iV0bk9rCL3BBOE6AgEHYEWAJvaUZSTOjed3Huef8frt//O6MhJAENNhdXT5r3Zm17jr33L1/+/X97r0vvD5XtBYKN7MqUTZZRSVCznZfDBQA2/ofv+xBCIqKssnezKpkbbgvej2ElH+okndzpbkTsPwoc+jpSi290XYNbUo6hpaQdC+MCp1dkekXxCg4gUhRP+n88VHXnDpEenJHOn34oXzyMHAQyOaUz7ki/iLwUZ7ygPt5K2u2gvn3SO5PKdj+ifLS1evjthWi+oYq/g0JDHcSDZfF9vYYWx6KChiEHMUieJTDrsmEz2s1zcencPtT2F/BvKAiLzyWze79bO3gbmAGwCD8O9RuA094/cyVldbLA/wrBipTBbe4PbI3XBJ1vPvSuHT1MlPsTETIAaeKBxT1nlMnM39qIIIYA0QiWCBV5YBvTO3M6o8/66a/PuPyhzub0ZH/xLHqqY+hnOV5r5eyEiy6Nvpdnm9mQddVf1BZ/tFNcedti6PCwrr6tpIYawh+6lVRQBDkPIIpiKLhC0SINJxkXX1eEjN7xDVHd2RT2/9Fdd/dwJ4Yw2+xprCNXa516Pp6KitbIf40mgmiQN9dpRVb3pJ0vssKVwyYQm+3sUxrTqbqfcuKigqISLAegEhLMjkloSqKgoKqIGpADGJiEdMhlpM+55hvjufKj76XTt3/yfrerwJjisqnkXhbiG99PZQ1D7PJ3MCOHOCu8rLL2iR6z0VR2y9vTDqXpTgmfdbIVUUFE2GMgUhebr1XLYQGczmH96J4K6JdJi4mRDyaTh34ezf7pVl1X/tk7cAzAA+zyd7AjleM41dU9kqIn4JsE9iVSe91tyUL/u06W97cLwmzuMzhxGJMFLLs634J4FCf431EpG1E8XFN+XFe+/729MRnXkzHf7AD8jk5/2+VNYBRtiJsy3+nsuS9tyd9v9eFXWJaYSWIaCvJ8DO+PGhwfVUB4xU3SX7ovnTsX3+qeuh/KlutsK1169ktLOd2XcxmyD1wb9eKO66Ujn+5LCpd4vDU1Dc9GllMJK81Jb5i0JhWZLcc2iuozsd4jncGcWUxhQjDAVd/9imd/s93TO691wDfB3vDORQ+KzK5E+zHIVcwn2tb/p5fsp3/Zk1UXjeleaOBV0HiAsb8TJRsNtG0CVkOeY5EEUSnxLSIcWBSfJ6j2RJTXGwxq9ZEpbFvNyefvxfcnWCfOouy5qyoaOtWpyB3Fhdee2Oh666VpnTxmGapQ2OLsRYR/3r7aZ5DlkEcI20VpK2ElEvBss0meD/nzlhELMY6NB7TLF1pShffWOi6687iwmsV5O6tW93ZDHnmG3IHywq37/hGtqy8+rLL4/Jdy6PSpRFCinqLieX1js8onLefqUIzo7DhCgqb3oS9cCV2eDHu4FH8iTGkVDzNvaFVzowDb5EoEunqELPyb6Lup6986P6RD7Es2cnUS6ClPUNxvYfh/F4OLJmV/APX286NkQg1dc0IrHkt8SkSXNMESKFz8eddq9BKqLBTs5jBforXXkG8ZiWFmzZgBvpQ56CZEV9+Ic0nniXffQC39xCa54i1oIoJQtsarhmJFC62bRu3u/EPeHT8HoZH7uWAtLzXnW5Z2QpmB7htHPCfKQ1/YEOh41eXRklniqKoxJhIX0v8qaL1BtQaaK0OjRScCzFoTFBcQDrbSK65gvKH3knpg+/AXrgC099DNNBHNNhPfNU67MWr0WZG9tRPoN5Aikn4fCAK4lAQoVMiH4tZtEJKJzbmO/8O0K0Q7WjZaC5mzadRBzBAMnxrsfv29XHHqhnNc1GwmOg1xWjuQgZtK2N6OjELejB93Uhb5VQiynMACte9keI7N2MvWo1UiuA9Wk/DAeU5eIdds4LCG9eFg8pyRMzpJQmLiURhRvN8fdyx6tZi9+0DJMMALb3MvBtvZW0E4j+/YG2bracfF+WaOg4PJjoN4r2qq5igxycwA70Ut9yMfcNyTH8vWq2TPfY06bcexY1PBndSxa5cil23BunpxE9M409MUPvCX5I9+wKVf/ZB4ksuQLo60ZnqfLTq2ZmJeDB1HKJcs61t6ON5KfkUJ6S6lbXRNnY5G6y6wAvolukTC3+rNHjbkE0qky5vRiKxEMDweS9ViG1AO0dGsauWUdpyC4W3Xou9eDWmtws/OQ0up/nIEzCaQxzShenuIOrrhmKCGzlB7c/uo/6lb6BTM1S9J1o8AIUYf3wczXKklIBzL4OXAhIhdtLlzSGbVK6m7bbfnT76Rx+DPcoCvw2MDdZ9JLuNwfIQbOo38cI2ibRO7mJM4ZUVBWKL1hpo2sSuWUnpV26n9I4bkc72kEVV8YePkT3+LH66ihQLaO6CS1sLNkLiGM0y0u0P4yaPE6+4gOzpXTT/9hnwDoltCINCPF+GzrwsIhnetUmk/SZeOITddBuLjsIjdZDYbmKZEUR/s7zowrWm/f0ZUpzWXFReZStkrhqkTcxAH+2/83EKt2wK7qCKOzyCztZJv/MD6n/xTTTLMd2d6MRkAAuNFG2kUCmDjTBDA8jufehsFUkKIRnNlRwNaOq8Zy9E05pLhhQvj9vfn0Qzz0hNntrEMmMfoc8JB3ij7Vy9MipuKImJnao3iH01cSrFBHfkKPG6NbT/3ieIr7sKUymD87iDIzR/8CTp9kfInvwJ6hWplFHnQqZuZriJSfzUDFG5iOlsp/JrHwIRmg89jNhKCI9iMXhDM3tFJzOIdaq+JCa+JC5vqDizGkaeeoQ+Z+HJHKRsYPVwVCzlKE1VHyH2/OVFIHf4sQnsymFKd7yb5OaNwQppk+Zjz1D/0/vIf7qPfM8BdKYWYnfsJGawn+Ttm4mGFlJYf2lwT2sxXR0kG98I3hOvXR2eX62RPb6T/Pm9mP7e4ElZ/hKAcUbDzng0L4iY4ahY2ucaq4EyPFm3EUY7YFEVXRUhvo43Os8wzgMYVMEYTF8PxS23kLx9M9poIqWE5hPPUv3cvTT+6kEwEWZRHyIGf3IKM9BHsvmXSN59E/FlazG9XQEkRCaUHWmS3LyR5B9two9N4o+M0ljcT/0r38IfGoVSElw7c2fFci25NUNJML6KruqARRHmRetR3mS7hgqw3KFGQ9/g/KjQGLRWR8olkre9mcJbriFa0A0C7rkXqf3Rn9P4X9/HLOgN92d5uL+9jfKvbiG5+VrMQB/Rgh7UGNR7xATEJeXivE+aBd2IEUofvh2zdJDqf/hj/NgEJMl5xVNUVMGJmgIsf5PtGnoon3zRAmywbYs7sEtdCH6Vc/nI6QgpbaJRRLR8CHvBcqSzHXf4GNO//TnS7zyC6WgLEscx7ugx7JJB2n7jV0jeuhHT3xPY2+Q07tg4qBIN9CDdnUgcQz3Fz1ZD1rUR0aIFlLbcTLSon5nf/H2y554nGloSUFkLib3UugEaOFXpwC7dYNsWP5RPBlCxopD0VsQMuLlbXwnzpinS20V8+UXYFUswpQDf/PExsqd34WszxMsW4GdmwaUU1q2h+J63krxjM9HgAMSWbOcL1P74L3CHRogvv5Dk5uuIL74AumLyA0dwz70YENhgP9HQIkxPF8W3vxkdn6T6uT8j+/s9mPa2UK/PKEVzGjigImZgRSHppREQlFkoxb6BqFBU1IcGmcr5EpPONLBLBynesgm7ehk4xY9N4A6OYLrakUIbmoXM6ScmKL3/VsofeS/SVsJPz+D2H6X+pW9Q+69fQX0Nt2c/CET9vUSd7Wiakj+/l/zQCKajTGHTegrXXYWUipTueCdabzD7H+8OkHLOsvqSuBUN5MMPRIVizfk+WqAi7jJx76ApMKv5XLDK+ZKT5g4pJkRLFmIGelGBfPcBssd24idnEBuddtoG09eNGVwAzpH/+BDV3/9vNL72XUx3J1JYQL7nIOn2RyhsfBNm6SDRkkVIe4XG/Q/iR0dInv0pqKdw/XqkXKRw4zWUTkxQv/vL4fs6KgGPn9JZAs9SHTQFTqrrZQ6z+XlSL6fDr3O7sfOQFDADvZjODjTLyH+ym8ZXv40fn8S0t+HrKWItyU0biNdfHp47NYPffxg3OhYOTCRQQDHoTA134Ch6eT2Qh8F+aOZARPPRJ8Er0ZJB7NpVRIP92BVLgmXrDaS7PSCyl8LH+b9z+hlCtOXZa5om+IB+2iuQFAIcnJjEHR6FZgZxFBiLgXjdBZjliwOaOj5O44EduH2HQ81URfM8QMDYQrXFdIxg+nuRUoLp7EQbKe75fbhDI+jUDJo7ouEhkrfdgBkaQKsNEHNWSTM8is8Bb0IUGhtjXoOyihhBCoUQw2kG3iPtbWAjcKcFQRwjLdDvxydpPrYTd+BgcHXCUVOw+Mlpmo/vxJ+cDCOCcinU3Vod09UBkSF98IdkL+wFY7AXDFP64NuJhofQmdpZOtVzEzaDhHA1phVVL2lly6vsRMg8ZvUhZnzgsSFhtJzJWsTaMCNIM6QQg5wG5r3HlEvoxBTpt3bgj42Hz0eB96pzSLmEGx2j9qf3kf1oF6ZcDImwsx2iCFV/jpapcrp+FsgmfTZ+VCI6JRIfmij6qqjd/PPk5W40h7JarioiSHcH2migmiJJAfUaPMM5TG838VUXY3q6AvE/raM438JppOhMFW1mSLmIVErhPvUvidJW81UMyFHfZNJn40BmAD+qjbFjrtkQxDA/d3kVSs5lgigKrhoFqq/ehzhUpfnQX5M98xwYQzTYT/FdN2GXLsUdHEFnq9BIccePAkpy6/WYRQvCM2r14M4iwQsig1TKQfFWWQstnrOKpqAIYo65ZmNUG2NzMcveZjpeVX8smgNbr6hrEEDTgGAkicFGaLU+T6wlDk2x9InHyHe+EN5rb6P84dspbbkFMzSA6e/FLOghWrQUe9mF2LUrkbYWYzoyGjxjzsLaatYJp1G+c8JFQImAqvpje5vp+Hxb5of57JGLCpWDkcgyFNH5wDsXjzJo1sSPTaDTs1BMkI4KEkeoa01hW7xTog78sTHciweRni6ko43i+27BXrQat+cgqkq0bBB70SrsqqVIZMj37G9RQhfI/ekIyZj5A5j/rjNkDSMSkUiEafKDP8xnjwBYg/BEPnn4wwzsi5ANImLkfKZVAmjPHH5iEj85helsJ75sLaWPvJf0G9/HH5+AUhFEMT1dNO7/HjQz2n77n2IW9hGtHiZaPhQ8QTXEXjEJ7u+V9Dt/Te2er0MLvKgquJCZxZgQ72mG1uqhvp7RJRNERYQI8U3Y90Q+edggGIeXaRipIHscauKALM+dnNQjlTLu8DEaX/se+d5DIdNdtIriu96CIviZyZB1W01wP3aSxv0PUv2De8h37cF0tWP6uomWDRINL8Ys6EHaK+jYJLW7v0L93vvxo2NBfhu6Gaarg2TzNdhVy0Itr9Whmb6sczHXj4oRHGoqyJ5pGHF4sXCVBWoedu93jfoik5QMYhzqo7NVau+hXMKPHid94BGSmzbA+suRcpFocAH2gmH8kaMhwRgDWY4ZHECnZqh98cuo9xTHJzE9XUg5CQI2c/z4FPnTu6h+/n/gDh0lWrwIbTTCYR2fxq5YQvkjW4ivuhhtNnFHRsn+5mn8+MnQhGt5+pzcTuGwb9Q97AZqcFVsr2csArK/y6d2V73/YVch3lQxJs7UNy1y9obbXLYtJrjDI/hj40TLF2N6Omn72C9T9Y70fz+OdHWE+xtpsHQc0/jad0jvf/CMRKMtp/HhcHq6gqK0sjEeqZSwa1ZgFi3AT8+S7XyB6he+gj82hnR3hH4yELoUplD1Pns2q/1wl5/ZDXA9Y5HdwQGvqLytNvhcmsx8eXOh4+oOsTb1zp0TXTg/j3Dq99yPVMqU/8n7kEoZe8WFJO+5GV9rkD35EygVkaQQXC8StB66kHOLCC8BKLEN3UgbpgZiDP7YGPGFqyl/9AOYpYtCUZmexR8fQ2dmQ/Y/fQakuA5jtUnaeDqb+fLulOcUFUG8BXK4PtrOSG0LC3Yc99lo0djVBolyVKOzEfm5kpBl5Hv3kj2xk3zzNdg3LEe6Oilcc0VIPrkne/LHaCMNHcU8x7RXoLP9FFRsjS7mQYgPIMRPTUGaY1csoXTHuyi++6ZwEED+1C7S7Q8HuNrO/HQhR9Ug0aw6Oe6z0cPkO7ZzogbXWyCPwrdV7COc8Md7hpsjzfriTuwli22hVFWXh/Pl7AoDlMvhjkIhJJyerkD/erowC/vQk1P40XG0XodmjmY52mzOC4h6aGYBHaUZ2mggNkbay9ihRZTvfB/FLW8lGlqIxJb8R7uofuHPSR/YEWp5wSI+AKEczXuiuLA/T6uP5TN/ubSt45sP1E5kn6Zid3Ain1MiUtQLogMkw9/tXvvFS23lpiO+kRpMbDgPS7AROjlDtO4C2n79DgpvvppooC+sf5ycJj94lOpn/4T6Vx/AdHS2Np70VL2UEBZ4Bx58I8VeMEzxbW8mefN67GVrw6w2KUCjyeSHPkH9vgeI+vrDpO8UD/Meny02xWRnXn3wrSd33XmMdH/LhQ3gTgOg26Id4Ku4ySVSLMfCmqEo6W2Kisd7e94FEUFPTATq1l7B9PVi2spIZzumt5to6SLiK9eRXH0p0apl2FXLEBuR73oRVz2OXb4itGXWX0bx5o0Ub72ewvVXE1+6BukITCp74UVmfv0zpN9+NJCLJAkkItA4h4i0S2Sezmf3fi+d+pNv5OPfb+lld7RytZw5n1U2GWHHoj+sLP/YbUnvJ4vG4FWbEoYUL1dYFQqFUGrSNCj19s3BKiuGArqqlMLpj03gDo3ix07iXthL87Gd6Gyd+MqLiNdfRrSgO7hrVwfqPVqto42U7Pk91O/5Oo3/fj9SLCF9PVCrIyK4QCdyI1JoeM/2dPyuX6vu+7yyaUTCupCcOZ+dR5r7ofBjpie2xH1js+RrB0xhWYUoSsPC18tZo0iYuxZiJElw+w/jj4/jZ2bwxycwlRKUSwF1xTGmXELaykQrlpJs3kBy6ybiS96A6e0Kr0oZJIJaDbf3INnjz1L/wy+R/tVDmP6+kKQaaavxAg6yClEhxfNsPvto7uWz38xO/nQfWtjJVH76IsnZikukW7cq27bpR4sLr/t4edG9w6Y4PK156lHbWuo6N8LyHuIYbTYxbRVK//jdFK69Eulow3R1YAqF0MmY++/DPFdbiyOaNgONOz5B9vxuGl/9DvmuvS0AcorGeVCH9wbJO8Qm+31j/3+pjdxxd2P0B2zdKrJtm5y5wSrn2JaJvxgWqMzn2pbffkOh81MXmvLF45o1cjQyIV+efYnEGHAuuDVCNDyI6e+bLzvFd9xIvG516GBUSkHRapjOu5HjNL79KG7vISS2+KkZ/KHRwIfbypC7VoyqejS3iOuVuPicr/3k4ebU7/zz2X33Af40+X8Oe1ASIhwFnQ1kmywFhMLGN2FXLAlAopgE5pI20WaGPzlN9rdP46fGoVBBWhxWIgOZC13Mf8Ae1M9+w21urcC09lLrjdBkm6OBc7CxtXAixaQ199GXLH29Hhtu0Sv0Ivx2dkQj4H02/cLzPnumYuzSbmNXdEtBUjR3OBUEc66RydxM1YdKGEbkEWJPe0U2vNdaE2IOSrY223xrd1Ewvg1rT2rGj/Lqw/fWR37jqfrodw+ckjM/7zzu576VOmfFs325nlrI/X+ylfqLtm/8C7dJ/gv3G4FfyF9//H/7ux5+kX6x9X8AQSQBAhVEWQQAAAAASUVORK5CYII=';
+
 var MP_ICON = {
   '本地': '<span class="mp-ico-emo">🎶</span>',
   'QQ导入': '<img class="mp-ico-qqm" alt="QQ音乐" src="' + MP_QQ_ICON + '">',
-  '网易云': '<svg viewBox="0 0 24 24" fill="none" stroke="#c62f2f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 18.5h11a4 4 0 0 0 .5-7.96A5.6 5.6 0 0 0 7.2 9.1 3.86 3.86 0 0 0 6.5 18.5z"/><path d="M10 14.5c1.2-1.6 2.6-1.6 3.6 0"/></svg>',
+  '网易云': '<img class="mp-ico-nem" alt="网易云音乐" src="' + MP_NE_ICON + '">',
   /* 默认态（还没在放歌）用的是「下载」图标 */
   '下载': '<svg viewBox="0 0 24 24" fill="none" stroke="#7E9A6B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v11"/><path d="M7.5 10.5L12 15l4.5-4.5"/><path d="M4 18.5h16"/></svg>'
 };
@@ -7444,7 +7454,10 @@ function mpLoad() {
       }];
     }
   });
-  if (!MP.lib[MP.curSrc]) MP.curSrc = '本地';
+  if (!MP.lib[MP.curSrc]) MP.curSrc = MP_LOCAL_SRC;
+  /* R54：QQ / 网易云改成外链入口，不再作为工作台内来源。旧数据仍留在本地存储里（不删），只是不再显示 */
+  var mpCanSrc = MP_SRC.filter(function (x) { return !x.ext; }).map(function (x) { return x.k; });
+  if (mpCanSrc.indexOf(MP.curSrc) < 0) MP.curSrc = MP_LOCAL_SRC;
   if (!MP.curPl) MP.curPl = {};
   if (!MP.curPl[MP.curSrc] || !mpPlById(MP.curPl[MP.curSrc])) MP.curPl[MP.curSrc] = MP.lib[MP.curSrc][0].id;
   // blob: 链接刷新后失效，清掉以便回落到 IndexedDB 里的原始文件
@@ -7575,12 +7588,16 @@ function mpInner(pl) {
       + '<span class="mp-pl-n">' + esc(p.name) + '</span>'
       + '<span class="mp-pl-c">' + ((p.songs || []).length) + ' 首</span></div>';
   }).join('');
+  /* R54：QQ / 网易云不再走工作台内歌单，这里只留「新建歌单」 */
   items += '<div class="mp-pl-foot">'
     + '<button class="mp-pl-act new" onclick="event.stopPropagation();mpNewPl()">＋ 新建歌单</button>'
-    + '<button class="mp-pl-act imp" onclick="event.stopPropagation();mpImportPl()">↓ 导入歌单文件</button>'
     + '</div>';
 
   var srcOpts = MP_SRC.map(function (s) {
+    if (s.ext) {
+      /* 外链入口：点了直接去官方的「我的歌单」网页 */
+      return '<div class="mp-src-opt ext" title="' + esc(s.label + ' · 打开我的歌单网页') + '" onclick="mpOpenSrc(\'' + s.k + '\', event)">' + MP_ICON[s.k] + '</div>';
+    }
     return '<div class="mp-src-opt' + (s.k === MP.curSrc ? ' cur' : '') + '" title="' + esc(s.label) + '" onclick="mpSwitchSrc(\'' + s.k + '\')">' + MP_ICON[s.k] + '</div>';
   }).join('');
   srcOpts = '<div class="mp-src-pill">' + srcOpts + '</div>';
@@ -7602,8 +7619,7 @@ function mpInner(pl) {
       return '<div class="mp-song' + (isCur ? ' cur' : '') + (sel ? ' sel' : '') + '" onclick="mpPlay(' + i + ')" title="' + esc(tn + (ar ? ' · ' + ar : '')) + '">' + inner + '</div>';
     }
     return '<a class="mp-song is-ext' + (sel ? ' sel' : '') + '" href="' + esc(mpExtUrl(s)) + '" target="_blank" rel="noopener" title="' + esc('在' + MP.curSrc + '打开：' + tn + (ar ? ' · ' + ar : '')) + '">' + inner + '</a>';
-  }).join('') : ('<div class="mp-empty">这个歌单还没有歌。点上面「＋ 添加」加几首，或直接用「↓ 导入歌单文件」导入 QQ 歌单（桌面那个 JSON）'
-    + '<button class="mp-pl-act imp" style="max-width:200px;margin:9px auto 0" onclick="mpImportPl()">↓ 导入歌单文件</button></div>');
+  }).join('') : ('<div class="mp-empty">这个歌单还没有歌。点右边「＋ 添加」，选本机音频文件（可多选）就进来了。</div>');
 
   var now = mpNowSong();
   var nowPl = mpNowPl();
@@ -7665,6 +7681,22 @@ function mpToggleSrc(e) {
 function mpSrcLeave() {
   var s = document.getElementById('mp-src');
   if (s) s.classList.remove('open');
+}
+/* R54：QQ / 网易云图标 = 外链入口，点了新窗口打开官方「我的歌单」 */
+function mpOpenSrc(k, e) {
+  if (e) { e.stopPropagation(); }
+  var s = MP_SRC.filter(function (x) { return x.k === k; })[0];
+  if (!s || !s.ext) return;
+  var box = document.getElementById('mp-src');
+  if (box) box.classList.remove('open');
+  var ok = false, win = null;
+  try {
+    /* 不用 window.open(url,'_blank','noopener')：Chrome 带 noopener 时一律返回 null，没法区分「已打开」和「被拦」 */
+    win = window.open(s.ext, '_blank');
+    ok = !!win;
+    if (win) { try { win.opener = null; } catch (e2) { } }  /* 等价于 noopener */
+  } catch (err) { ok = false; }
+  toast(ok ? '已打开「' + s.label + '」我的歌单网页' : '浏览器拦了新窗口，允许弹窗后再点一次', !ok);
 }
 function mpSwitchSrc(k) {
   if (!k) return;

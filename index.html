@@ -417,6 +417,57 @@
 /* R54：外链入口角标（提示点了会跳出去） */
 .mp-src-opt.ext{position:relative}
 .mp-src-opt.ext::after{content:'↗';position:absolute;right:-2px;top:-4px;font-size:9px;line-height:1;color:#b0a894;font-weight:700}
+/* ===== R55 网页歌单：A 区第四项（红云）+ 二级菜单 ===== */
+.mp-src-opt.ext2{position:relative}
+.mp-web-menu{position:absolute;right:calc(100% + 12px);bottom:-2px;transform:translateX(6px);background:#fff;border:1px solid #e6e1d3;border-radius:11px;box-shadow:0 12px 26px rgba(0,0,0,.16);padding:4px;min-width:146px;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .16s ease,transform .16s ease,visibility .16s ease;z-index:45}
+.mp-src-opt.ext2:hover .mp-web-menu,.mp-src-opt.ext2.open .mp-web-menu{opacity:1;visibility:visible;transform:translateX(0);pointer-events:auto}
+.mp-web-mi{display:flex;align-items:center;gap:6px;width:100%;border:0;background:transparent;font-family:inherit;font-size:12.5px;color:#4a4a44;padding:9px 10px;border-radius:8px;cursor:pointer;text-align:left;white-space:nowrap}
+.mp-web-mi:hover{background:#f4f7ef;color:#3c6b2c}
+/* 面板浮层 */
+.mpw-layer{position:fixed;inset:0;z-index:62;background:rgba(28,26,20,.36);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .22s ease,visibility .22s ease}
+.mpw-layer.on{opacity:1;visibility:visible;pointer-events:auto}
+.mpw-card{position:absolute;left:24px;top:56px;width:min(1100px,calc(100vw - 340px));height:min(620px,calc(100vh - 96px));background:#fff;border-radius:16px;box-shadow:0 24px 60px rgba(0,0,0,.26);display:flex;flex-direction:column;overflow:hidden;transform:translateY(10px) scale(.99);transition:transform .22s ease}
+.mpw-layer.on .mpw-card{transform:translateY(0) scale(1)}
+.mpw-head{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid #eee9db;background:#fcfbf6;flex:0 0 auto}
+.mpw-title{font-size:15px;font-weight:700;color:#3a3a34}
+.mpw-status{font-size:12px;color:#7d8a6f;background:#f1f6ea;border:1px solid #e0ead3;border-radius:20px;padding:2px 9px;font-variant-numeric:tabular-nums}
+.mpw-out{margin-left:auto;font-size:12px;color:#7E9A6B;text-decoration:none;border:1px solid #dfe6d5;border-radius:8px;padding:4px 9px}
+.mpw-out:hover{background:#f4f8ef}
+.mpw-x{border:0;background:transparent;font-size:16px;color:#a9a292;cursor:pointer;padding:2px 6px;border-radius:6px}
+.mpw-x:hover{background:#f2efe6;color:#6b6558}
+.mpw-body{flex:1;display:flex;min-height:0}
+.mpw-side{width:318px;flex:0 0 auto;display:flex;flex-direction:column;border-right:1px solid #eee9db;background:#fdfdfa}
+.mpw-side-top{display:flex;gap:6px;padding:10px 10px 8px;flex-wrap:wrap}
+.mpw-btn{font-family:inherit;font-size:12px;padding:6px 10px;border-radius:8px;border:1px solid #e0dccc;background:#fff;color:#5c5748;cursor:pointer;white-space:nowrap;transition:.15s}
+.mpw-btn:hover{background:#f7f5ee}
+.mpw-btn.primary{background:#eef5e9;border-color:#c9dcb8;color:#3f6b2d;font-weight:600}
+.mpw-btn.primary:hover{background:#e4efdb}
+.mpw-btn.danger{color:#a45c46;border-color:#e8d9d1}
+.mpw-btn.danger:hover{background:#fbf1ec}
+.mpw-btn:disabled{opacity:.42;cursor:default}
+.mpw-list{flex:1;overflow:auto;padding:2px 8px 8px}
+.mpw-item{display:flex;align-items:center;gap:7px;padding:8px 7px;border-radius:9px;border:1px solid transparent}
+.mpw-item:hover{background:#f7f6ef}
+.mpw-item.on{background:#f0f6ea;border-color:#d7e6c8}
+.mpw-ck{display:flex;align-items:center;margin:0}
+.mpw-cb{width:15px;height:15px;accent-color:#7E9A6B;cursor:pointer;margin:0}
+.mpw-info{flex:1;min-width:0}
+.mpw-nm{font-size:13px;color:#3d3a33;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mpw-meta{font-size:11px;color:#a8a294;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mpw-ico{flex:0 0 auto;width:24px;height:24px;border-radius:7px;border:1px solid #e4dfd0;background:#fff;color:#6d7f5e;font-size:11px;cursor:pointer;line-height:1}
+.mpw-ico:hover{background:#eef5e9;border-color:#c9dcb8;color:#3f6b2d}
+.mpw-none,.mpw-empty{font-size:12.5px;color:#a29b8b;padding:22px 12px;text-align:center;line-height:1.7}
+.mpw-side-tip{font-size:11px;color:#b0a999;padding:8px 12px 11px;border-top:1px solid #f0ece0;line-height:1.6}
+.mpw-stage{flex:1;display:flex;flex-direction:column;min-width:0;background:#f6f5f0}
+.mpw-bar{display:flex;align-items:center;gap:8px;padding:9px 12px;border-bottom:1px solid #eee9db;background:#fff;font-size:12.5px;color:#5a564b}
+.mpw-bar #mpw-now{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600;color:#3d3a33}
+.mpw-frame{flex:1;position:relative;min-height:0;overflow:hidden;background:#fff}
+.mpw-frame iframe{position:absolute;left:0;top:0;width:100%;height:100%;border:0;transform-origin:0 0;background:#fff}
+.mpw-layer.big .mpw-card{left:14px;top:14px;width:calc(100vw - 28px);height:calc(100vh - 28px)}
+.mpw-layer.big .mpw-side{width:296px}
+.mpw-form .mpw-f-l{font-size:12px;color:#8a8474;margin:10px 0 5px}
+.mpw-form .mpw-f-l:first-child{margin-top:0}
+.mpw-form .mpw-f-tip{font-size:11.5px;color:#a8a191;line-height:1.65;margin-top:10px;background:#faf8f1;border:1px solid #f0ebdd;border-radius:8px;padding:8px 10px}
 .mp-src-opt:hover{background:#f6f4ec}
 .mp-src-opt.cur{border-color:#c9c1ab;background:#f2f6ee}
 /* B 行 */
@@ -1648,7 +1699,7 @@
         <div id="shopping-body" data-page-node-id="BubJXjwm5ya3Ps7wQaOf0l"></div>
       </section>
       <section class="module" id="mod-media" data-sp-bindable="database" data-sp-database-id="XwBGD3AthDZziupFstknF4" data-page-node-id="wmE0Ozv4VPOxb1QNG9Gq81">
-        <div class="mod-head" data-page-node-id="ww8NZJbJ993jpKKtV5WKns"><h2 data-page-node-id="12stfYH9V0UA46lU8o3M7i">书影音</h2><span class="desc" data-page-node-id="LH5Tx5hHfiLB9V60VgZUjH">收藏、评分与年度统计，记录看过的好东西</span><span class="build-ver" title="页面版本">R54</span></div>
+        <div class="mod-head" data-page-node-id="ww8NZJbJ993jpKKtV5WKns"><h2 data-page-node-id="12stfYH9V0UA46lU8o3M7i">书影音</h2><span class="desc" data-page-node-id="LH5Tx5hHfiLB9V60VgZUjH">收藏、评分与年度统计，记录看过的好东西</span><span class="build-ver" title="页面版本">R55</span></div>
         <div id="media-body" data-page-node-id="MvHLGITKcoHEoc4n5mYw56"></div>
       </section>
       <section class="module" id="mod-report" data-sp-bindable="database" data-sp-database-id="VDJ7npH13yRDIkMBUcnQO4" data-page-node-id="zEMiJyVPF1imOLfhLXwOHu">
@@ -7407,7 +7458,9 @@ var MP_KEY = 'lw_musiclib_v1';
 var MP_SRC = [
   { k: '本地', label: '本地音乐' },
   { k: 'QQ导入', label: 'QQ 音乐', ext: 'https://y.qq.com/n/ryqq_v2/profile/like/playlist' },
-  { k: '网易云', label: '网易云音乐', ext: 'https://music.163.com/#/my/m/music/playlist?id=534839262' }
+  { k: '网易云', label: '网易云音乐', ext: 'https://music.163.com/#/my/m/music/playlist?id=534839262' },
+  /* R55：网页歌单——悬停出二级菜单（添加网址 / 播放歌单） */
+  { k: '网页歌单', label: '网页歌单', sub: true }
 ];
 var MP_LOCAL_SRC = '本地';
 /* QQ 音乐图标：用户提供的黄绿圆音符图（已裁掉白边并做圆形遮罩，59x59） */
@@ -7419,11 +7472,12 @@ var MP_ICON = {
   '本地': '<span class="mp-ico-emo">🎶</span>',
   'QQ导入': '<img class="mp-ico-qqm" alt="QQ音乐" src="' + MP_QQ_ICON + '">',
   '网易云': '<img class="mp-ico-nem" alt="网易云音乐" src="' + MP_NE_ICON + '">',
+  '网页歌单': '<svg viewBox="0 0 24 24" fill="none" stroke="#c62f2f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 18.5h11a4 4 0 0 0 .5-7.96A5.6 5.6 0 0 0 7.2 9.1 3.86 3.86 0 0 0 6.5 18.5z"/><path d="M10 14.5c1.2-1.6 2.6-1.6 3.6 0"/></svg>',
   /* 默认态（还没在放歌）用的是「下载」图标 */
   '下载': '<svg viewBox="0 0 24 24" fill="none" stroke="#7E9A6B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v11"/><path d="M7.5 10.5L12 15l4.5-4.5"/><path d="M4 18.5h16"/></svg>'
 };
 
-var MP = { curSrc: '本地', curPl: {}, lib: {}, nowOpen: false, playPl: '', idx: -1, shuffle: false };
+var MP = { curSrc: '本地', curPl: {}, lib: {}, nowOpen: false, playPl: '', idx: -1, shuffle: false, webpl: [] };
 var mpSel = {};
 
 /* ---------------- 存储 ---------------- */
@@ -7441,10 +7495,12 @@ function mpLoad() {
         MP.curPl = o.curPl || {};
         MP.lib = o.lib || {};
         MP.shuffle = !!o.shuffle;
+        MP.webpl = Array.isArray(o.webpl) ? o.webpl : [];   /* R55 网页歌单库 */
       }
     } catch (e) { }
   }
   if (!MP.lib) MP.lib = {};
+  if (!Array.isArray(MP.webpl)) MP.webpl = [];
   MP_SRC.forEach(function (s) {
     if (!MP.lib[s.k] || !MP.lib[s.k].length) {
       MP.lib[s.k] = [{
@@ -7456,7 +7512,7 @@ function mpLoad() {
   });
   if (!MP.lib[MP.curSrc]) MP.curSrc = MP_LOCAL_SRC;
   /* R54：QQ / 网易云改成外链入口，不再作为工作台内来源。旧数据仍留在本地存储里（不删），只是不再显示 */
-  var mpCanSrc = MP_SRC.filter(function (x) { return !x.ext; }).map(function (x) { return x.k; });
+  var mpCanSrc = MP_SRC.filter(function (x) { return !x.ext && !x.sub; }).map(function (x) { return x.k; });
   if (mpCanSrc.indexOf(MP.curSrc) < 0) MP.curSrc = MP_LOCAL_SRC;
   if (!MP.curPl) MP.curPl = {};
   if (!MP.curPl[MP.curSrc] || !mpPlById(MP.curPl[MP.curSrc])) MP.curPl[MP.curSrc] = MP.lib[MP.curSrc][0].id;
@@ -7594,6 +7650,14 @@ function mpInner(pl) {
     + '</div>';
 
   var srcOpts = MP_SRC.map(function (s) {
+    if (s.sub) {
+      /* R55：网页歌单——悬停/点击出二级菜单 */
+      return '<div class="mp-src-opt ext2" title="' + esc(s.label) + '" onclick="mpWebPlToggleMenu(event)">' + MP_ICON[s.k]
+        + '<div class="mp-web-menu">'
+        + '<button class="mp-web-mi" onclick="event.stopPropagation();mpWebPlAdd()">＋ 添加歌单网址</button>'
+        + '<button class="mp-web-mi" onclick="event.stopPropagation();mpWebPlOpen()">▶ 播放歌单</button>'
+        + '</div></div>';
+    }
     if (s.ext) {
       /* 外链入口：点了直接去官方的「我的歌单」网页 */
       return '<div class="mp-src-opt ext" title="' + esc(s.label + ' · 打开我的歌单网页') + '" onclick="mpOpenSrc(\'' + s.k + '\', event)">' + MP_ICON[s.k] + '</div>';
@@ -7960,6 +8024,279 @@ function mpWebClose() {
   var body = document.getElementById('mp-webbody');
   if (body) body.innerHTML = '';   /* 拆掉 iframe = 停止播放 */
 }
+
+/* ================= R55 网页歌单：输入网址即播放 + 歌单库 + 连播 ================= */
+var MPW = { queue: [], idx: 0, endAt: 0, timer: null, cur: '' };
+
+function mpWebPlList() { if (!Array.isArray(MP.webpl)) MP.webpl = []; return MP.webpl; }
+function mpWebPlById(id) {
+  var a = mpWebPlList();
+  for (var i = 0; i < a.length; i++) if (a[i].id === id) return a[i];
+  return null;
+}
+function mpWebPlFromUrl(u) {
+  var h = String(u || '').replace(/^https?:\/\//i, '').split(/[?#]/)[0];
+  return h.length > 32 ? h.slice(0, 32) + '…' : (h || '网页歌单');
+}
+function mpWebPlHost(u) {
+  try { return String(u || '').replace(/^https?:\/\//i, '').split('/')[0]; } catch (e) { return ''; }
+}
+function mpWebPlToggleMenu(e) {
+  if (e) e.stopPropagation();
+  var o = document.querySelector('.mp-src-opt.ext2');
+  if (o) o.classList.add('open');
+}
+function mpWebPlHideMenu() {
+  var o = document.querySelector('.mp-src-opt.ext2');
+  if (o) o.classList.remove('open');
+}
+
+/* ---------- 添加 / 编辑 ---------- */
+function mpWebPlAdd() { mpWebPlForm(''); }
+function mpWebPlEdit(id) { mpWebPlForm(id); }
+function mpWebPlForm(id) {
+  mpWebPlHideMenu(); mpSrcLeave();
+  var ed = id ? mpWebPlById(id) : null;
+  appDialog({
+    app: '网页歌单',
+    html: '<div class="mpw-form">'
+      + '<div class="mpw-f-l">歌单名称</div>'
+      + '<input id="mpw-f-name" class="inp" style="width:100%;box-sizing:border-box" placeholder="例如：办公室轻音乐" value="' + esc(ed ? ed.name : '') + '">'
+      + '<div class="mpw-f-l">歌单网页地址</div>'
+      + '<input id="mpw-f-url" class="inp" style="width:100%;box-sizing:border-box" placeholder="https://i2.y.qq.com/a/playlist/9726644335" value="' + esc(ed ? ed.url : '') + '">'
+      + '<div class="mpw-f-l">预计时长（分钟）——到点自动切下一个歌单</div>'
+      + '<input id="mpw-f-dur" class="inp" type="number" min="1" max="600" style="width:110px" value="' + (ed && ed.dur ? ed.dur : 30) + '">'
+      + '<div class="mpw-f-tip">网页里的音频由官方页面播放，第一次要在页面里点一下「播放全部」（官方要求登录 + 点击）。网页不会告诉我们「播完了」，所以这里填一个预计时长，到点自动切下一个；想更准就按歌单实际长度改。</div>'
+      + '</div>',
+    buttons: [
+      { label: '取消', cls: '' },
+      {
+        label: ed ? '保存' : '添加', cls: 'primary', stay: true, onClick: function () {
+          var en = document.getElementById('mpw-f-name'), eu = document.getElementById('mpw-f-url'), ed2 = document.getElementById('mpw-f-dur');
+          var nm = ((en && en.value) || '').trim();
+          var url = ((eu && eu.value) || '').trim();
+          var dur = parseInt((ed2 && ed2.value) || '30', 10);
+          if (!/^https?:\/\//i.test(url)) { toast('网址要以 http:// 或 https:// 开头', true); return; }
+          if (!(dur > 0)) dur = 30;
+          if (ed) {
+            ed.name = nm || mpWebPlFromUrl(url); ed.url = url; ed.dur = dur;
+            toast('已保存「' + ed.name + '」');
+          } else {
+            var item = { id: 'w' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5), name: nm || mpWebPlFromUrl(url), url: url, dur: dur };
+            mpWebPlList().push(item);
+            toast('已添加「' + item.name + '」');
+          }
+          mpSave(); mpWebPlRender();
+          appDialogClose(true);
+        }
+      }
+    ]
+  });
+  setTimeout(function () { var el = document.getElementById('mpw-f-name'); if (el) el.focus(); }, 80);
+}
+
+/* ---------- 面板 ---------- */
+function mpWebPlOpen() {
+  mpWebPlHideMenu(); mpSrcLeave();
+  var layer = document.getElementById('mpw-layer');
+  if (!layer) {
+    layer = document.createElement('div');
+    layer.id = 'mpw-layer'; layer.className = 'mpw-layer';
+    layer.innerHTML = '<div class="mpw-card">'
+      + '<div class="mpw-head"><span class="mpw-title">网页歌单</span>'
+      + '<span class="mpw-status" id="mpw-status">未播放</span>'
+      + '<a class="mpw-out" id="mpw-out" href="#" target="_blank" rel="noopener">在浏览器打开 ↗</a>'
+      + '<button class="mpw-x" title="放大/还原面板" onclick="mpWebPlBig()" style="font-size:14px">⤢</button>'
+      + '<button class="mpw-x" title="关闭并停止播放" onclick="mpWebPlClose()">✕</button></div>'
+      + '<div class="mpw-body">'
+      + '  <div class="mpw-side">'
+      + '    <div class="mpw-side-top">'
+      + '      <button class="mpw-btn primary" id="mpw-playsel" onclick="mpWebPlPlaySel()" disabled>▶ 连续播放</button>'
+      + '      <button class="mpw-btn" onclick="mpWebPlAdd()">＋ 添加</button>'
+      + '      <button class="mpw-btn danger" id="mpw-delsel" onclick="mpWebPlDelSel()" disabled>删除勾选</button>'
+      + '    </div>'
+      + '    <div class="mpw-list" id="mpw-list"></div>'
+      + '    <div class="mpw-side-tip">勾选多个 → 「连续播放」按顺序一个接一个；每行 ✎ 可改名和改时长。</div>'
+      + '  </div>'
+      + '  <div class="mpw-stage">'
+      + '    <div class="mpw-bar"><span id="mpw-now">还没选歌单</span>'
+      + '      <button class="mpw-btn" onclick="mpWebPlNext()">下一个 ⏭</button>'
+      + '      <button class="mpw-btn" onclick="mpWebPlStop()">停止</button></div>'
+      + '    <div class="mpw-frame" id="mpw-frame"><div class="mpw-empty">从左边点某个歌单的 ▶ 开始；或者勾选多个点「连续播放」。</div></div>'
+      + '  </div>'
+      + '</div></div>';
+    document.body.appendChild(layer);
+    layer.addEventListener('click', function (e) { if (e.target === layer) mpWebPlClose(); });
+    var l = document.getElementById('mpw-list');
+    if (l) l.addEventListener('change', function (e) {
+      if (e.target && e.target.classList && e.target.classList.contains('mpw-cb')) mpWebPlSyncBtns();
+    });
+  }
+  mpWebPlRender();
+  layer.classList.add('on');
+  setTimeout(mpWebPlFit, 120);
+}
+
+function mpWebPlRender() {
+  var list = document.getElementById('mpw-list');
+  if (!list) return;
+  var arr = mpWebPlList();
+  if (!arr.length) {
+    list.innerHTML = '<div class="mpw-none">还没有网页歌单。<br>点上面「＋ 添加」把歌单网页地址存进来。</div>';
+  } else {
+    list.innerHTML = arr.map(function (p) {
+      var on = MPW.cur === p.id ? ' on' : '';
+      return '<div class="mpw-item' + on + '">'
+        + '<label class="mpw-ck"><input type="checkbox" class="mpw-cb" value="' + p.id + '"></label>'
+        + '<div class="mpw-info"><div class="mpw-nm" title="' + esc(p.url) + '">' + esc(p.name) + '</div>'
+        + '<div class="mpw-meta">' + esc(mpWebPlHost(p.url)) + ' · ' + (p.dur || 30) + ' 分钟</div></div>'
+        + '<button class="mpw-ico" title="播放这个歌单" onclick="mpWebPlPlayOne(\'' + p.id + '\')">▶</button>'
+        + '<button class="mpw-ico" title="改名 / 改时长" onclick="mpWebPlEdit(\'' + p.id + '\')">✎</button>'
+        + '</div>';
+    }).join('');
+  }
+  mpWebPlSyncBtns();
+  mpWebPlStatus();
+}
+
+function mpWebPlSelIds() {
+  return Array.prototype.slice.call(document.querySelectorAll('#mpw-list .mpw-cb:checked')).map(function (x) { return x.value; });
+}
+function mpWebPlSyncBtns() {
+  var n = mpWebPlSelIds().length;
+  var a = document.getElementById('mpw-playsel'), d = document.getElementById('mpw-delsel');
+  if (a) { a.textContent = n ? '▶ 连续播放 (' + n + ')' : '▶ 连续播放'; a.disabled = !n; }
+  if (d) { d.textContent = n ? '删除勾选 (' + n + ')' : '删除勾选'; d.disabled = !n; }
+}
+
+/* ---------- 播放 / 连播 ---------- */
+function mpWebPlPlayOne(id) {
+  MPW.queue = [id]; MPW.idx = 0; mpWebPlStart();
+  var p = mpWebPlById(id); if (p) toast('正在播「' + p.name + '」——在页面里点一下「播放全部」');
+}
+function mpWebPlPlaySel() {
+  var ids = mpWebPlSelIds();
+  if (!ids.length) { toast('先勾选要播的歌单', true); return; }
+  MPW.queue = ids; MPW.idx = 0; mpWebPlStart();
+  toast('开始连续播放 ' + ids.length + ' 个歌单');
+}
+/* 把网页按「虚拟 1000×700 视口」等比缩到舞台里：QQ 这类桌面站才不会出现横向滚动条 */
+function mpWebPlFit() {
+  var host = document.getElementById('mpw-frame');
+  if (!host) return;
+  var f = host.querySelector('iframe');
+  if (!f) return;
+  var w = host.clientWidth || 0, h = host.clientHeight || 0;
+  if (w < 50 || h < 50) return;
+  var VW = 1000, VH = 700;
+  var sc = Math.min(w / VW, h / VH);
+  if (!(sc > 0.15)) return;
+  f.style.width = VW + 'px';
+  f.style.height = VH + 'px';
+  f.style.transform = 'scale(' + sc + ')';
+  f.style.left = Math.max(0, (w - VW * sc) / 2) + 'px';
+  f.style.top = Math.max(0, (h - VH * sc) / 2) + 'px';
+}
+function mpWebPlBig() {
+  var layer = document.getElementById('mpw-layer');
+  if (!layer) return;
+  layer.classList.toggle('big');
+  setTimeout(mpWebPlFit, 120);
+  setTimeout(mpWebPlFit, 400);
+}
+window.addEventListener('resize', function () { mpWebPlFit(); });
+
+function mpWebPlStart() {
+  var pl = mpWebPlById(MPW.queue[MPW.idx]);
+  if (!pl) { mpWebPlStop(); return; }
+  MPW.cur = pl.id;
+  var host = document.getElementById('mpw-frame');
+  if (host) {
+    host.innerHTML = '';
+    var f = document.createElement('iframe');
+    f.src = pl.url;
+    f.setAttribute('allow', 'autoplay; encrypted-media; fullscreen');
+    f.setAttribute('referrerpolicy', 'no-referrer-when-downgrade');
+    host.appendChild(f);
+    setTimeout(mpWebPlFit, 80);
+  }
+  var out = document.getElementById('mpw-out'); if (out) out.href = pl.url;
+  MPW.endAt = Date.now() + (pl.dur || 30) * 60000;
+  if (MPW.timer) clearInterval(MPW.timer);
+  MPW.timer = setInterval(mpWebPlTick, 1000);
+  mpWebPlRender();
+}
+function mpWebPlTick() {
+  if (!MPW.cur) return;
+  if (Date.now() >= MPW.endAt) { mpWebPlNext(true); return; }
+  mpWebPlStatus();
+}
+function mpWebPlStatus() {
+  var now = document.getElementById('mpw-now'), st = document.getElementById('mpw-status');
+  var pl = mpWebPlById(MPW.cur);
+  if (!pl) { if (now) now.textContent = '还没选歌单'; if (st) st.textContent = '未播放'; return; }
+  var left = Math.max(0, Math.round((MPW.endAt - Date.now()) / 1000));
+  var mm = Math.floor(left / 60), ss = left % 60;
+  if (now) now.textContent = '正在播「' + pl.name + '」（' + (MPW.idx + 1) + '/' + MPW.queue.length + '）';
+  if (st) st.textContent = '剩 ' + mm + ':' + (ss < 10 ? '0' : '') + ss;
+}
+function mpWebPlNext(auto) {
+  if (!MPW.cur) { toast('还没有在播的歌单', true); return; }
+  if (MPW.idx + 1 >= MPW.queue.length) {
+    toast(auto ? '全部歌单播完了' : '已经是最后一个了');
+    mpWebPlStop();
+    return;
+  }
+  MPW.idx++;
+  mpWebPlStart();
+  var pl = mpWebPlById(MPW.cur);
+  if (pl) toast((auto ? '已自动切到下一个：' : '切到：') + '「' + pl.name + '」');
+}
+function mpWebPlStop() {
+  if (MPW.timer) { clearInterval(MPW.timer); MPW.timer = null; }
+  MPW.queue = []; MPW.idx = 0; MPW.endAt = 0; MPW.cur = '';
+  var host = document.getElementById('mpw-frame');
+  if (host) host.innerHTML = '<div class="mpw-empty">已停止。从左边的 ▶ 重新开始。</div>';
+  var out = document.getElementById('mpw-out'); if (out) out.href = '#';
+  mpWebPlRender();
+}
+function mpWebPlClose() {
+  mpWebPlStop();
+  var layer = document.getElementById('mpw-layer');
+  if (layer) layer.classList.remove('on');
+}
+function mpWebPlDelSel() {
+  var ids = mpWebPlSelIds();
+  if (!ids.length) { toast('先勾选要删的歌单', true); return; }
+  appDialog({
+    msg: '删除勾选的 ' + ids.length + ' 个网页歌单？（只删收藏的地址，不影响网页本身）',
+    buttons: [
+      { label: '取消', cls: '' },
+      {
+        label: '删除', cls: 'primary', onClick: function () {
+          var stopIt = ids.indexOf(MPW.cur) >= 0;
+          MP.webpl = mpWebPlList().filter(function (p) { return ids.indexOf(p.id) < 0; });
+          if (stopIt) mpWebPlStop();
+          mpSave(); mpWebPlRender();
+          toast('已删除 ' + ids.length + ' 个');
+        }
+      }
+    ]
+  });
+}
+/* 点页面其他地方 → 收起 A 区二级菜单 */
+document.addEventListener('click', function (e) {
+  var box = document.querySelector('.mp-src-opt.ext2');
+  if (!box) return;
+  if (!box.contains(e.target)) box.classList.remove('open');
+}, true);
+/* 如果歌单网页是我们可控的页面，播完发一句 postMessage 就能立刻切下一个（可选增强） */
+window.addEventListener('message', function (e) {
+  var d = e && e.data;
+  if (!d) return;
+  var t = (typeof d === 'string') ? d : d.type;
+  if (t === 'mp-webpl-ended') mpWebPlNext(true);
+});
 
 function mpPickFiles(relink) {
   var inp = document.getElementById('mp-file');

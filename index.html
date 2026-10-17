@@ -352,7 +352,7 @@
   #media-body .row select{width:auto;min-width:104px;max-width:172px;padding:6px 9px;font-size:12.5px}
   #media-body .row{align-items:center;justify-content:flex-end}
 /* R45 书影音顶部：电影(左)+音乐(右) */
-.media-top{display:flex;gap:18px;margin-bottom:18px;flex-wrap:wrap}
+.media-top{display:flex;gap:18px;margin-bottom:18px;flex-wrap:wrap;position:relative;z-index:6}
 .media-top .mt-col{flex:1;min-width:280px;background:#fff;border:1px solid #e8e8e8;border-radius:14px;padding:14px}
 .mt-head{display:flex;align-items:center;gap:10px;margin-bottom:10px}
 .mt-head h4{margin:0;font-size:15px}
@@ -374,7 +374,7 @@
 .mc-actions{display:flex;gap:6px;flex:0 0 auto}
 /* ===== R49 音乐区：三级歌单 + 播放浮层 ===== */
 .mt-music-sec{margin-bottom:12px}
-.mp{position:relative;border:1px solid #eae5d7;border-radius:14px;background:#fbfaf6;padding:10px 12px;overflow:hidden;min-height:232px}
+.mp{position:relative;border:1px solid #eae5d7;border-radius:14px;background:#fbfaf6;padding:10px 12px;overflow:visible;min-height:232px}
 .mp-row1{display:flex;align-items:flex-start;gap:10px;padding-right:88px}
 .mp-drop{position:relative;flex:1;min-width:0}
 .mp-pl-btn{width:100%;display:flex;align-items:center;justify-content:space-between;gap:8px;background:#fff;border:1px solid #e3ded0;border-radius:10px;padding:9px 12px;font-size:14px;font-weight:600;color:#3a3a3a;cursor:pointer;text-align:left}
@@ -382,7 +382,7 @@
 .mp-pl-label{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .mp-caret{color:#b9b2a0;font-size:11px;flex:0 0 auto;transition:transform .18s ease}
 .mp-pl-btn.on .mp-caret{transform:rotate(180deg)}
-.mp-pl-menu{position:absolute;left:0;right:0;top:calc(100% + 4px);z-index:30;background:#fff;border:1px solid #e6e1d3;border-radius:10px;box-shadow:0 12px 26px rgba(0,0,0,.12);padding:5px;max-height:230px;overflow:auto;opacity:0;visibility:hidden;transform:translateY(-6px);pointer-events:none;transition:opacity .18s ease,transform .18s ease,visibility .18s ease}
+.mp-pl-menu{position:absolute;left:0;right:0;top:calc(100% + 4px);z-index:30;background:#fff;border:1px solid #e6e1d3;border-radius:10px;box-shadow:0 12px 26px rgba(0,0,0,.12);padding:5px;max-height:300px;overflow:auto;opacity:0;visibility:hidden;transform:translateY(-6px);pointer-events:none;transition:opacity .18s ease,transform .18s ease,visibility .18s ease}
 .mp-pl-menu.open{opacity:1;visibility:visible;transform:translateY(0);pointer-events:auto}
 .mp-pl-item{display:flex;align-items:center;gap:8px;padding:8px 9px;border-radius:8px;font-size:13px;cursor:pointer}
 .mp-pl-item:hover{background:#f6f4ec}
@@ -391,6 +391,13 @@
 .mp-pl-c{font-size:11px;color:var(--muted);flex:0 0 auto}
 .mp-pl-new{border-top:1px dashed #ece7da;margin-top:4px;padding-top:9px;color:#7E9A6B;font-weight:600}
 .mp-pl-imp{color:#7f8a76;font-size:12.5px}
+/* R53：新建/导入固定在下拉底部，歌单再多也不会被滚出可视区 */
+.mp-pl-foot{position:sticky;bottom:-5px;z-index:2;display:flex;gap:6px;margin:6px -5px -5px;padding:7px 6px 6px;background:linear-gradient(180deg,rgba(255,255,255,.62),#fff 42%);border-top:1px solid #ece7da;border-radius:0 0 10px 10px}
+.mp-pl-act{flex:1;display:flex;align-items:center;justify-content:center;gap:4px;height:30px;padding:0 8px;border:1px solid #dfe4d3;background:#f4f8ef;color:#4d7a3b;font-size:12.5px;font-weight:600;border-radius:8px;cursor:pointer;font-family:inherit;white-space:nowrap;transition:.15s}
+.mp-pl-act:hover{background:#eaf3e1;border-color:#c6d8b2}
+.mp-pl-act.imp{background:#fff;border-color:#e2ddcf;color:#5c6653;font-weight:500}
+.mp-pl-act.imp:hover{background:#f7f5ee}
+.build-ver{margin-left:8px;font-size:11px;color:#c9c3b3;letter-spacing:.3px;vertical-align:middle}
 /* A 区：来源切换 */
 .mp-src{position:relative;flex:0 0 auto;width:42px;height:42px;z-index:35}
 .mp-src-cur{width:42px;height:42px;border-radius:50%;background:#fff;border:1px solid #e3ded0;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.18s}
@@ -452,7 +459,7 @@
 .mp-song.sel .mp-pick{opacity:1;background:#7E9A6B;border-color:#7E9A6B;color:#fff}
 .mp-empty{grid-column:1/-1;padding:14px 4px;font-size:12px;color:var(--muted)}
 /* 播放浮层 */
-.mp-now{position:absolute;left:0;right:0;top:0;bottom:0;z-index:40;display:flex;flex-direction:column;background:#fdfdfb;padding:0 14px 10px;transform:translateY(-100%);opacity:0;pointer-events:none;transition:transform .34s cubic-bezier(.22,.61,.36,1),opacity .3s ease}
+.mp-now{position:absolute;left:0;right:0;top:0;bottom:0;overflow:hidden;border-radius:14px;z-index:40;display:flex;flex-direction:column;background:#fdfdfb;padding:0 14px 10px;transform:translateY(-100%);opacity:0;pointer-events:none;transition:transform .34s cubic-bezier(.22,.61,.36,1),opacity .3s ease}
 .mp.show-now .mp-now{transform:translateY(0);opacity:1;pointer-events:auto}
 .mp-now-top{height:26px;flex:0 0 auto;display:flex;align-items:center;justify-content:center;margin:0 -14px;font-size:11px;color:transparent;cursor:pointer;border-radius:0 0 12px 12px;transition:background .18s,color .18s}
 .mp-now-top:hover{background:rgba(0,0,0,.055);color:#8a8574}
@@ -1636,7 +1643,7 @@
         <div id="shopping-body" data-page-node-id="BubJXjwm5ya3Ps7wQaOf0l"></div>
       </section>
       <section class="module" id="mod-media" data-sp-bindable="database" data-sp-database-id="XwBGD3AthDZziupFstknF4" data-page-node-id="wmE0Ozv4VPOxb1QNG9Gq81">
-        <div class="mod-head" data-page-node-id="ww8NZJbJ993jpKKtV5WKns"><h2 data-page-node-id="12stfYH9V0UA46lU8o3M7i">书影音</h2><span class="desc" data-page-node-id="LH5Tx5hHfiLB9V60VgZUjH">收藏、评分与年度统计，记录看过的好东西</span></div>
+        <div class="mod-head" data-page-node-id="ww8NZJbJ993jpKKtV5WKns"><h2 data-page-node-id="12stfYH9V0UA46lU8o3M7i">书影音</h2><span class="desc" data-page-node-id="LH5Tx5hHfiLB9V60VgZUjH">收藏、评分与年度统计，记录看过的好东西</span><span class="build-ver" title="页面版本">R53</span></div>
         <div id="media-body" data-page-node-id="MvHLGITKcoHEoc4n5mYw56"></div>
       </section>
       <section class="module" id="mod-report" data-sp-bindable="database" data-sp-database-id="VDJ7npH13yRDIkMBUcnQO4" data-page-node-id="zEMiJyVPF1imOLfhLXwOHu">
@@ -7568,8 +7575,10 @@ function mpInner(pl) {
       + '<span class="mp-pl-n">' + esc(p.name) + '</span>'
       + '<span class="mp-pl-c">' + ((p.songs || []).length) + ' 首</span></div>';
   }).join('');
-  items += '<div class="mp-pl-item mp-pl-new" onclick="mpNewPl()">＋ 新建歌单</div>';
-  items += '<div class="mp-pl-item mp-pl-imp" onclick="mpImportPl()">↓ 导入歌单文件（QQ 歌单）</div>';
+  items += '<div class="mp-pl-foot">'
+    + '<button class="mp-pl-act new" onclick="event.stopPropagation();mpNewPl()">＋ 新建歌单</button>'
+    + '<button class="mp-pl-act imp" onclick="event.stopPropagation();mpImportPl()">↓ 导入歌单文件</button>'
+    + '</div>';
 
   var srcOpts = MP_SRC.map(function (s) {
     return '<div class="mp-src-opt' + (s.k === MP.curSrc ? ' cur' : '') + '" title="' + esc(s.label) + '" onclick="mpSwitchSrc(\'' + s.k + '\')">' + MP_ICON[s.k] + '</div>';
@@ -7593,7 +7602,8 @@ function mpInner(pl) {
       return '<div class="mp-song' + (isCur ? ' cur' : '') + (sel ? ' sel' : '') + '" onclick="mpPlay(' + i + ')" title="' + esc(tn + (ar ? ' · ' + ar : '')) + '">' + inner + '</div>';
     }
     return '<a class="mp-song is-ext' + (sel ? ' sel' : '') + '" href="' + esc(mpExtUrl(s)) + '" target="_blank" rel="noopener" title="' + esc('在' + MP.curSrc + '打开：' + tn + (ar ? ' · ' + ar : '')) + '">' + inner + '</a>';
-  }).join('') : '<div class="mp-empty">这个歌单还没有歌，点右上「＋ 添加」加几首</div>';
+  }).join('') : ('<div class="mp-empty">这个歌单还没有歌。点上面「＋ 添加」加几首，或直接用「↓ 导入歌单文件」导入 QQ 歌单（桌面那个 JSON）'
+    + '<button class="mp-pl-act imp" style="max-width:200px;margin:9px auto 0" onclick="mpImportPl()">↓ 导入歌单文件</button></div>');
 
   var now = mpNowSong();
   var nowPl = mpNowPl();

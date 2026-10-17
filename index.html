@@ -351,6 +351,127 @@
   .mi-count{font-size:12px;color:var(--muted)}
   #media-body .row select{width:auto;min-width:104px;max-width:172px;padding:6px 9px;font-size:12.5px}
   #media-body .row{align-items:center;justify-content:flex-end}
+/* R45 书影音顶部：电影(左)+音乐(右) */
+.media-top{display:flex;gap:18px;margin-bottom:18px;flex-wrap:wrap}
+.media-top .mt-col{flex:1;min-width:280px;background:#fff;border:1px solid #e8e8e8;border-radius:14px;padding:14px}
+.mt-head{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.mt-head h4{margin:0;font-size:15px}
+.mt-add{font-size:12px}
+.movie-cols{display:flex;gap:12px}
+.movie-cols .mcol{flex:1;min-width:0}
+.mcol-head{font-size:12.5px;font-weight:600;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.mcol-dot{width:9px;height:9px;border-radius:50%;display:inline-block}
+.mcol-hint{font-size:12px;color:#9aa0a6;padding:8px 4px}
+.movie-card{display:flex;flex-direction:column;gap:6px;padding:8px 10px;border:1px solid #eee;border-radius:10px;margin-bottom:7px;cursor:pointer;background:#fafafa}
+.movie-card .mc-top{display:flex;align-items:center;gap:8px;min-width:0}
+.movie-card .mc-top .mc-title{flex:1;min-width:0}
+.movie-card .mc-actions{flex-wrap:wrap;align-items:center}
+.movie-card:hover{border-color:#cfd8dc}
+.movie-card .poster{width:34px;height:46px;border-radius:6px;object-fit:cover;background:#eee;flex:0 0 auto;display:flex;align-items:center;justify-content:center;font-size:13px;color:#bbb;overflow:hidden}
+.movie-card .mc-info{flex:1;min-width:0}
+.mc-title{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mc-sub{font-size:12px;color:#b8860b;margin-top:2px}
+.mc-actions{display:flex;gap:6px;flex:0 0 auto}
+/* ===== R49 音乐区：三级歌单 + 播放浮层 ===== */
+.mt-music-sec{margin-bottom:12px}
+.mp{position:relative;border:1px solid #eae5d7;border-radius:14px;background:#fbfaf6;padding:10px 12px;overflow:hidden;min-height:232px}
+.mp-row1{display:flex;align-items:flex-start;gap:10px;padding-right:88px}
+.mp-drop{position:relative;flex:1;min-width:0}
+.mp-pl-btn{width:100%;display:flex;align-items:center;justify-content:space-between;gap:8px;background:#fff;border:1px solid #e3ded0;border-radius:10px;padding:9px 12px;font-size:14px;font-weight:600;color:#3a3a3a;cursor:pointer;text-align:left}
+.mp-pl-btn:hover{background:#f7f5ee}
+.mp-pl-label{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mp-caret{color:#b9b2a0;font-size:11px;flex:0 0 auto;transition:transform .18s ease}
+.mp-pl-btn.on .mp-caret{transform:rotate(180deg)}
+.mp-pl-menu{position:absolute;left:0;right:0;top:calc(100% + 4px);z-index:30;background:#fff;border:1px solid #e6e1d3;border-radius:10px;box-shadow:0 12px 26px rgba(0,0,0,.12);padding:5px;max-height:230px;overflow:auto;opacity:0;visibility:hidden;transform:translateY(-6px);pointer-events:none;transition:opacity .18s ease,transform .18s ease,visibility .18s ease}
+.mp-pl-menu.open{opacity:1;visibility:visible;transform:translateY(0);pointer-events:auto}
+.mp-pl-item{display:flex;align-items:center;gap:8px;padding:8px 9px;border-radius:8px;font-size:13px;cursor:pointer}
+.mp-pl-item:hover{background:#f6f4ec}
+.mp-pl-item.cur{background:#eef5e9;font-weight:600}
+.mp-pl-n{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mp-pl-c{font-size:11px;color:var(--muted);flex:0 0 auto}
+.mp-pl-new{border-top:1px dashed #ece7da;margin-top:4px;padding-top:9px;color:#7E9A6B;font-weight:600}
+.mp-pl-imp{color:#7f8a76;font-size:12.5px}
+/* A 区：来源切换 */
+.mp-src{position:relative;flex:0 0 auto;width:42px;height:42px;z-index:35}
+.mp-src-cur{width:42px;height:42px;border-radius:50%;background:#fff;border:1px solid #e3ded0;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.18s}
+.mp-src-cur svg{width:20px;height:20px}
+.mp-src:hover .mp-src-cur,.mp-src.open .mp-src-cur{border-color:#c9c1ab;box-shadow:0 4px 12px rgba(0,0,0,.10)}
+.mp-src-list{position:absolute;left:50%;top:100%;z-index:1;padding-top:8px;opacity:0;transform:translateX(-50%) translateY(-8px);pointer-events:none;transition:opacity .2s ease,transform .2s ease}
+.mp-src-pill{display:flex;flex-direction:column;gap:6px;padding:6px;background:#fff;border:1px solid #e6e1d3;border-radius:24px;box-shadow:0 10px 24px rgba(0,0,0,.14)}
+.mp-src:hover .mp-src-list,.mp-src.open .mp-src-list{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:auto}
+.mp-src-opt{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;border:1px solid transparent}
+.mp-src-opt svg{width:17px;height:17px}
+.mp-ico-emo{display:block;font-size:16px;line-height:1;transform:translateY(-1px)}
+.mp-src-cur .mp-ico-emo{font-size:19px}
+.mp-ico-qqm{display:block;width:22px;height:22px;border-radius:50%}
+.mp-src-cur .mp-ico-qqm{width:26px;height:26px}
+.mp-src-opt:hover{background:#f6f4ec}
+.mp-src-opt.cur{border-color:#c9c1ab;background:#f2f6ee}
+/* B 行 */
+/* ---- R52 网页播放器浮层（内嵌 QQ 音乐官方页，音频走官方流，不下载） ---- */
+.mp-weblayer{position:fixed;inset:0;z-index:60;background:rgba(28,26,20,.34);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .22s ease,visibility .22s ease}
+.mp-weblayer.on{opacity:1;visibility:visible;pointer-events:auto}
+.mp-webcard{position:absolute;left:24px;top:70px;width:min(920px,calc(100vw - 48px));height:min(650px,calc(100vh - 100px));display:flex;flex-direction:column;background:#fff;border-radius:14px;box-shadow:0 24px 60px rgba(0,0,0,.28);overflow:hidden;transform:translateY(-10px);transition:transform .22s ease}
+.mp-weblayer.on .mp-webcard{transform:translateY(0)}
+.mp-webhead{display:flex;align-items:center;gap:10px;padding:9px 12px;border-bottom:1px solid #eee9dc;background:#fbfaf6}
+.mp-webhead .mp-web-t{flex:1;min-width:0;font-size:13px;font-weight:600;color:#3a3a3a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mp-webhead a{font-size:12px;color:#5f8c46;text-decoration:none;white-space:nowrap}
+.mp-webhead a:hover{text-decoration:underline}
+.mp-webhead .mp-web-x{width:24px;height:24px;padding:0;border-radius:50%;border:1px solid #e3ded0;background:#fff;color:#8a8574;font-size:13px;line-height:1;cursor:pointer;flex:0 0 auto}
+.mp-webhead .mp-web-x:hover{background:#f6f2e8;color:#4a4a4a}
+.mp-webbody{position:relative;flex:1;min-height:0;background:#fff}
+.mp-webbody iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block}
+.mp-web-tip{padding:7px 12px;border-top:1px solid #f0ece1;font-size:11px;color:#8a8574;background:#fbfaf6}
+.mp-row2{display:flex;align-items:center;gap:10px;margin:12px 0 8px;flex-wrap:wrap;padding-right:88px}
+.mp-pl-title{flex:1 1 120px;min-width:0;font-size:13px;font-weight:600;color:#4a4a4a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mp-acts{display:flex;gap:6px;flex:0 0 auto;margin-left:auto}
+.mp-chip{display:inline-flex;align-items:center;gap:5px;max-width:190px;font-size:12px;font-weight:600;color:#4d7a3b;background:#f0f6ea;border:1px solid #dae7cd;border-radius:16px;padding:5px 11px;cursor:pointer;white-space:nowrap;overflow:hidden;transition:background .15s,border-color .15s,transform .12s}
+.mp-chip:hover{background:#e7f1dc;border-color:#c6dab0}
+.mp-chip:active{transform:translateY(1px)}
+.mp-chip-ar{font-size:11px;line-height:1;color:#5f8c46;flex:0 0 auto}
+.mp-chip-nm{overflow:hidden;text-overflow:ellipsis;max-width:140px}
+/* C 区：歌曲（无方框） */
+.mp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px 6px;max-height:250px;overflow:auto}
+.mp-song{display:block;position:relative;padding:8px 28px 8px 10px;border:1px solid #f0ece1;border-radius:10px;background:#fff;min-width:0;cursor:pointer;text-decoration:none;color:inherit;transition:background .15s,border-color .15s}
+.mp-song:hover{background:#f8f6ee;border-color:#e4ddc9}
+.mp-song.cur{background:#eef5e9;border-color:#cfe0c2}
+.mp-song.sel{background:#e8f1ff;border-color:#b9d3f5}
+.mp-song-name{font-size:14px;font-weight:600;color:#2b2b2b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mp-song-meta{display:flex;justify-content:flex-end;align-items:baseline;gap:6px;font-size:11px;color:var(--muted);margin-top:3px;min-width:0}
+.mp-song-art{max-width:72%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mp-song-dur{flex:0 0 auto}
+.mp-song-ext{color:#9aa88f;font-size:11px}
+.mp-bind{position:absolute;right:26px;top:8px;width:20px;height:20px;padding:0;border-radius:50%;border:1px solid #d8d2c2;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;transition:.15s}
+.mp-bind svg{width:12px;height:12px}
+.mp-bind:hover{border-color:#7E9A6B;background:#f2f7ee}
+.mp-song:hover .mp-bind{opacity:1}
+.mp-song.is-ext{padding-right:50px}
+.mp-song.is-ext .mp-song-name{color:#4a4a4a}
+.mp-pick{position:absolute;right:4px;top:8px;width:18px;height:18px;padding:0;border-radius:50%;border:1px solid #d8d2c2;background:#fff;color:transparent;font-size:11px;line-height:16px;text-align:center;cursor:pointer;opacity:0;transition:.15s}
+.mp-song:hover .mp-pick{opacity:1}
+.mp-song.sel .mp-pick{opacity:1;background:#7E9A6B;border-color:#7E9A6B;color:#fff}
+.mp-empty{grid-column:1/-1;padding:14px 4px;font-size:12px;color:var(--muted)}
+/* 播放浮层 */
+.mp-now{position:absolute;left:0;right:0;top:0;bottom:0;z-index:40;display:flex;flex-direction:column;background:#fdfdfb;padding:0 14px 10px;transform:translateY(-100%);opacity:0;pointer-events:none;transition:transform .34s cubic-bezier(.22,.61,.36,1),opacity .3s ease}
+.mp.show-now .mp-now{transform:translateY(0);opacity:1;pointer-events:auto}
+.mp-now-top{height:26px;flex:0 0 auto;display:flex;align-items:center;justify-content:center;margin:0 -14px;font-size:11px;color:transparent;cursor:pointer;border-radius:0 0 12px 12px;transition:background .18s,color .18s}
+.mp-now-top:hover{background:rgba(0,0,0,.055);color:#8a8574}
+.mp-now-body{flex:1 1 auto;display:flex;align-items:center;gap:14px;padding-top:4px;min-height:0}
+.mp-now-left{flex:0 0 auto;max-width:32%;min-width:0}
+.mp-now-src{font-size:11px;color:var(--muted)}
+.mp-now-title{font-size:19px;font-weight:700;color:#2b2b2b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mp-now-prog{flex:1 1 auto;min-width:60px;height:6px;background:#e6e2d6;border-radius:6px;cursor:pointer;position:relative;overflow:hidden}
+.mp-now-fill{height:100%;width:0;background:#7E9A6B;border-radius:6px}
+.mp-now-btns{flex:0 0 auto;display:flex;gap:6px}
+.mp-now-btns button{width:38px;height:34px;border:1px solid #e3ded0;background:#fff;border-radius:9px;font-size:13px;color:#4a4a4a;cursor:pointer}
+.mp-now-btns button:hover{background:#f5f2e8}
+.mp-now-foot{flex:0 0 auto;display:flex;align-items:center;gap:12px;font-size:12px;color:var(--muted);padding-top:8px}
+.mp-now-foot .mp-modes{display:flex;gap:6px;margin-left:auto}
+.mp-now-btns button:last-child{margin-right:2px}
+@media (max-width:760px){.mp-grid{grid-template-columns:repeat(2,1fr)}.mp-now-body{gap:8px}.mp-now-title{font-size:15px}}
+.btn.active{background:#7E9A6B;color:#fff;border-color:#7E9A6B}
+
+
   .btn.danger{color:#C25B4E;border-color:#f0c8c2;background:#fff}
   .btn.danger:hover{background:#fbeae8;color:#C25B4E;border-color:#e0a99f}
   @media (max-width:820px){.mboard{grid-template-columns:1fr 1fr}}
@@ -1625,7 +1746,7 @@ var OPT = {
   shopStatus:["想买","已购"],
   mediaType:["书籍","电影","剧集","音乐"],
   mediaStatus:["想看","在看","看过"],
-  mediaSrc:["微信读书","纸质书","手动"],
+  mediaSrc:["微信读书","纸质书","豆瓣","QQ音乐","本地","手动"],
   mediaRating:["★","★★","★★★","★★★★","★★★★★"]
 };
 
@@ -5046,15 +5167,54 @@ function mediaCol(status,color,hint,shown){
   return '<div class="mcol"><div class="mcol-head"><span class="mcol-dot" style="background:'+color+'"></span>'+
     '<span class="mcol-name">'+status+'</span><span class="mcol-n">· '+list.length+'</span></div>'+inner+'</div>';
 }
+/* ---- R45：书影音顶部专区 电影(左) + 音乐(右) ---- */
+function mediaExtLink(r){
+  var c=r&&r["链接"]; if(!c) return '';
+  if(typeof c==='string') return c;
+  if(c.link) return c.link;
+  if(c.url&&c.url.link) return c.url.link;
+  if(c.text&&/^https?:/i.test(c.text)) return c.text;
+  return '';
+}
+function renderMediaTop(rows){
+  rows=rows||[];
+  var movies=rows.filter(function(r){return r["类型"]==='电影';});
+  var seen=movies.filter(function(r){return (r["状态"]||'')==='看过';});
+  var want=movies.filter(function(r){return (r["状态"]||'')!=='看过';});
+  function movieCard(r){
+    var id=rid(r);
+    var poster=mediaCoverLink(r);
+    var pc=poster?'<img class="poster" src="'+esc(poster)+'" onerror="this.style.display=\'none\'">':('<span class="poster ph">'+esc(String(r["标题"]||'?').charAt(0))+'</span>');
+    var ext=mediaExtLink(r);
+    var acts='';
+    if((r["状态"]||'')!=='看过'){ acts+='<button class="btn sm" onclick="event.stopPropagation();movieMarkSeen(\''+id+'\')">标记已看</button>'; }
+    if(ext){ acts+='<a class="btn sm" href="'+esc(ext)+'" target="_blank" rel="noopener" onclick="event.stopPropagation()">豆瓣 ↗</a>'; }
+    return '<div class="movie-card" onclick="openMediaEdit(\''+id+'\')">'+'<div class="mc-top">'+pc+'<div class="mc-title">'+esc(r["标题"]||'')+'</div>'+(r["评分"]?'<span class="mc-sub">'+esc(r["评分"])+'</span>':'')+'</div>'+(acts?'<div class="mc-actions">'+acts+'</div>':'')+'</div>';
+  }
+  var left='<div class="mt-col"><div class="mt-head"><button class="btn sm primary mt-add" onclick="openMovieAdd()">＋ 添加作品</button><a class="btn sm" href="https://movie.douban.com/" target="_blank" rel="noopener">豆瓣电影 ↗</a></div>'+
+    '<div class="movie-cols">'+
+      '<div class="mcol"><div class="mcol-head"><span class="mcol-dot" style="background:#7E9A6B"></span>已看 · '+seen.length+'</div>'+(seen.length?seen.map(movieCard).join(''):'<div class="mcol-hint">还没有标记看过的作品</div>')+'</div>'+
+      '<div class="mcol"><div class="mcol-head"><span class="mcol-dot" style="background:#D9A441"></span>想看 · '+want.length+'</div>'+(want.length?want.map(movieCard).join(''):'<div class="mcol-hint">片单空空，加几部吧</div>')+'</div>'+
+    '</div></div>';
+  var right='<div class="mt-col">'+mpShell(rows)+'</div>';
+  return '<div class="media-top">'+left+right+'</div>';
+}
+function movieMarkSeen(id){
+  if(!id) return;
+  updRec(DB.media, id, {"状态":{select:'看过'}}).then(function(){ LOADERS.media(); toast('已标记看过'); }).catch(function(e){ toast('失败：'+((e&&e.message)||'错误'),true); });
+}
+function openMovieAdd(){ mediaFormModal(null, '电影'); }
+function openMusicAdd(){ mediaFormModal(null, '音乐'); }
 function renderMedia(rows){
   rows=rows||[];
   var yr=new Date().getFullYear();
-  var thisYear=rows.filter(function(r){ return dateSub(r["记录日期"]).substring(0,4)===String(yr); });
+  var books=rows.filter(function(r){ var t=r["类型"]||''; return t!=='电影'&&t!=='音乐'; });
+  var thisYear=books.filter(function(r){ return dateSub(r["记录日期"]).substring(0,4)===String(yr); });
   var seen=thisYear.filter(function(r){return r["状态"]==='看过';});
-  var rated=rows.filter(function(r){return r["评分"];});
+  var rated=books.filter(function(r){return r["评分"];});
   var avgR = rated.length? (rated.reduce(function(s,r){return s+ratingStars(r["评分"]);},0)/rated.length).toFixed(1) : '—';
-  var wantCnt=rows.filter(function(r){return (r["状态"]||'想看')==='想看';}).length;
-  var doingCnt=rows.filter(function(r){return r["状态"]==='在读';}).length;
+  var wantCnt=books.filter(function(r){return (r["状态"]||'想看')==='想看';}).length;
+  var doingCnt=books.filter(function(r){return r["状态"]==='在读';}).length;
 
   var actbar='<div class="m-actbar">'+
       '<button class="btn sm primary" onclick="openWeRead()">打开微信读书 ↗</button>'+
@@ -5075,7 +5235,7 @@ function renderMedia(rows){
       '<button class="'+(mediaView==='board'?'on':'')+'" onclick="mediaSetView(\'board\')">看板</button>'+
       '<button class="'+(mediaView==='wall'?'on':'')+'" onclick="mediaSetView(\'wall\')">封面墙</button>'+
       '<button class="'+(mediaView==='list'?'on':'')+'" onclick="mediaSetView(\'list\')">列表</button></div>';
-  var fType='<select onchange="mediaTypeF=this.value;renderMedia(window.__media)"><option'+(mediaTypeF==='全部'?' selected':'')+'>全部</option>'+OPT.mediaType.map(function(c){return '<option'+(c===mediaTypeF?' selected':'')+'>'+c+'</option>';}).join('')+'</select>';
+  var fType='<select onchange="mediaTypeF=this.value;renderMedia(window.__media)"><option'+(mediaTypeF==='全部'?' selected':'')+'>全部</option>'+OPT.mediaType.filter(function(c){return c!=='电影'&&c!=='音乐';}).map(function(c){return '<option'+(c===mediaTypeF?' selected':'')+'>'+c+'</option>';}).join('')+'</select>';
   var fSrc='<select onchange="mediaSrcF=this.value;renderMedia(window.__media)"><option'+(mediaSrcF==='全部'?' selected':'')+'>全部</option>'+OPT.mediaSrc.map(function(c){return '<option'+(c===mediaSrcF?' selected':'')+'>'+c+'</option>';}).join('')+'</select>';
   var fStatus='';
   if(mediaView!=='board'){
@@ -5084,7 +5244,7 @@ function renderMedia(rows){
   var filterBar='<div class="row" style="margin-bottom:12px;align-items:center;gap:8px;justify-content:flex-end">'+vtg+fType+fSrc+fStatus+'</div>';
 
   var shown=rows.filter(function(r){
-    var st=r["状态"]||'想看';
+    var t=r["类型"]||''; if(t==='电影'||t==='音乐') return false;    var st=r["状态"]||'想看';
     return (mediaTypeF==='全部'||r["类型"]===mediaTypeF)
         && (mediaSrcF==='全部'||(r["来源"]||'')===mediaSrcF)
         && (mediaView==='board' || mediaStatusF==='全部' || st===mediaStatusF);
@@ -5119,13 +5279,14 @@ function renderMedia(rows){
       shown.map(function(r){ return '<tr style="cursor:pointer" onclick="openMediaEdit(\''+rid(r)+'\')"><td style="font-weight:600">'+esc(r["标题"]||'')+'</td><td><span class="badge">'+esc(r["类型"]||'')+'</span></td><td>'+mediaSrcBadge(r)+'</td><td><span class="badge '+esc(r["状态"]||'想看')+'">'+esc(r["状态"]||'想看')+'</span></td><td>'+(r["评分"]?'<span class="stars">'+esc(r["评分"])+'</span>':'—')+'</td><td style="color:var(--muted);max-width:240px">'+esc(r["短评"]||'')+'</td><td><button class="icon-btn" onclick="event.stopPropagation();openMediaEdit(\''+rid(r)+'\')">'+icon('edit')+'</button></td></tr>'; }).join('')+
       '</tbody></table></div>';
   }
-  setBody('media', actbar+stats+filterBar+content);
+  setBody('media', renderMediaTop(rows)+actbar+stats+filterBar+content);
+  if(typeof renderLocalPlayer==='function'){ renderLocalPlayer(); }
 }
 /* ---- 添加 / 修改 收藏 ---- */
 var MEDIA_EDIT_ID=null;
 function openMediaAdd(){ mediaFormModal(null); }
 function openMediaEdit(id){ mediaFormModal(id); }
-function mediaFormModal(id){
+function mediaFormModal(id, presetType){
   MEDIA_EDIT_ID=id||null;
   var r=null;
   if(id) r=(window.__media||[]).filter(function(x){return rid(x)===id;})[0]||null;
@@ -5133,27 +5294,30 @@ function mediaFormModal(id){
   if(!m){ m=document.createElement('div'); m.id='media-edit-modal'; m.className='imp-modal-mask'; document.body.appendChild(m); }
   var cover=r?mediaCoverLink(r):'';
   var prog=(r&&r["进度"]!=null&&r["进度"]!=='')?String(r["进度"]):'';
-  m.innerHTML='<div class="imp-modal-card" style="width:560px" onclick="event.stopPropagation()">'+
-    '<h3>'+(id?'修改收藏':'添加收藏')+'</h3>'+
-    '<div class="imp-sub">想读的书多、懒得一本本填？用上面的「批量导入」把书名一次性粘进来。</div>'+
-    '<div class="es-row es-row-2"><div class="fld"><label>类型</label><select id="me-type">'+optHTML(OPT.mediaType,(r&&r["类型"])||'书籍')+'</select></div>'+
-      '<div class="fld"><label>标题</label><input id="me-title" placeholder="作品名" value="'+esc((r&&r["标题"])||'')+'"></div></div>'+
-    '<div class="es-row es-row-2"><div class="fld"><label>来源</label><select id="me-src">'+optHTML(OPT.mediaSrc,(r&&r["来源"])||'微信读书')+'</select></div>'+
-      '<div class="fld"><label>状态</label><select id="me-status">'+optHTML(OPT.mediaStatus,(r&&r["状态"])||'想看')+'</select></div></div>'+
-    '<div class="es-row es-row-2"><div class="fld"><label>评分</label><select id="me-rating"><option>未评</option>'+optHTML(OPT.mediaRating,(r&&r["评分"])||'')+'</select></div>'+
-      '<div class="fld"><label>进度%（在读时填）</label><input id="me-prog" type="number" min="0" max="100" placeholder="0-100" value="'+esc(prog)+'"></div></div>'+
-    '<div class="fld"><label>封面链接（选填）</label><input id="me-cover" placeholder="https://..." value="'+esc(cover)+'"></div>'+
-    '<div class="es-row es-row-2"><div class="fld"><label>作者（选填）</label><input id="me-author" placeholder="作者" value="'+esc((r&&r["作者"])||'')+'"></div>'+
-      '<div class="fld"><label>阅读链接（选填）</label><input id="me-link" placeholder="微信读书链接，卡片可一键打开" value="'+esc(mediaReadLink(r))+'"></div></div>'+
-    '<div class="fld"><label>短评 / 笔记（选填）</label><input id="me-note" placeholder="写点什么…" value="'+esc((r&&r["短评"])||'')+'"></div>'+
-    '<div class="imp-foot" style="justify-content:space-between">'+
-      (id?'<button class="btn danger" onclick="delMedia()">删除</button>':'<span></span>')+
-      '<span style="display:flex;gap:8px"><button class="btn" onclick="closeMediaModal()">取消</button>'+
-      '<button class="btn primary" onclick="saveMedia()">'+(id?'保存修改':'添加')+'</button></span>'+
-    '</div></div>';
+    var typeField = presetType
+    ? '<input type="hidden" id="me-type" value="'+esc(presetType)+'">'
+    : '<div class="es-row es-row-2"><div class="fld"><label>类型</label><select id="me-type">'+optHTML(OPT.mediaType,(r&&r["类型"])||'书籍')+'</select></div></div>';
+  m.innerHTML='<div class="imp-modal-card" style="width:560px" onclick="event.stopPropagation()">'
+    +'<h3>'+(id?'修改作品':'添加作品')+'</h3>'
+    +'<div class="imp-sub">添加影视 / 书籍作品。要批量搬微信读书书架，用上面的「批量导入」。</div>'
+    + typeField
+    +'<div class="es-row es-row-2"><div class="fld"><label>作品名</label><input id="me-title" placeholder="作品名" value="'+esc((r&&r["标题"])||'')+'"></div>'
+      +'<div class="fld"><label>作者（选填）</label><input id="me-author" placeholder="作者" value="'+esc((r&&r["作者"])||'')+'"></div></div>'
+    +'<div class="es-row es-row-2"><div class="fld"><label>来源</label><select id="me-src">'+optHTML(OPT.mediaSrc,(r&&r["来源"])||'豆瓣')+'</select></div>'
+      +'<div class="fld"><label>状态</label><select id="me-status">'+optHTML(OPT.mediaStatus,(r&&r["状态"])||'想看')+'</select></div></div>'
+    +'<div class="es-row es-row-2"><div class="fld"><label>评分</label><select id="me-rating"><option>未评</option>'+optHTML(OPT.mediaRating,(r&&r["评分"])||'')+'</select></div>'
+      +'<div class="fld"><label>进度%（在读时填）</label><input id="me-prog" type="number" min="0" max="100" placeholder="0-100" value="'+esc(prog)+'"></div></div>'
+    +'<div class="es-row es-row-2"><div class="fld"><label>封面链接（选填）</label><input id="me-cover" placeholder="https://..." value="'+esc(cover)+'"></div>'
+      +'<div class="fld"><label>阅读链接（选填）</label><input id="me-link" placeholder="阅读/豆瓣链接，卡片可一键打开" value="'+esc(mediaReadLink(r))+'"></div></div>'
+    +'<div class="fld"><label>短评 / 笔记（选填）</label><input id="me-note" placeholder="写点什么…" value="'+esc((r&&r["短评"])||'')+'"></div>'
+    +'<div class="imp-foot" style="justify-content:space-between">'
+      +(id?'<button class="btn danger" onclick="delMedia()">删除</button>':'<span></span>')+
+      '<span style="display:flex;gap:8px"><button class="btn" onclick="closeMediaModal()">取消</button>'
+      +'<button class="btn primary" onclick="saveMedia()">'+(id?'保存修改':'添加')+'</button></span>'
+    +'</div></div>';
   m.onclick=function(e){ if(e.target===m) closeMediaModal(); };
   m.style.display='flex';
-  try{ document.getElementById('me-title').focus(); }catch(e){}
+  if(!id && presetType){ try{ var _mt=document.getElementById('me-type'); if(_mt)_mt.value=presetType; }catch(e){} if(presetType==='音乐'){ try{ var _ms=document.getElementById('me-src'); if(_ms)_ms.value='QQ音乐'; }catch(e){} } if(presetType==='电影'){ try{ var _mst=document.getElementById('me-status'); if(_mst)_mst.value='想看'; }catch(e){} } }  try{ document.getElementById('me-title').focus(); }catch(e){}
 }
 function closeMediaModal(){ var m=document.getElementById('media-edit-modal'); if(m) m.style.display='none'; MEDIA_EDIT_ID=null; }
 function saveMedia(){
@@ -5164,7 +5328,7 @@ function saveMedia(){
   var p={ "类型":{select:val('me-type')}, "标题":{text:ti}, "来源":{select:val('me-src')}, "状态":{select:val('me-status')},
           "评分":{select:rating}, "进度":{number:prog}, "短评":{text:val('me-note')}, "封面链接":{url:{text:'封面',link:link}},
           "作者":{text:val('me-author')}, "阅读链接":{url:{text:'打开阅读',link:val('me-link')}} };
-  if(MEDIA_EDIT_ID){
+  var ext=val('me-url'); if(ext){ p["链接"]={url:{text:'外链',link:ext}}; }  if(MEDIA_EDIT_ID){
     updRec(DB.media, MEDIA_EDIT_ID, p).then(function(){ closeMediaModal(); LOADERS.media(); toast('已保存修改'); })
       .catch(function(e){ toast('保存失败：'+((e&&e.message)||'错误'),true); });
   } else {
@@ -5184,7 +5348,7 @@ function delMedia(){
 /* ---- 批量导入：把书架书名粘进来，一行一本 ---- */
 function mediaParseLines(txt){
   return String(txt==null?'':txt).split(/\r?\n/).map(function(s){ return s.trim(); }).filter(function(s){ return s.length; })
-    .map(function(line){ var parts=line.split('|'); return { title:(parts[0]||'').trim(), note:(parts.slice(1).join('|')||'').trim() }; })
+    .map(function(line){ var parts=line.split('|'); return { title:(parts[0]||'').trim(), note:(parts.slice(1).join('|')||'').trim(), raw:line }; })
     .filter(function(x){ return x.title; });
 }
 function openMediaImport(){
@@ -5212,6 +5376,13 @@ function doMediaImport(){
   if(!items.length){ toast('先粘贴要导入的书名，一行一本',true); return; }
   var type=val('mi-type')||'书籍', src=val('mi-src')||'微信读书';
   var ops=items.map(function(it){
+    if(type==='音乐'){
+      var c=it.raw.split('|').map(function(x){return x.trim();});
+      var p={ "类型":{select:'音乐'}, "来源":{select:src||'QQ音乐'}, "标题":{text:c[0]||it.title}, "状态":{select:'收藏'}, "记录日期":{date:today()} };
+      if(c[1]) p["作者"]={text:c[1]};
+      if(c[2]) p["链接"]={url:{text:'外链',link:c[2]}};
+      return addRec(DB.media,p);
+    }
     return addRec(DB.media, { "类型":{select:type}, "标题":{text:it.title}, "来源":{select:src}, "状态":{select:'想看'}, "短评":{text:it.note}, "记录日期":{date:today()} });
   });
   Promise.all(ops).then(function(){ closeMediaImport(); LOADERS.media(); toast('已导入 '+items.length+' 本 ✅'); })
@@ -7214,6 +7385,805 @@ if('serviceWorker' in navigator){
     navigator.serviceWorker.register('./sw.js').catch(function(){});
   });
 }
+</script>
+<script>
+/* ================= R49 音乐区：三级歌单 + 播放浮层 ================= */
+/* 结构：歌单来源（本地 / QQ导入 / 网易云）→ 歌单 → 歌曲 */
+
+var MP_KEY = 'lw_musiclib_v1';
+var MP_SRC = [
+  { k: '本地', label: '本地音乐' },
+  { k: 'QQ导入', label: 'QQ 导入歌单' },
+  { k: '网易云', label: '网易云音乐歌单' }
+];
+/* QQ 音乐图标：用户提供的黄绿圆音符图（已裁掉白边并做圆形遮罩，59x59） */
+var MP_QQ_ICON = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADsAAAA7CAYAAADFJfKzAAAQAElEQVR4AbxaCXQVVZr+btWrt2TlZUGMbM0iYYmCzjQRaRWVadxAaBUElxFXFPuM7XGdPm2fHkXp1tOKcqR1cNRzVNxa7W4VFEEBEURZAwmyJMqaPXlJ3l5157v18rLxkryQYE79VXf97//df7tVLxpO0Z+UMk+aNXfL6A9LZGDTCun/dI1seKNI1r9YIeuel9K3vEI2vFkk/Z+vkaGit6TZ8JyU5t1q3ikSCX0KVoZK86X/s4cIZhOqFh5G1d1LUXn/vaj9w2zULp6C+qVj4XslFw2vAb6XclH/wljULpqC6ofmoPLW33LOUtT9+bBs+mCTjOx5SMpQfl8C7xOwMrBqvqx/qRiNJN//PoWGVyei8U2BxveApn8C/s+AwJdAcCMQ2kL6DghuJrEeWAv4PwYa3wUa3iS9JqK+VyfW1b311PaatcVvVRQXP/jTgVv6AnSvwMrg1unS9/Iu1D67HLW/z0fdYgr9DhD6HjBrARlNSkYJgQh0+MwojgYrUOzbhfWVa/DG0TVYfGRn/ovlh17J3vLxzunbnroiKYadDDopsDJ8vFD6ln2Dmoc/QtV94xBYDUQrCc7qZJmum8PSgXKrH9aHC7AkcA3uafwdbml8BH8LTMXeSH+EJNBf1BXc4frwX9X7MjbImoXnd80xcW+PwDJ4CNn41iLU3PsN6l4otE3SaiLICLlTIt47u0yGhyorHSXRgVgfKcB74YuwNDgLj/lvxb1N9+G2xofxROAmfBD+FUrMwfBLFyJSgEELA0U5Jhs7cK7jB6SLpvMRqdsgA1ueUPJ0tl6i9qTBSvldCnxLPmCAeQT+VUB4D2xTRQxkBTXzNUG8GZqKV0JX4OXgVXgxMAPPB2bhr4Fr8XRgNp7lc2lwJvuuxOvBX2NF6GL8neA+iUy0N2CHORyHrRw0EaiAxe0xFTiCLMFM5zrkaPUwYHLtXUDg00cRPfIeAackApaoTUvU2LFNNpXkoe6TDfC9NgP+zwHLxyEWqfXaaw6ytbIk+BuCuw7PENyfA3PwpH8uFvnnkW7Ac8Fr8GroMnvc2sjZ2B4dhjKzP+otjw1MI5A46SwbiCJfL8MlxhZc6NgGB9vsFcPFQNMHYGCbhcj+dcxjOXZ7N7duwcpw2QQ0LtqC+mUTENraKbvt0ZHYHMlHMc30JzMbx6x+qJHpaIIbYYoJWoBma0tpLBkykYIgrjU+x1XGOqSIUOvaMgyEd4Ixg4A/ORdm1WZqeEzrgMSlLsFKuTUXNQ99hMCaPDJMzKG5daJjD0bpP0KT9M4+oAw04mb3Skx2FtN8GRea12l5SAuwGoD6Z0nLhyG8YyUB57b0Jyh0ClbKjR7UvPsBAmsHwTwOqN1MwCDeNFI/jAmO/RihH2EiMXtFuaIGFzh2YLrzawzXj8MpzPgybZ6SMkWBSBlN+kOgccUgRPb8nYCNNoPaFTsFi7r1r6Hpo/NhVsSYtpt2YsWrNeJcxz6cb+yGQd/SemSyFn02RgO0Gpxn7ME1rq9wluMgMkQCrbZbXgLh3aCspA8nwzzyfLvuNpWEYGXd3x7m5GvtiNtmcHfFcY5SXOr8HllaEwFHIWhqyZIy/1QEcL5jN25wf4Gr3d8gVQS7W7K1P7IP8L0MxpU7pVn9X60drSWttRgrydCmMWh6+3GEtsUaenBPoXBn6odxtXM9vMJHbZlJkwshzHV/ifmeVZhEzfZg2dhQxglEK4C6pwl429M056Gxjtb7CWDhe3URInt1yEDrqCRLGiOuMsPpro0YrFXAzQgqYKEr0plehmjHcKvnM8xybcAYx48902iLbDRnGQRCO4DgOh2R4qdaupoL7cBK/yeFzKMzuou8zXMTPtJEAAWOMvpdMfK06i416xUNDGr7MIObc517HQroBpnd+mjCZZsbLcCqR+ylY/NsKSOTmjvsRzuw8K/9K6KHANkmp9nDkr9p1K6HGr3c9R3GMRU5GcU1mlicdJZV5s0V9TiHAe0G9xrckbKSGv2JlsD8mfxSnY8MfQuEvgazyF/aDmoBKxten4Om9wuR5JtKK5MTSzpNd7xxABOM/RikV/J9xmwhtRHDHeW4M+VzPJb+Nq52f4tsBrQTufSixaKywiXU8NpJUkbnxDnZYKXc50Jo+1OIHmU7TYH33l4GfVEFmgudOxmVoy3sskQDxuv7Mc21xfZrjwjT1OlvLSP6okB+kf1AgEdb6X+SwUpXXG2waNjxC4RLhkA5uGrtIxruOI5fUrsjqUknwgxUJsJSQ6N0wsHNUCbfR0udyMashp06IwcZlRtGqgExsNEfrkb0oKr3KaUzFeU7jmKKqwhpaOJRMopay4OiyCB8GxmFepn0C0vP5ZIRIFqF2Gto4zTFoBlsyTRESlW9z2mIXm5HW6+opd/GzLnGSsMbgV/hqOnt8/XaMZSNQHA9QdfGwEq5KQPR4+dB7US7kX1TMYSJAXo9rnR/jyF6hW2+Ub6Ul0aysDk8EmVml2f33gmhPiwEt4DpaAr9NlODb/PlzKtOtvSOcSezNaYiZc5T3UVQJp3KIyF4jAxYDmwIjUBxJA9R6ryT6b1rlmHYqdTyEZ95mYbInkLYL+O949vVbKeIYoxxDOcYZdRupR2oBF8WdhPo9vAgmnO/rqb3os8CLJqywmcFx2t04gHoxSEiWUl05t7J7n34pesgTdkkYMnvTG5siwzF+uBI9opkWfV8nPQB0j9Ag1XXD0rdPWfR4xlDtHKMN0qRbxwl4Cjzq4XSaC420nePmRn8wGanwx7z7XaC5SfYEMGa5dRssNvxfTHAJSLIdxyBSkUGy4L6DDDnlkb7Y1XwbKYiT18scyIP+/wQUWCrCDZ04oBT1JKn12Kicz+GMTKn8AytjLean1hXB8fiUDQLAWmcgpWZ8qRJsFYDowMrp2CJRCw91OgQRw1UdM7V6mnKUQLU8UPkNGxlsKow0xNN610bXz4Aq58G4agDwwV+xj+v5sfMlK2MzNVw8RipURhTSnwcOMtORRa3oE/FEQ6y0+s06NnHIVys/HyXzrSTzW9Wk1z7MILnZjAXSy6vTlS7ImfgAIMWq3140TWE4zjB5v4sYCWtp1G6UcWjYjkjb6WZhhFGOYY5KqBMWyEL0l93RAbj+/BQ6tvBLVAerXp6SRoDnzDKNGhZpwSsAudnpK0kuB8ZePbSJ7fRJzeGhmEdT06KqsxU6MJqfmmXRCRt390S+gWO8dxs9pU5CwXWrTR72ikBG5IO+t/peKfpHDxWNw13Vl+PB2pm4gmWn6m/FIr+p+4yfOwfg1rTBUm/VRSyJA5EvPgsMAYBi+bHLej1JdxkoczYOH0TFHJW++JqsNzYEhqCFxqmYKnvAvzTPw4lkQGoNd1otBxo6kBBS0OUwUkFqDgdiabhi8BwHOBLgrKOXsklNEBLJbm3a5AT1kLz9kmiPRzNxNrgCLxJba4KnMlUkocfo/1Qzw2I0GdNSp0MNdJ3SzlvTWAEzTmDs07yEjz/OwYSaGYYcK7RRNZ19dBzv2QKOkmOsWk1Vipf2Ybiff9Z+DiQT5DpPPtqjLvypKiRbrCaG7c3koMmgo+t0sO7SCHGCQTrXSuE8FHHZOAY/CG0TBZO7lKh5ZvwMPwjMA5fhwbzECh7TSGpMVhl4/vwGShjgDspybQ0wD0ZEF7+GETMUH+O0SthDFelHpMKRAej2fhH05nYFsqF8jurxQct1hORROuYWFnVE9HXwaH4LkRT7LFknCDoq55CCSP7I9Zga1Z4F5TBGLlXNfSUfPTHVTTbYppbveXsYLJgPRG1mrbFbGp2QT9GM7A70h+lUS+tRSQvntKqMQhU4k4hUo+piZq62WSM+SP0LBaTZ2gy6FRbKVjFQFJhptjA+Lrc8lTlzsjkSqpPPbuiBvprKQPf7khuz8A6zqAJFwJadsvPIC1gRdZ/r4Br/C72UozkrhAFKefBYFc4Cz6mlERm2BdtFUxbe5l7LX67Sk4yHXCOA1JmFAnhWhGf0wLWbki97kHYh2a71u2tliZ8kOYV5ciuTLG3ffWWC0d4xFSBkEt1fxlDANe5pIIH2g5uB1Zk3rUSrolfJRuZg1JnDjWSMltlsidLEYaWCNdqK3iXZc+FNOHJXwnhXtl2XDuwdkfG7N/DGIyeaNjilp8skGTm6dxONz/aobs/YYABiUAvABxjH+04XOvYIDLu2UATWAw9m12C1Pnl4iE+XYswcHSdPnrrtykijFz++NW1NDqgMcCmXgklvzCyN3aU/ASw9oDc/3sUnqnvQuh2tbNbphbGQEcjE4fFvZenjHL0JoxxVkITNKHOhNG91OhEIHPB+3AWnKBVNS0hWCGosv7Tb0bqtO1qUGfk4Y7n6fUYbdQiRSgNg4cFEDz4JPiWw0X7stK0Ejtu/qqsSLXHzVodThS5yXeYox7jCVa3OSeQRlMnJaaZzN/uhGPUjbb8iYYlaLObhLgugIxZ0+GacAiCZ0y7tf3NQV0q85rmKUO2HuBrmoyZNIcpoRUARfGyeipSeTX25HhuiCrHiT9T2HzUPEVjjSqc4zyOAXojs7pqIfO2l6CfuqnR1JmH4Zl0BYF2+v8RCTUb5yVS5h9C2vXT4RwTgJYeb273zNRCuCplP0Y7qpCmhey9VxpSYsXJYmusTHAsq3psTHNdASapMXHQGsflcAMv5UYWuo7wO7PaorZLU3SNSnCpfHpNAK4rCTTlcNsRHcuc0bGpfV14H9yOzHsHUcMbod4N23fbn1TG8qeN36SW0NTKmzXbDIICK2BqinoqMKqsKF5XbarckdwMfJcT6OWeUowy+FurmtSWNL6Qq/N81qKNyJw3SLhO29m2O1G5W7Bqksi4uRp5C6cg48ZlULtJg1LtcRIsXOL+CTel7cavKSCrXV4KoPJH9VSaVOU4qTblo/PTduGu9G0YadR0WI2sHXlA6gwg54Vl8EybIkRGgt3guA5XUmDVHPpwWOS+tgDpty2Aa5wJFRRURzP11/24gOZ2c9oe/GdaCcZSG6kibAcqZbJtyfZLzlNt8TJoBQMYdS/jZt2eXoTZqXsxmv6aRh4cyotbqr6Cuv8NSJtrIu2WBcJz4QIhWgZwTNdX0mDjbETukmVInTMe7otW800JMdDC7h7kaIAKVgszdtjCXur5CRNclRji8CGXm5GmhflxLWKTit5eLQg1p8BZjYvcRzEz9QBuI9Ab04pxrrMcLqH8lLw1fq1wjgJSphLovNVIv3G8SP2PZfaiPbj1GKzizZeGIpH3r6nInD8VzjOLbNMWBrs0KG0WGMfwUOa3eC5rHf7k3Yy51PTFBF7A9DHCqOMn1BgVuo9hFoPbA5lbsTznCzzjXYerPPuhIjxA0YQB6EwrrrOAjNu/Q87yqaLffVOF6+wiLtbjixx7PKdlguj3yGoxcGsBvH9iTp5eAmMYoEwNsb8crQmTnIexIH0nHu/3DZZnr8ZbuZ+20LNZX+F3BHqZ5yBO130wmN7tmUIFHx7mJMUEFAAAAMlJREFUU6cDWU/uQc5fZot+9/+7ME5bbfef5K1XYONrCu/9r4sB748m6NHI/uPDyLxjMzwXS8N1JjKcXpxuaBhqNGGkUY98HkDiNNzw4wxDR5YzG07XKIiUS6jBOyS8f9gM7+MPw7twtMhcOFa4znsnvlZvnlpvJnecKzLmllDbi0XuS4Xod/tApN10D9JvWIL0eSuQPnct0ufsRtrsShJ973o+5+5G+jy23/g20m96Hunz70HqXQNF1iOFImPeYuGaUtJxjd7U/x8AAP//Q+AZBAAAAAZJREFUAwAHHh9CaIXzjwAAAABJRU5ErkJggg==';
+var MP_ICON = {
+  '本地': '<span class="mp-ico-emo">🎶</span>',
+  'QQ导入': '<img class="mp-ico-qqm" alt="QQ音乐" src="' + MP_QQ_ICON + '">',
+  '网易云': '<svg viewBox="0 0 24 24" fill="none" stroke="#c62f2f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 18.5h11a4 4 0 0 0 .5-7.96A5.6 5.6 0 0 0 7.2 9.1 3.86 3.86 0 0 0 6.5 18.5z"/><path d="M10 14.5c1.2-1.6 2.6-1.6 3.6 0"/></svg>',
+  /* 默认态（还没在放歌）用的是「下载」图标 */
+  '下载': '<svg viewBox="0 0 24 24" fill="none" stroke="#7E9A6B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v11"/><path d="M7.5 10.5L12 15l4.5-4.5"/><path d="M4 18.5h16"/></svg>'
+};
+
+var MP = { curSrc: '本地', curPl: {}, lib: {}, nowOpen: false, playPl: '', idx: -1, shuffle: false };
+var mpSel = {};
+
+/* ---------------- 存储 ---------------- */
+function mpSave() {
+  try { localStorage.setItem(MP_KEY, JSON.stringify(MP)); } catch (e) { }
+}
+function mpLoad() {
+  var raw = null;
+  try { raw = localStorage.getItem(MP_KEY); } catch (e) { }
+  if (raw) {
+    try {
+      var o = JSON.parse(raw);
+      if (o && typeof o === 'object') {
+        MP.curSrc = o.curSrc || '本地';
+        MP.curPl = o.curPl || {};
+        MP.lib = o.lib || {};
+        MP.shuffle = !!o.shuffle;
+      }
+    } catch (e) { }
+  }
+  if (!MP.lib) MP.lib = {};
+  MP_SRC.forEach(function (s) {
+    if (!MP.lib[s.k] || !MP.lib[s.k].length) {
+      MP.lib[s.k] = [{
+        id: mpUid(),
+        name: s.k === '本地' ? '我的本地歌单' : (s.k === 'QQ导入' ? 'QQ 收藏歌单' : '网易云歌单'),
+        songs: []
+      }];
+    }
+  });
+  if (!MP.lib[MP.curSrc]) MP.curSrc = '本地';
+  if (!MP.curPl) MP.curPl = {};
+  if (!MP.curPl[MP.curSrc] || !mpPlById(MP.curPl[MP.curSrc])) MP.curPl[MP.curSrc] = MP.lib[MP.curSrc][0].id;
+  // blob: 链接刷新后失效，清掉以便回落到 IndexedDB 里的原始文件
+  Object.keys(MP.lib).forEach(function (k) {
+    (MP.lib[k] || []).forEach(function (p) {
+      (p.songs || []).forEach(function (s) { if (s.url && String(s.url).indexOf('blob:') === 0) s.url = ''; });
+    });
+  });
+  // 修掉旧版把「歌名/歌手」解析颠倒的历史数据
+  try { mpFixTags(); } catch (e) { }
+}
+function mpUid() { return 'm' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+
+function mpPls(src) { src = src || MP.curSrc; if (!MP.lib[src]) MP.lib[src] = []; return MP.lib[src]; }
+function mpPlById(id) {
+  var arr = mpPls();
+  for (var i = 0; i < arr.length; i++) if (arr[i].id === id) return arr[i];
+  return null;
+}
+function mpCurPl() {
+  var p = mpPlById(MP.curPl[MP.curSrc]);
+  if (!p) { p = mpPls()[0]; MP.curPl[MP.curSrc] = p.id; }
+  return p;
+}
+function fmtTime(s) { s = Math.floor(s || 0); var m = Math.floor(s / 60); var ss = s % 60; return m + ':' + (ss < 10 ? '0' : '') + ss; }
+
+/* ---------------- 本地音频：IndexedDB 暂存 ---------------- */
+var MP_DB = null;
+function mpIdbOpen() {
+  return new Promise(function (res, rej) {
+    if (MP_DB) return res(MP_DB);
+    var rq;
+    try { rq = indexedDB.open('lw_music_blobs', 1); } catch (e) { return rej(e); }
+    rq.onupgradeneeded = function () { var d = rq.result; if (!d.objectStoreNames.contains('b')) d.createObjectStore('b'); };
+    rq.onsuccess = function () { MP_DB = rq.result; res(MP_DB); };
+    rq.onerror = function () { rej(rq.error); };
+  });
+}
+function mpBlobPut(key, blob) {
+  return mpIdbOpen().then(function (db) {
+    return new Promise(function (res, rej) {
+      var tx = db.transaction('b', 'readwrite');
+      tx.objectStore('b').put(blob, key);
+      tx.oncomplete = function () { res(true); };
+      tx.onerror = function () { rej(tx.error); };
+    });
+  });
+}
+function mpBlobGet(key) {
+  return mpIdbOpen().then(function (db) {
+    return new Promise(function (res, rej) {
+      var tx = db.transaction('b', 'readonly');
+      var r = tx.objectStore('b').get(key);
+      r.onsuccess = function () { res(r.result); };
+      r.onerror = function () { rej(r.error); };
+    });
+  });
+}
+
+/* ---------------- 音频元素（常驻 body，不随模块重渲染丢失） ---------------- */
+function mpAudioEl() {
+  var a = document.getElementById('mp-audio');
+  if (!a) {
+    a = document.createElement('audio');
+    a.id = 'mp-audio';
+    a.style.display = 'none';
+    a.addEventListener('timeupdate', mpTick);
+    a.addEventListener('ended', function () { mpNext(); });
+    a.addEventListener('loadedmetadata', function () {
+      var s = mpNowSong();
+      if (s && isFinite(a.duration) && a.duration > 0) { s.dur = Math.round(a.duration); mpSave(); mpTick(); }
+    });
+    document.body.appendChild(a);
+  }
+  return a;
+}
+
+/* ---------------- 当前播放曲 ---------------- */
+/* 按 id 在所有来源里找歌单（原来只找「本地」，导致 QQ/网易云歌单播放时面板认不出） */
+function mpFindPlById(id) {
+  if (!id) return null;
+  var keys = Object.keys(MP.lib || {});
+  for (var k = 0; k < keys.length; k++) {
+    var arr = MP.lib[keys[k]] || [];
+    for (var i = 0; i < arr.length; i++) if (arr[i].id === id) return arr[i];
+  }
+  return null;
+}
+function mpNowSong() {
+  if (MP.idx < 0) return null;
+  var p = mpFindPlById(MP.playPl);
+  return p ? ((p.songs || [])[MP.idx] || null) : null;
+}
+function mpNowPl() {
+  return mpFindPlById(MP.playPl);
+}
+
+/* ---------------- 模板 ---------------- */
+function mpShell(rows) {
+  mpSyncMedia(rows || []);
+  var pl = mpCurPl();
+  var cls = 'mp' + (MP.nowOpen ? ' show-now' : '') + (MP.nowOpen ? '' : ' collapsed');
+  return '<div class="' + cls + '" id="mp-box">' + mpInner(pl) + '</div>';
+}
+
+function mpRender() {
+  var box = document.getElementById('mp-box');
+  if (!box) return;
+  var wantNow = !!MP.nowOpen;
+  var hadNow = box.className.indexOf('show-now') >= 0;
+  // 内容先以「收起」状态重建，再在下一帧加 show-now，浮层才会有滑入动画
+  box.className = 'mp' + (wantNow && hadNow ? ' show-now' : ' collapsed');
+  box.innerHTML = mpInner(mpCurPl());
+  if (wantNow) {
+    if (!hadNow) void box.offsetHeight; /* 强制回流，让过渡生效 */
+    box.classList.remove('collapsed');
+    box.classList.add('show-now');
+  }
+  mpTick();
+}
+
+function mpInner(pl) {
+  pl = pl || { id: '', name: '', songs: [] };
+  var songs = pl.songs || [];
+  var list = mpPls(MP.curSrc);
+  var items = list.map(function (p) {
+    return '<div class="mp-pl-item' + (p.id === pl.id ? ' cur' : '') + '" onclick="mpPickPl(\'' + p.id + '\')">'
+      + '<span class="mp-pl-n">' + esc(p.name) + '</span>'
+      + '<span class="mp-pl-c">' + ((p.songs || []).length) + ' 首</span></div>';
+  }).join('');
+  items += '<div class="mp-pl-item mp-pl-new" onclick="mpNewPl()">＋ 新建歌单</div>';
+  items += '<div class="mp-pl-item mp-pl-imp" onclick="mpImportPl()">↓ 导入歌单文件（QQ 歌单）</div>';
+
+  var srcOpts = MP_SRC.map(function (s) {
+    return '<div class="mp-src-opt' + (s.k === MP.curSrc ? ' cur' : '') + '" title="' + esc(s.label) + '" onclick="mpSwitchSrc(\'' + s.k + '\')">' + MP_ICON[s.k] + '</div>';
+  }).join('');
+  srcOpts = '<div class="mp-src-pill">' + srcOpts + '</div>';
+
+  var cells = songs.length ? songs.map(function (s, i) {
+    var isCur = (i === MP.idx && MP.playPl === pl.id);
+    var sel = !!mpSel[s.id];
+    var tn = s.title || String(s.name || '').replace(/\.[^.]+$/, '') || '未命名';
+    var ar = s.artist && s.artist !== '本地' ? s.artist : '';
+    // 本地歌、或已绑定本地文件的外链歌 → 页面内播放；否则整张卡是外链（真 <a>，不会被浏览器拦弹窗）
+    var playable = (MP.curSrc === '本地') || !!s.blobId;
+    var inner = '<button class="mp-pick" title="选中（可多选后删除）" onclick="event.preventDefault();event.stopPropagation();mpTogglePick(\'' + s.id + '\')">✓</button>'
+      + (playable ? '' : '<button class="mp-bind" title="绑定本地文件，就能在页面里播放" onclick="event.preventDefault();event.stopPropagation();mpBindLocal(\'' + s.id + '\')">' + MP_ICON['下载'] + '</button>')
+      + '<div class="mp-song-name">' + esc(tn) + '</div>'
+      + '<div class="mp-song-meta"><span class="mp-song-art">' + esc(ar) + '</span>'
+      + (playable ? '' : '<span class="mp-song-ext" title="在 ' + esc(MP.curSrc) + ' 打开">↗</span>')
+      + '<span class="mp-song-dur">' + (s.dur ? fmtTime(s.dur) : '') + '</span></div>';
+    if (playable) {
+      return '<div class="mp-song' + (isCur ? ' cur' : '') + (sel ? ' sel' : '') + '" onclick="mpPlay(' + i + ')" title="' + esc(tn + (ar ? ' · ' + ar : '')) + '">' + inner + '</div>';
+    }
+    return '<a class="mp-song is-ext' + (sel ? ' sel' : '') + '" href="' + esc(mpExtUrl(s)) + '" target="_blank" rel="noopener" title="' + esc('在' + MP.curSrc + '打开：' + tn + (ar ? ' · ' + ar : '')) + '">' + inner + '</a>';
+  }).join('') : '<div class="mp-empty">这个歌单还没有歌，点右上「＋ 添加」加几首</div>';
+
+  var now = mpNowSong();
+  var nowPl = mpNowPl();
+  var a = document.getElementById('mp-audio');
+  var playing = !!(MP.idx >= 0 && now);
+  var total = nowPl ? (nowPl.songs || []).length : songs.length;
+  var chip = '<span class="mp-chip' + (playing ? ' on' : '') + '" onclick="mpPlayAll()" title="播放整张歌单">'
+    + '<span class="mp-chip-ar">▶</span>'
+    + (playing ? '<span class="mp-chip-nm">' + esc(now.title || now.name || '') + '</span>' : '')
+    + '</span>';
+
+  return ''
+    + '<div class="mp-row1">'
+    + '  <div class="mp-drop">'
+    + '    <button class="mp-pl-btn" onclick="mpTogglePlMenu(event)"><span class="mp-pl-label">' + esc(pl.name || '选择歌单') + '</span><span class="mp-caret">▾</span></button>'
+    + '    <div class="mp-pl-menu" id="mp-pl-menu" onclick="event.stopPropagation()">' + items + '</div>'
+    + '  </div>'
+    + '  <div class="mp-src" id="mp-src" onmouseleave="mpSrcLeave()">'
+    + '    <div class="mp-src-cur' + (playing ? ' playing' : '') + '" onclick="mpToggleSrc(event)" title="当前来源：' + esc(MP_SRC.filter(function (x) { return x.k === MP.curSrc; })[0].label) + '">' + (playing ? MP_ICON[MP.curSrc] : MP_ICON['下载']) + '</div>'
+    + '    <div class="mp-src-list">' + srcOpts + '</div>'
+    + '  </div>'
+    + '</div>'
+    + '<div class="mp-row2">'
+    + '  <div class="mp-pl-title">' + esc(pl.name || '') + ' · ' + songs.length + ' 首</div>'
+    + chip
+    + (pl.dissId ? '<button class="btn sm" onclick="mpWebPlayer(1)" title="内嵌 QQ 音乐官方播放页，扫码登录后整张播放，不用下载">网页播放</button>' : '')
+    + '  <div class="mp-acts">'
+    + '    <button class="btn sm" onclick="mpDeleteSel()">删除选中</button>'
+    + '    <button class="btn sm" onclick="mpAddSongs()">＋ 添加</button>'
+    + '    <button class="btn sm" onclick="mpClear()">清空</button>'
+    + '  </div>'
+    + '</div>'
+    + '<div class="mp-grid">' + cells + '</div>'
+    + '<div class="mp-now">'
+    + '  <div class="mp-now-top" onclick="mpSetNow(false)">▲</div>'
+    + '  <div class="mp-now-body">'
+    + '    <div class="mp-now-left"><div class="mp-now-src">' + (MP.curSrc === '本地' ? '本地音乐' : esc(MP.curSrc)) + '</div>'
+    + '      <div class="mp-now-title">' + esc(now ? (now.title || now.name) : '未播放') + '</div></div>'
+    + '    <div class="mp-now-prog" onclick="mpSeek(event)"><div class="mp-now-fill" id="mp-now-fill"></div></div>'
+    + '    <div class="mp-now-btns">'
+    + '      <button onclick="mpTogglePlay()" title="播放/暂停">' + (playing && a && !a.paused ? '⏸' : '▶') + '</button>'
+    + '      <button onclick="mpPrev()" title="上一首">⏮</button>'
+    + '      <button onclick="mpNext()" title="下一首">⏭</button>'
+    + '    </div>'
+    + '  </div>'
+    + '  <div class="mp-now-foot"><span id="mp-now-time">0:00 / 0:00</span><span id="mp-now-cnt">共 ' + total + ' 首</span>'
+    + '    <div class="mp-modes"><button class="btn sm ' + (!MP.shuffle ? 'active' : '') + '" onclick="mpSetMode(false)">顺序</button>'
+    + '    <button class="btn sm ' + (MP.shuffle ? 'active' : '') + '" onclick="mpSetMode(true)">随机</button></div>'
+    + '  </div>'
+    + '</div>';
+}
+
+/* ---------------- 来源 / 歌单切换 ---------------- */
+function mpToggleSrc(e) {
+  if (e) e.stopPropagation();
+  var s = document.getElementById('mp-src');
+  if (s) s.classList.toggle('open');
+}
+function mpSrcLeave() {
+  var s = document.getElementById('mp-src');
+  if (s) s.classList.remove('open');
+}
+function mpSwitchSrc(k) {
+  if (!k) return;
+  MP.curSrc = k;
+  if (!MP.curPl[k] || !mpPlById2(k, MP.curPl[k])) MP.curPl[k] = mpPls(k)[0].id;
+  mpSel = {};
+  mpSave();
+  mpRender();
+  var s = document.getElementById('mp-src'); if (s) s.classList.remove('open');
+  toast('已切换到「' + MP_SRC.filter(function (x) { return x.k === k; })[0].label + '」');
+}
+function mpPlById2(src, id) {
+  var arr = mpPls(src);
+  for (var i = 0; i < arr.length; i++) if (arr[i].id === id) return arr[i];
+  return null;
+}
+function mpTogglePlMenu(e) {
+  if (e) e.stopPropagation();
+  var m = document.getElementById('mp-pl-menu');
+  var b = m && m.parentNode ? m.parentNode.querySelector('.mp-pl-btn') : null;
+  if (m) {
+    var on = !m.classList.contains('open');
+    m.classList.toggle('open', on);
+    if (b) b.classList.toggle('on', on);
+  }
+}
+function mpClosePlMenu(cb, delay) {
+  var m = document.getElementById('mp-pl-menu');
+  var b = m && m.parentNode ? m.parentNode.querySelector('.mp-pl-btn') : null;
+  if (m) m.classList.remove('open');
+  if (b) b.classList.remove('on');
+  if (cb) setTimeout(cb, delay == null ? 180 : delay);
+}
+function mpPickPl(id) {
+  MP.curPl[MP.curSrc] = id;
+  mpSel = {};
+  mpSave();
+  mpClosePlMenu(function () { mpRender(); }, 180);
+}
+function mpNewPl() {
+  mpClosePlMenu(null, 0);
+  appDialog({
+    app: '音乐歌单',
+    html: '<div style="font-size:13px;margin-bottom:8px">给新歌单起个名字（来源：' + esc(MP.curSrc) + '）</div>'
+      + '<input id="mp-newpl-input" class="inp" style="width:100%;box-sizing:border-box" placeholder="例如：通勤路上">',
+    buttons: [
+      { label: '取消', cls: '' },
+      {
+        label: '创建', cls: 'primary', onClick: function () {
+          var el = document.getElementById('mp-newpl-input');
+          var name = (el && el.value || '').trim();
+          if (!name) { toast('名字不能为空', true); return; }
+          var p = { id: mpUid(), name: name, songs: [] };
+          mpPls().push(p);
+          MP.curPl[MP.curSrc] = p.id;
+          MP.nowOpen = false;
+          mpSave(); mpRender();
+          toast('已新建歌单「' + name + '」');
+        }
+      }
+    ]
+  });
+}
+
+/* ---------------- 歌曲：添加 / 播放 / 删除 ---------------- */
+function mpParseName(fname) {
+  var n = String(fname || '').replace(/\.[^.]+$/, '').trim();
+  n = n.replace(/^\s*\d{1,3}\s*[\.\-、_ ]\s*/, '').trim();
+  var segs = n.split(/\s*[-–—]\s*/).filter(function (x) { return x.trim(); });
+  if (segs.length >= 2) {
+    var a = segs[0].trim(), b = segs.slice(1).join('-').trim();
+    // 命名习惯多为「歌名-歌手」；若某一边带「、/&/feat」等合唱歌手特征，就把那一边当歌手
+    var ART = /[、&,，]|\bfeat\.?\b|\bft\.?\b|\bvs\.?\b|合唱/i;
+    if (ART.test(b) && !ART.test(a)) return { title: a, artist: b };
+    if (ART.test(a) && !ART.test(b)) return { title: b, artist: a };
+    return { title: a, artist: b };
+  }
+  return { title: n, artist: '本地' };
+}
+/* 旧版解析（歌名/歌手颠倒），仅用于识别并修复历史数据 */
+function mpLegacyParse(fname) {
+  var n = String(fname || '').replace(/\.[^.]+$/, '');
+  var m = n.split(/\s*[-–—]\s*/);
+  if (m.length >= 2 && m[0].trim()) return { artist: m[0].trim(), title: m.slice(1).join('-').trim() || n };
+  return { artist: '本地', title: n };
+}
+function mpFixTags() {
+  var changed = false;
+  Object.keys(MP.lib || {}).forEach(function (k) {
+    (MP.lib[k] || []).forEach(function (p) {
+      (p.songs || []).forEach(function (sg) {
+        if (!sg || !sg.name) return;
+        var old = mpLegacyParse(sg.name), nw = mpParseName(sg.name);
+        if (nw.title === old.title && nw.artist === old.artist) return;
+        if (String(sg.title || '') === old.title && String(sg.artist || '') === old.artist) {
+          sg.title = nw.title; sg.artist = nw.artist; changed = true;
+        }
+      });
+    });
+  });
+  if (changed) mpSave();
+  return changed;
+}
+
+function mpAddSongs() {
+  if (MP.curSrc === '本地') { mpPickFiles(null); return; }
+  var hint = MP.curSrc === 'QQ导入' ? '每行一首，格式：歌名|歌手|链接（链接可空，播放时自动去 QQ 音乐搜索）' : '每行一首，格式：歌名|歌手|链接（链接可空，播放时自动去网易云搜索）';
+  appDialog({
+    app: '添加歌曲',
+    html: '<div style="font-size:12px;color:#8a8574;margin-bottom:8px">' + esc(hint) + '</div>'
+      + '<textarea id="mp-bulk-input" class="inp" style="width:100%;height:130px;box-sizing:border-box;font-size:13px" placeholder="晴天|周杰伦|https://y.qq.com/...\n浮夸|陈奕迅"></textarea>',
+    buttons: [
+      { label: '取消', cls: '' },
+      {
+        label: '加入歌单', cls: 'primary', onClick: function () {
+          var el = document.getElementById('mp-bulk-input');
+          var txt = (el && el.value || '').trim();
+          if (!txt) return;
+          var pl = mpCurPl();
+          var n = 0;
+          txt.split(/\r?\n/).forEach(function (line) {
+            line = line.trim();
+            if (!line) return;
+            var parts = line.split('|').map(function (x) { return x.trim(); });
+            var title = parts[0] || '';
+            if (!title) return;
+            if (parts[1] === undefined && /https?:\/\//.test(title)) {
+              // 只给了链接，标题留空用链接
+            }
+            pl.songs.push({ id: mpUid(), title: title, artist: parts[1] || '', url: parts[2] || '', dur: 0 });
+            n++;
+          });
+          mpSave(); mpRender();
+          toast('已加入 ' + n + ' 首到「' + pl.name + '」');
+        }
+      }
+    ]
+  });
+}
+
+/* ---------------- R52 歌单文件导入 + 网页播放器浮层 ---------------- */
+function mpImportPl() {
+  mpClosePlMenu(null, 0);
+  var inp = document.getElementById('mp-json');
+  if (!inp) {
+    inp = document.createElement('input');
+    inp.type = 'file'; inp.id = 'mp-json'; inp.accept = '.json,application/json'; inp.multiple = true;
+    inp.style.display = 'none';
+    inp.addEventListener('change', function () {
+      var files = inp.files ? Array.prototype.slice.call(inp.files) : [];
+      inp.value = '';
+      if (!files.length) return;
+      var left = files.length, ok = 0, bad = 0;
+      files.forEach(function (f) {
+        var fr = new FileReader();
+        fr.onload = function () {
+          var fine = false;
+          try { fine = mpApplyImport(JSON.parse(String(fr.result || ''))); } catch (e) { fine = false; }
+          if (fine) ok++; else bad++;
+          if (--left === 0) {
+            if (ok) toast('已导入 ' + ok + ' 个歌单' + (bad ? '；' + bad + ' 个文件格式不认识' : ''));
+            else toast('这个文件不是工作台歌单格式', true);
+          }
+        };
+        fr.onerror = function () { bad++; if (--left === 0) toast('读取文件失败', true); };
+        fr.readAsText(f, 'utf-8');
+      });
+    });
+    document.body.appendChild(inp);
+  }
+  try { inp.click(); } catch (e) { toast('无法打开文件选择，请重试', true); }
+}
+
+/* 兼容多种歌单 JSON：工作台格式 / 原始 fcg 格式 / 直接数组 */
+function mpApplyImport(obj) {
+  if (!obj) return false;
+  var it = obj;
+  if (Array.isArray(obj)) it = { name: '导入歌单', songs: obj };
+  if (it.playlist) it = it.playlist;
+  if (it.cdlist && it.cdlist[0]) it = it.cdlist[0];
+  var raw = it.songs || it.trackList || it.songlist || [];
+  if (!raw.length) return false;
+  var songs = raw.map(function (s) {
+    var mid = s.mid || s.songmid || s.songMid || '';
+    var url = s.url || s.h5url || s.songH5Url || (mid ? 'https://y.qq.com/n/ryqq/songDetail/' + mid : '');
+    var artist = s.artist || s.singerName || s.singer || '';
+    if (Object.prototype.toString.call(artist) === '[object Array]') {
+      artist = artist.map(function (x) { return (x && (x.name || x)) || ''; }).filter(Boolean).join('、');
+    }
+    return {
+      id: mpUid(),
+      title: s.title || s.songname || s.songName || s.name || '',
+      artist: String(artist || ''),
+      album: s.album || s.albumname || s.albumName || '',
+      mid: mid,
+      url: url,
+      dur: Math.max(0, parseInt(s.dur || s.interval || 0, 10) || 0)
+    };
+  }).filter(function (s) { return !!s.title; });
+  if (!songs.length) return false;
+
+  var dissId = parseInt(it.dissId || it.dissid || it.disstid || 0, 10) || 0;
+  var name = it.name || it.dissName || it.dissname || '导入歌单';
+  var list = mpPls('QQ导入'), old = null;
+  for (var i = 0; i < list.length; i++) if (dissId && list[i].dissId === dissId) { old = list[i]; break; }
+  if (old) {
+    old.name = name;
+    old.cover = it.cover || old.cover || '';
+    old.songs = songs;
+  } else {
+    old = { id: 'qqp-' + (dissId || mpUid()), name: name, cover: it.cover || '', dissId: dissId, songs: songs };
+    list.push(old);
+  }
+  MP.curSrc = 'QQ导入';
+  MP.curPl['QQ导入'] = old.id;
+  MP.nowOpen = false;
+  mpSel = {};
+  mpSave(); mpRender();
+  toast('已导入「' + name + '」' + songs.length + ' 首');
+  return true;
+}
+
+/* 内嵌 QQ 音乐官方歌单页：音频走官方流，不下载、不落本地 */
+function mpWebPlayer(open) {
+  var pl = mpCurPl();
+  var layer = document.getElementById('mp-weblayer');
+  if (!pl || !pl.dissId) { toast('这个歌单没有关联 QQ 歌单地址', true); return; }
+  var url = 'https://y.qq.com/n/ryqq_v2/playlist/' + pl.dissId;
+  if (!layer) {
+    layer = document.createElement('div');
+    layer.id = 'mp-weblayer';
+    layer.className = 'mp-weblayer';
+    layer.innerHTML = '<div class="mp-webcard">'
+      + '<div class="mp-webhead"><span class="mp-web-t" id="mp-web-t"></span>'
+      + '<a href="#" id="mp-web-out" target="_blank" rel="noopener">在浏览器打开 ↗</a>'
+      + '<button class="mp-web-x" title="关闭并停止播放" onclick="mpWebClose()">✕</button></div>'
+      + '<div class="mp-webbody" id="mp-webbody"></div>'
+      + '<div class="mp-web-tip">音频由 QQ 音乐官方网页播放：第一次点播放要扫码登录一次；关掉面板音乐就停，不会进工作台播放器。</div></div>';
+    document.body.appendChild(layer);
+    layer.addEventListener('click', function (e) { if (e.target === layer) mpWebClose(); });
+  }
+  var t = document.getElementById('mp-web-t');
+  if (t) t.textContent = pl.name || 'QQ 歌单';
+  var out = document.getElementById('mp-web-out');
+  if (out) out.href = url;
+  var body = document.getElementById('mp-webbody');
+  if (body && !body.querySelector('iframe')) {
+    var f = document.createElement('iframe');
+    f.src = url;
+    f.setAttribute('allow', 'autoplay; encrypted-media; fullscreen');
+    f.setAttribute('referrerpolicy', 'no-referrer-when-downgrade');
+    body.appendChild(f);
+  }
+  if (open !== false) layer.classList.add('on');
+}
+
+function mpWebClose() {
+  var layer = document.getElementById('mp-weblayer');
+  if (!layer) return;
+  layer.classList.remove('on');
+  var body = document.getElementById('mp-webbody');
+  if (body) body.innerHTML = '';   /* 拆掉 iframe = 停止播放 */
+}
+
+function mpPickFiles(relink) {
+  var inp = document.getElementById('mp-file');
+  if (!inp) {
+    inp = document.createElement('input');
+    inp.type = 'file'; inp.id = 'mp-file'; inp.accept = 'audio/*'; inp.multiple = true; inp.style.display = 'none';
+    inp.addEventListener('change', function () {
+      var files = inp.files ? Array.prototype.slice.call(inp.files) : [];
+      if (files.length) mpAddFiles(files, mpPickFiles._relink);
+      mpPickFiles._relink = null;
+      inp.value = '';
+    });
+    document.body.appendChild(inp);
+  }
+  mpPickFiles._relink = relink || null;
+  try { inp.click(); } catch (e) { toast('无法打开文件选择，请重试', true); }
+}
+
+function mpAddFiles(files, relink) {
+  var pl = mpCurPl();
+  if (relink) {
+    // 重新关联已存在的曲目（含 QQ / 网易云歌单里绑本地文件）
+    var f0 = files[0];
+    var bid = relink.blobId || mpUid();
+    relink.blobId = bid;
+    try { mpBlobPut(bid, f0).catch(function () { }); } catch (e) { }
+    relink.url = URL.createObjectURL(f0);
+    relink.name = f0.name;
+    var info = mpParseName(f0.name);
+    if (!relink.title || relink.title === relink.name) relink.title = info.title;
+    if (!relink.artist || relink.artist === '本地') relink.artist = info.artist;
+    mpSave();
+    mpPlayBySong(relink);
+    toast('已绑定本地文件：' + (relink.title || relink.name));
+    return;
+  }
+  var added = 0;
+  files.forEach(function (f) {
+    var info = mpParseName(f.name);
+    var rec = { id: mpUid(), name: f.name, title: info.title, artist: info.artist, dur: 0, blobId: mpUid() };
+    rec.url = URL.createObjectURL(f);
+    pl.songs.push(rec);
+    added++;
+    // 异步存进 IndexedDB，刷新后还能播
+    try {
+      mpBlobPut(rec.blobId, f).catch(function () { });
+    } catch (e) { }
+  });
+  mpSave(); mpRender();
+  toast('已加入 ' + added + ' 首到「' + pl.name + '」');
+}
+
+function mpUrlOf(s) {
+  if (!s) return Promise.reject(new Error('empty'));
+  if (s.url && s.url.indexOf('blob:') === 0) return Promise.resolve(s.url);
+  if (s.blobId) {
+    return mpBlobGet(s.blobId).then(function (blob) {
+      if (!blob) throw new Error('noblob');
+      s.url = URL.createObjectURL(blob);
+      return s.url;
+    });
+  }
+  if (s.url) return Promise.resolve(s.url);
+  return Promise.reject(new Error('nourl'));
+}
+
+function mpPlay(i) {
+  var pl = mpCurPl();
+  var s = (pl.songs || [])[i];
+  if (!s) return;
+  if (MP.curSrc !== '本地' && !s.blobId) { mpOpenExternal(s); return; }
+  mpPlaySong(s, pl.id, i);
+}
+
+/* 播放整张歌单：没在放歌就从第 1 首开始；已在放歌就打开播放面板 */
+function mpPlayAll() {
+  var now = mpNowSong();
+  if (MP.idx >= 0 && now) { mpSetNow(true); return; }
+  var pl = mpCurPl();
+  if (!(pl.songs || []).length) { toast('这个歌单还没有歌，点「＋ 添加」加几首', true); return; }
+  mpPlay(0);
+}
+
+/* 给外链歌（QQ/网易云）绑定本地文件，绑完就能在页面里播 */
+function mpBindLocal(id) {
+  var pl = mpCurPl();
+  var s = null;
+  (pl.songs || []).forEach(function (x) { if (x.id === id) s = x; });
+  if (!s) return;
+  mpPickFiles(s);
+}
+
+/* 外链地址：有链接用链接，否则用平台搜索 */
+function mpExtUrl(s) {
+  if (s && s.url && /^https?:/i.test(s.url)) return s.url;
+  var q = encodeURIComponent((((s && s.title) || '') + ' ' + ((s && s.artist) || '')).trim());
+  return MP.curSrc === 'QQ导入' ? ('https://y.qq.com/n/ryqq/search?w=' + q) : ('https://music.163.com/#/search/m/?s=' + q);
+}
+
+function mpPlayBySong(s) {
+  var pl = mpCurPl();
+  var idx = (pl.songs || []).indexOf(s);
+  if (idx < 0) idx = 0;
+  mpPlaySong(s, pl.id, idx);
+}
+
+function mpPlaySong(s, plId, idx) {
+  var a = mpAudioEl();
+  mpUrlOf(s).then(function (url) {
+    a.src = url;
+    a.play().catch(function () { toast('浏览器拒绝了自动播放，请点一下播放键', true); });
+    MP.idx = idx; MP.playPl = plId; MP.nowOpen = true;
+    mpSave(); mpRender();
+  }).catch(function () {
+    toast('这首歌没有可播放的本地文件，请重新选择', true);
+    mpPickFiles(s);
+  });
+}
+
+function mpOpenExternal(s) {
+  var url = s.url;
+  if (!url) {
+    var q = encodeURIComponent(((s.title || '') + ' ' + (s.artist || '')).trim());
+    url = MP.curSrc === 'QQ导入' ? ('https://y.qq.com/n/ryqq/search?w=' + q) : ('https://music.163.com/#/search/m/?s=' + q);
+  }
+  try { window.open(url, '_blank'); } catch (e) { }
+  toast('已在新标签打开：' + (s.title || ''));
+}
+
+function mpTogglePlay() {
+  var a = mpAudioEl();
+  var s = mpNowSong();
+  if (!s) { var pl = mpCurPl(); if ((pl.songs || []).length) mpPlay(0); return; }
+  if (a.paused) { a.play().catch(function () { }); } else { a.pause(); }
+  setTimeout(mpRender, 60);
+}
+function mpNext() {
+  var pl = mpNowPl() || mpCurPl();
+  var arr = (pl.songs || []);
+  if (!arr.length) return;
+  var n;
+  if (MP.shuffle) { do { n = Math.floor(Math.random() * arr.length); } while (arr.length > 1 && n === MP.idx); }
+  else { n = (MP.idx + 1) % arr.length; }
+  mpPlaySong(arr[n], pl.id, n);
+}
+function mpPrev() {
+  var pl = mpNowPl() || mpCurPl();
+  var arr = (pl.songs || []);
+  if (!arr.length) return;
+  var n;
+  if (MP.shuffle) { do { n = Math.floor(Math.random() * arr.length); } while (arr.length > 1 && n === MP.idx); }
+  else { n = (MP.idx - 1 + arr.length) % arr.length; }
+  mpPlaySong(arr[n], pl.id, n);
+}
+function mpSetMode(shuffle) {
+  MP.shuffle = !!shuffle; mpSave(); mpRender();
+  toast(MP.shuffle ? '随机播放' : '按歌单顺序播放');
+}
+function mpSeek(e) {
+  var a = mpAudioEl();
+  if (!a || !a.duration) return;
+  var rect = e.currentTarget.getBoundingClientRect();
+  var r = (e.clientX - rect.left) / rect.width;
+  if (r < 0) r = 0; if (r > 1) r = 1;
+  a.currentTime = r * a.duration;
+}
+function mpTick() {
+  var a = document.getElementById('mp-audio');
+  var fill = document.getElementById('mp-now-fill');
+  var t = document.getElementById('mp-now-time');
+  if (fill) fill.style.width = (a && a.duration ? Math.min(100, a.currentTime / a.duration * 100) : 0) + '%';
+  if (t) t.textContent = fmtTime(a ? a.currentTime : 0) + ' / ' + fmtTime(a && isFinite(a.duration) ? a.duration : 0);
+}
+
+/* ---------------- 选中 / 删除 / 清空 ---------------- */
+function mpTogglePick(id) {
+  if (mpSel[id]) delete mpSel[id]; else mpSel[id] = true;
+  mpRender();
+}
+function mpDeleteSel() {
+  var ids = Object.keys(mpSel).filter(function (k) { return mpSel[k]; });
+  if (!ids.length) { toast('先点歌曲右上角的 ✓ 选中，再删除', true); return; }
+  var pl = mpCurPl();
+  var playingId = null;
+  if (mpNowPl() && mpNowPl().id === pl.id && MP.idx >= 0) playingId = ((pl.songs || [])[MP.idx] || {}).id;
+  pl.songs = (pl.songs || []).filter(function (s) { return !mpSel[s.id]; });
+  mpSel = {};
+  if (playingId) {
+    // 按 id 重新定位正在播的那首（删掉别的歌会让它前移，不能简单按原下标）
+    var ni = -1;
+    for (var k = 0; k < pl.songs.length; k++) { if (pl.songs[k].id === playingId) { ni = k; break; } }
+    if (ni < 0) {
+      var a = document.getElementById('mp-audio');
+      if (a) { a.pause(); a.removeAttribute('src'); try { a.load(); } catch (e) { } }
+      MP.idx = -1; MP.nowOpen = false;
+    } else { MP.idx = ni; }
+  } else if (MP.idx >= pl.songs.length) {
+    MP.idx = Math.max(0, pl.songs.length - 1);
+  }
+  mpSave(); mpRender();
+  toast('已删除 ' + ids.length + ' 首');
+}
+function mpClear() {
+  var pl = mpCurPl();
+  if (!(pl.songs || []).length) { toast('歌单本来就是空的'); return; }
+  myConfirm('清空「' + pl.name + '」里的 ' + pl.songs.length + ' 首歌？', function () {
+    pl.songs = [];
+    mpSel = {};
+    var a = document.getElementById('mp-audio');
+    if (mpNowPl() && mpNowPl().id === pl.id) {
+      if (a) { a.pause(); a.removeAttribute('src'); try { a.load(); } catch (e) { } }
+      MP.idx = -1; MP.nowOpen = false;
+    }
+    mpSave(); mpRender();
+    toast('已清空');
+  });
+}
+
+/* ---------------- 浮层收起 / 展开 ---------------- */
+function mpSetNow(open) {
+  MP.nowOpen = !!open;
+  var box = document.getElementById('mp-box');
+  if (box) {
+    box.classList.toggle('show-now', !!open);
+    box.classList.toggle('collapsed', !open);
+    var chip = box.querySelector('.mp-chip');
+    if (chip) chip.classList.toggle('on', !open && MP.idx >= 0 && !!mpNowSong());
+  }
+  mpSave();
+  mpTick();
+}
+
+/* ---------------- 与旧「书影音」音乐记录同步 ---------------- */
+function mpSyncMedia(rows) {
+  if (!rows || !rows.length) return;
+  var pl = null;
+  var arr = mpPls('QQ导入');
+  if (!MP.lib['QQ导入']) return;
+  pl = mpPlById2('QQ导入', MP.curPl['QQ导入']) || arr[0];
+  if (!pl) return;
+  var have = {};
+  (pl.songs || []).forEach(function (s) { have[String(s.title || '').trim()] = 1; });
+  var changed = false;
+  rows.forEach(function (r) {
+    if (r['类型'] !== '音乐') return;
+    var t = String(r['标题'] || '').trim();
+    if (!t || have[t]) return;
+    var u = (typeof mediaExtLink === 'function') ? (mediaExtLink(r) || '') : '';
+    pl.songs.push({ id: mpUid(), title: t, artist: r['作者'] || '', url: u, dur: 0 });
+    have[t] = 1; changed = true;
+  });
+  if (changed) mpSave();
+}
+
+/* 兼容旧调用 */
+function renderLocalPlayer() { mpTick(); }
+
+/* 点空白处收起下拉 */
+document.addEventListener('click', function (e) {
+  var m = document.getElementById('mp-pl-menu'); if (m) m.classList.remove('open');
+  var s = document.getElementById('mp-src'); if (s) s.classList.remove('open');
+});
+
+/* 初始化 */
+mpLoad();
+
 </script>
 </body>
 </html>

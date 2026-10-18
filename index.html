@@ -465,7 +465,6 @@
 .mpw-side-tip{font-size:11px;color:#b0a999;padding:8px 12px 11px;border-top:1px solid #f0ece0;line-height:1.6}
 .mpw-stage{flex:1;display:flex;flex-direction:column;min-width:0;background:#f6f5f0}
 .mpw-bar{display:flex;align-items:center;gap:8px;padding:9px 12px;border-bottom:1px solid #eee9db;background:#fff;font-size:12.5px;color:#5a564b}
-.mpw-bar #mpw-now{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600;color:#3d3a33}
 .mpw-frame{flex:1;position:relative;min-height:0;overflow:hidden;background:#fff}
 .mpw-frame iframe{position:absolute;left:0;top:0;width:100%;height:100%;border:0;transform-origin:0 0;background:#fff}
 .mpw-layer.big .mpw-card{left:14px;top:14px;width:calc(100vw - 28px);height:calc(100vh - 28px)}
@@ -476,7 +475,6 @@
 /* ===== R57 网页歌单：直接在音乐卡里展示（不再弹浮层） ===== */
 #mpw-stage{margin-top:10px;border:1px solid #eae5d7;border-radius:12px;overflow:hidden;background:#fff;height:440px;transition:height .18s ease;display:flex;flex-direction:column;margin-bottom:2px}
 .mpw-bar{display:flex;align-items:center;gap:8px;padding:6px 9px;background:#fcfbf6;border-bottom:1px solid #efeadc;flex:0 0 auto;font-size:11.5px;color:#6b6558;min-height:0}
-.mpw-bar .mpw-now{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600;color:#4a4a42}
 .mpw-bar .mpw-left{font-variant-numeric:tabular-nums;color:#8f8a79;flex:0 0 auto}
 .mpw-bar .mpw-out{color:#4d7a3b;text-decoration:none;font-weight:600;white-space:nowrap;flex:0 0 auto}
 .mpw-bar .mpw-out:hover{text-decoration:underline}
@@ -488,6 +486,14 @@
 #mpw-stage.is-empty{height:176px}
 #mpw-stage .mpw-empty{padding:22px 18px;text-align:center;color:#a9a291;font-size:12.5px;line-height:1.9}
 .mp-web-hint{margin-top:8px;font-size:11px;color:#b0a999;line-height:1.6}
+/* R58 网页歌单界面精简：控制框 2/3 宽、操作按钮上提一行、播放框填满卡片 */
+.mp.mp-web{max-width:66.67%}
+.mp.mp-web{display:flex;flex-direction:column;min-height:520px}
+.mp.mp-web .mp-row1{padding-right:0;flex-wrap:wrap;gap:6px}
+.mp.mp-web .mp-web-acts{display:flex;gap:5px;margin-left:auto;flex:0 0 auto}
+.mp.mp-web .mp-web-acts .btn{height:28px;padding:0 8px;font-size:12px;white-space:nowrap}
+.mp.mp-web .mp-pl-menu{min-width:300px}
+.mp.mp-web #mpw-stage{flex:1;min-height:440px;height:auto}
 /* 下拉里的网页歌单行：勾选 + 名字 + 时长 + ✎ + ↗ */
 .mpw-pl-item{position:relative;padding-right:4px}
 .mpw-pl-item.sel{background:#f5f8f0}
@@ -7728,7 +7734,7 @@ function mpNowPl() {
 function mpShell(rows) {
   mpSyncMedia(rows || []);
   var pl = mpCurPl();
-  var cls = 'mp' + (MP.nowOpen ? ' show-now' : '') + (MP.nowOpen ? '' : ' collapsed');
+  var cls = 'mp' + (MP.nowOpen ? ' show-now' : '') + (MP.nowOpen ? '' : ' collapsed') + (MP.curSrc === '网页歌单' ? ' mp-web' : '');
   /* R57：舞台放在 mp-body 之外，mpRender 重建 body 时不会把 iframe 拆掉 */
   return '<div class="' + cls + '" id="mp-box">'
     + '<div class="mp-body" id="mp-body">' + mpInner(pl) + '</div>'
@@ -7745,7 +7751,7 @@ function mpRender() {
   var wantNow = !!MP.nowOpen;
   var hadNow = box.className.indexOf('show-now') >= 0;
   // 内容先以「收起」状态重建，再在下一帧加 show-now，浮层才会有滑入动画
-  box.className = 'mp' + (wantNow && hadNow ? ' show-now' : ' collapsed');
+  box.className = 'mp' + (wantNow && hadNow ? ' show-now' : ' collapsed') + (MP.curSrc === '网页歌单' ? ' mp-web' : '');
   var body = document.getElementById('mp-body');
   if (body) body.innerHTML = mpInner(mpCurPl());   /* R57：舞台在 body 外，不受影响 */
   else box.innerHTML = mpInner(mpCurPl());
@@ -8252,8 +8258,8 @@ function mpWebStageHtml() {
       + '勾选多个再点「▶ 连播选中」，就会一个接一个播下去；每行的 ↗ 可以直接在浏览器里打开。</div>';
   }
   return '<div class="mpw-bar">'
-    + '<span class="mpw-now" id="mpw-now">' + esc(pl.name) + '</span>'
     + '<span class="mpw-left" id="mpw-left"></span>'
+    + '<span style="flex:1"></span>'
     + '<a class="mpw-out" id="mpw-out" href="' + esc(pl.url) + '" target="_blank" rel="noopener" title="在浏览器里打开这个歌单">在浏览器打开 ↗</a>'
     + '<button class="mpw-btn" onclick="mpWebPlNext()" title="播下一个">下一个 ›</button>'
     + '<button class="mpw-btn" onclick="mpWebPlStop()" title="停止并关掉网页">停止</button>'
@@ -8300,14 +8306,9 @@ function mpInnerWeb() {
   }).join('') : '<div class="mpw-none2">还没有网页歌单<br>点下面「＋ 添加歌单网址」把地址存进来</div>';
 
   var foot = '<div class="mp-pl-foot col">'
-    + '<button class="mp-pl-act new" onclick="event.stopPropagation();mpWebPlAdd()">＋ 添加歌单网址</button>'
     + '<div class="mp-pl-row">'
     + '<button class="mp-pl-act" id="mpw-playsel" onclick="event.stopPropagation();mpWebPlPlaySel()"' + (nSel ? '' : ' disabled') + '>▶ 连播选中' + (nSel ? ' (' + nSel + ')' : '') + '</button>'
-    + '<button class="mp-pl-act del" id="mpw-delsel" onclick="event.stopPropagation();mpWebPlDelSel()"' + (nSel ? '' : ' disabled') + '>删除选中' + (nSel ? ' (' + nSel + ')' : '') + '</button>'
     + '</div></div>';
-
-  var title = cur ? (cur.name + ' · ' + (cur.dur || 30) + ' 分钟')
-    : (list.length ? '还没选歌单' : '还没有网页歌单');
 
   return ''
     + '<div class="mp-row1">'
@@ -8319,15 +8320,11 @@ function mpInnerWeb() {
     + '    <div class="mp-src-cur' + (cur ? ' playing' : '') + '" onclick="mpToggleSrc(event)" title="当前来源：网页歌单">' + (cur ? MP_ICON['网页歌单'] : MP_ICON['下载']) + '</div>'
     + '    <div class="mp-src-list">' + mpSrcOptsHtml() + '</div>'
     + '  </div>'
-    + '</div>'
-    + '<div class="mp-row2">'
-    + '  <div class="mp-pl-title" style="flex:1 1 auto;min-width:0">' + esc(title) + '</div>'
-    + '  <div class="mp-acts">'
+    + '  <div class="mp-web-acts">'
     + '    <button class="btn sm" onclick="mpWebPlAdd()">＋ 添加歌单网址</button>'
-    + '    <button class="btn sm" onclick="mpWebPlDelSel()">删除选中</button>'
+    + '    <button class="btn sm" id="mpw-delsel" onclick="mpWebPlDelSel()"' + (nSel ? '' : ' disabled') + '>删除选中' + (nSel ? ' (' + nSel + ')' : '') + '</button>'
     + '  </div>'
-    + '</div>'
-    + '<div class="mp-web-hint">音频走官方网页播放，不下载、不存 Key；勾选多个歌单可以连着播。</div>';
+    + '</div>';
 }
 
 /* ---------- 勾选 ---------- */
@@ -8408,12 +8405,11 @@ function mpWebPlTick() {
   mpWebPlStatus();
 }
 function mpWebPlStatus() {
-  var nowEl = document.getElementById('mpw-now'), leftEl = document.getElementById('mpw-left');
+  var leftEl = document.getElementById('mpw-left');
   var pl = mpWebPlById(MPW.cur);
   if (!pl) return;
   var sec = Math.max(0, Math.round((MPW.endAt - Date.now()) / 1000));
   var mm = Math.floor(sec / 60), ss = sec % 60;
-  if (nowEl) nowEl.textContent = '正在播「' + pl.name + '」（' + (MPW.idx + 1) + '/' + MPW.queue.length + '）';
   if (leftEl) leftEl.textContent = '剩 ' + mm + ':' + (ss < 10 ? '0' : '') + ss;
 }
 function mpWebPlNext(auto) {

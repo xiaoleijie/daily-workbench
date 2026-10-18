@@ -374,7 +374,7 @@
 .mc-actions{display:flex;gap:6px;flex:0 0 auto}
 /* ===== R49 音乐区：三级歌单 + 播放浮层 ===== */
 .mt-music-sec{margin-bottom:12px}
-.mp{position:relative;border:1px solid #eae5d7;border-radius:14px;background:#fbfaf6;padding:10px 12px;overflow:visible;min-height:232px}
+.mp{position:relative;border:1px solid #eae5d7;border-radius:14px;background:#fbfaf6;padding:10px 12px;overflow:visible;min-height:232px;transition:min-height .3s cubic-bezier(.22,.61,.36,1)}
 .mp-row1{display:flex;align-items:flex-start;gap:10px;padding-right:88px}
 .mp-drop{position:relative;flex:1;min-width:0}
 .mp-pl-btn{width:100%;display:flex;align-items:center;justify-content:space-between;gap:8px;background:#fff;border:1px solid #e3ded0;border-radius:10px;padding:9px 12px;font-size:14px;font-weight:600;color:#3a3a3a;cursor:pointer;text-align:left}
@@ -480,7 +480,8 @@
 .mp.show-webnow #mpw-stage{transform:translateY(0);opacity:1}
 .mpw-back{flex:0 0 auto;height:30px;display:flex;align-items:center;justify-content:center;gap:6px;font-size:11.5px;color:#8a8574;cursor:pointer;background:#faf9f4;border-top:1px solid #f0ece0;border-radius:0 0 14px 14px;transition:background .18s,color .18s}
 .mpw-back:hover{background:#f2efe4;color:#5c6653}
-.mpw-bar{display:flex;align-items:center;gap:8px;padding:6px 96px 6px 9px;background:#fcfbf6;border-bottom:1px solid #efeadc;flex:0 0 auto;font-size:11.5px;color:#6b6558;min-height:0}
+.mpw-bar{display:flex;align-items:center;gap:8px;padding:6px 16px 6px 9px;background:#fcfbf6;border-bottom:1px solid #efeadc;flex:0 0 auto;font-size:11.5px;color:#6b6558;min-height:0}
+.mp.cat-zone .mpw-bar{padding-right:96px}
 .mpw-bar .mpw-left{font-variant-numeric:tabular-nums;color:#8f8a79;flex:0 0 auto}
 .mpw-bar .mpw-out{color:#4d7a3b;text-decoration:none;font-weight:600;white-space:nowrap;flex:0 0 auto}
 .mpw-bar .mpw-out:hover{text-decoration:underline}
@@ -501,9 +502,10 @@
 .mp.mp-web .mp-web-acts .btn{height:28px;padding:0 8px;font-size:12px;white-space:nowrap}
 .mp.mp-web .mp-pl-menu{min-width:300px}
 /* R60：本地歌单栏缩窄 + 四个操作按钮并入第一行（参考网页歌单）
-   ⚠️ padding-right:88px 是给右上角猫让位（.pet 固定占位），不能去掉，否则按钮被猫压住 */
-.mp:not(.mp-web) .mp-row1{padding-right:88px;flex-wrap:wrap;gap:8px;align-items:center}
-.mp:not(.mp-web) .mp-drop{flex:0 1 170px;max-width:200px;min-width:96px}
+   R62：歌单栏 flex:1 拉宽填满中间空地，四按钮靠右；猫让位改动态（.cat-zone，见 mpCatZone） */
+.mp:not(.mp-web) .mp-row1{padding-right:16px;flex-wrap:wrap;gap:8px;align-items:center}
+.mp.cat-zone:not(.mp-web) .mp-row1{padding-right:88px}
+.mp:not(.mp-web) .mp-drop{flex:1 1 170px;min-width:120px;max-width:none}
 .mp:not(.mp-web) .mp-acts{gap:4px;margin-left:auto;flex-wrap:nowrap;justify-content:flex-end}
 .mp:not(.mp-web) .mp-acts .btn{height:27px;padding:0 6px;font-size:11px;white-space:nowrap;flex:0 0 auto}
 .mp:not(.mp-web) .mp-chip{height:27px;padding:0 7px;font-size:11px;border-radius:14px;flex:0 0 auto}
@@ -572,7 +574,8 @@
 .mp.show-now .mp-now{transform:translateY(0);opacity:1;pointer-events:auto}
 .mp-now-top{height:30px;flex:0 0 auto;display:flex;align-items:center;justify-content:center;gap:6px;margin:8px -14px -10px;font-size:11.5px;color:#8a8574;cursor:pointer;border-radius:0 0 14px 14px;background:#faf9f4;border-top:1px solid #f0ece0;transition:background .18s,color .18s}
 .mp-now-top:hover{background:#f2efe4;color:#5c6653}
-.mp-now-body{flex:1 1 auto;display:flex;align-items:center;gap:14px;padding-top:4px;padding-right:88px;min-height:0}
+.mp-now-body{flex:0 0 auto;display:flex;align-items:center;gap:14px;padding-top:4px;padding-right:16px;min-height:0}
+.mp.cat-zone .mp-now-body{padding-right:88px}
 .mp-now-left{flex:0 0 auto;max-width:32%;min-width:0}
 .mp-now-src{font-size:11px;color:var(--muted)}
 .mp-now-title{font-size:19px;font-weight:700;color:#2b2b2b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -581,8 +584,19 @@
 .mp-now-btns{flex:0 0 auto;display:flex;gap:6px}
 .mp-now-btns button{width:38px;height:34px;border:1px solid #e3ded0;background:#fff;border-radius:9px;font-size:13px;color:#4a4a4a;cursor:pointer}
 .mp-now-btns button:hover{background:#f5f2e8}
-.mp-now-foot{flex:0 0 auto;display:flex;align-items:center;gap:12px;font-size:12px;color:var(--muted);padding-top:8px;padding-right:88px}
+.mp-now-foot{flex:0 0 auto;display:flex;align-items:center;gap:12px;font-size:12px;color:var(--muted);padding-top:8px;padding-right:16px}
+.mp.cat-zone .mp-now-foot{padding-right:88px}
 .mp-now-foot .mp-modes{display:flex;gap:6px;margin-left:auto}
+/* R62：播放页高度收紧——歌单位（被浮层盖住）不再撑高卡片，内容不拉伸；
+   正在播放区下方加「接下来 3 首」小字列表（字号同 1:14 / 4:42 共 N 首） */
+.mp.show-now:not(.mp-web){min-height:204px}
+.mp.show-now:not(.mp-web) .mp-grid{display:none}
+.mp-now-next{flex:1 1 auto;min-height:0;overflow:auto;display:flex;flex-direction:column;justify-content:flex-start;gap:1px;padding:3px 0 2px}
+.mp-nx-row{display:flex;align-items:center;gap:8px;padding:4px 2px;font-size:12px;line-height:1.35;color:var(--muted);cursor:pointer;border-radius:7px;white-space:nowrap}
+.mp-nx-row:hover{background:#f4f1e8;color:#5c6653}
+.mp-nx-n{flex:0 0 auto;width:15px;text-align:center;font-size:11px;opacity:.7;font-variant-numeric:tabular-nums}
+.mp-nx-t{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.mp-nx-d{flex:0 0 auto;font-size:11px;opacity:.75;font-variant-numeric:tabular-nums}
 .mp-now-btns button:last-child{margin-right:2px}
 @media (max-width:760px){.mp-grid{grid-template-columns:repeat(2,1fr)}.mp-now-body{gap:8px}.mp-now-title{font-size:15px}}
 .btn.active{background:#7E9A6B;color:#fff;border-color:#7E9A6B}
@@ -1752,7 +1766,7 @@
         <div id="shopping-body" data-page-node-id="BubJXjwm5ya3Ps7wQaOf0l"></div>
       </section>
       <section class="module" id="mod-media" data-sp-bindable="database" data-sp-database-id="XwBGD3AthDZziupFstknF4" data-page-node-id="wmE0Ozv4VPOxb1QNG9Gq81">
-        <div class="mod-head" data-page-node-id="ww8NZJbJ993jpKKtV5WKns"><h2 data-page-node-id="12stfYH9V0UA46lU8o3M7i">书影音</h2><span class="desc" data-page-node-id="LH5Tx5hHfiLB9V60VgZUjH">收藏、评分与年度统计，记录看过的好东西</span><span class="build-ver" title="页面版本">R61</span></div>
+        <div class="mod-head" data-page-node-id="ww8NZJbJ993jpKKtV5WKns"><h2 data-page-node-id="12stfYH9V0UA46lU8o3M7i">书影音</h2><span class="desc" data-page-node-id="LH5Tx5hHfiLB9V60VgZUjH">收藏、评分与年度统计，记录看过的好东西</span><span class="build-ver" title="页面版本">R62</span></div>
         <div id="media-body" data-page-node-id="MvHLGITKcoHEoc4n5mYw56"></div>
       </section>
       <section class="module" id="mod-report" data-sp-bindable="database" data-sp-database-id="VDJ7npH13yRDIkMBUcnQO4" data-page-node-id="zEMiJyVPF1imOLfhLXwOHu">
@@ -7274,6 +7288,7 @@ function enablePetDrag(){
   function endDrag(){
     if(!drag) return; drag=false; cat.classList.remove('dragging'); var wrap=document.getElementById('petCatWrap'); if(wrap) wrap.classList.remove('dragging');
     try{ var r=pet.getBoundingClientRect(); localStorage.setItem('lw_pet_pos', JSON.stringify({x:Math.round(r.left),y:Math.round(r.top)})); }catch(_){}
+    if(typeof mpCatZone==='function') mpCatZone();   /* R62：拖完重算音乐卡让位 */
   }
   cat.addEventListener('pointerup', endDrag);
   cat.addEventListener('pointercancel', endDrag);
@@ -7313,6 +7328,7 @@ function enablePetResize(){
     if(!on) return; on=false; h.classList.remove('on');
     var wrap=document.getElementById('petCatWrap'); if(wrap) wrap.classList.remove('dragging');
     savePetSize(); toast('小猫大小：'+PET_SIZE+'px');
+    if(typeof mpCatZone==='function') mpCatZone();   /* R62：大小变了也重算让位 */
   }
   h.addEventListener('pointerup', done);
   h.addEventListener('pointercancel', done);
@@ -7327,6 +7343,7 @@ function setPetHomeState(flag){
   if(d) d.classList.toggle('cat-out', !PET_AT_HOME);
   var h=document.getElementById('doorHint'); if(h) h.textContent = PET_AT_HOME ? '召唤小猫出门' : '召唤小猫回家';
   if(d) d.setAttribute('title', PET_AT_HOME ? '召唤小猫出门' : '召唤小猫回家');
+  if(typeof mpCatZone==='function') mpCatZone();   /* R62：回家/出门切换后重算让位 */
 }
 /* 点门：小猫在家 -> 出门；小猫在外 -> 回家 */
 function petToggleDoor(){ if(PET_AT_HOME){ petComeOut(); } else { petGoHome(); } }
@@ -7752,6 +7769,20 @@ function mpBoxCls(nowOverride) {
     + (web ? ' mp-web' : '')
     + (web && MPW.cur && MPW.nowOpen ? ' show-webnow' : '');
 }
+/* R62：猫可拖到任意位置——只在它真的漂到音乐卡右上角时，才给第一行/播放页加让位 padding（.cat-zone）；
+   猫在左边或别处时只留 16px，按钮可以一路靠右 */
+function mpCatZone() {
+  var box = document.getElementById('mp-box');
+  if (!box) return;
+  var pet = document.getElementById('pet');
+  var near = false;
+  if (pet && pet.style.display !== 'none') {
+    var pr = pet.getBoundingClientRect();
+    var br = box.getBoundingClientRect();
+    if (pr.width > 0 && pr.left < br.right && pr.right > br.right - 150 && pr.top < br.top + 64 && pr.bottom > br.top - 10) near = true;
+  }
+  box.classList.toggle('cat-zone', near);
+}
 
 function mpShell(rows) {
   mpSyncMedia(rows || []);
@@ -7785,6 +7816,7 @@ function mpRender() {
     box.classList.add('show-now');
   }
   mpTick();
+  mpCatZone();   /* R62：className 刚被重置过，让位状态要重算 */
 }
 
 function mpInner(pl) {
@@ -7834,6 +7866,27 @@ function mpInner(pl) {
     + (playing ? '<span class="mp-chip-nm">' + esc(now.title || now.name || '') + '</span>' : '')
     + '</span>';
 
+  /* R62：播放页「接下来 3 首」——取正在播的那张歌单里当前歌之后的 3 首（到头循环、去重），
+     每首一行、字号同底部「1:14 / 4:42 共 N 首」；点某行直接播那首 */
+  var nxHtml = '';
+  var nPl = nowPl || pl, nSongs = (nPl && nPl.songs) || [];
+  if (nSongs.length > 1 && MP.idx >= 0) {
+    var seq = [];
+    for (var k = 1; k <= 3; k++) {
+      var s2 = nSongs[(MP.idx + k) % nSongs.length];
+      if (s2 && seq.length < 3 && !seq.some(function (x) { return x.id === s2.id; })) seq.push(s2);
+    }
+    nxHtml = seq.map(function (s2, j) {
+      var t2 = s2.title || String(s2.name || '').replace(/\.[^.]+$/, '') || '未命名';
+      var a2 = s2.artist && s2.artist !== '本地' ? s2.artist : '';
+      var full2 = t2 + (a2 ? ' · ' + a2 : '');
+      return '<div class="mp-nx-row" onclick="mpPlayNextRow(\'' + s2.id + '\')" title="播放：' + esc(full2) + '">'
+        + '<span class="mp-nx-n">' + (j + 1) + '</span>'
+        + '<span class="mp-nx-t">' + esc(full2) + '</span>'
+        + '<span class="mp-nx-d">' + (s2.dur ? fmtTime(s2.dur) : '') + '</span></div>';
+    }).join('');
+  }
+
   return ''
     + '<div class="mp-row1">'
     + '  <div class="mp-drop">'
@@ -7868,8 +7921,22 @@ function mpInner(pl) {
     + '    <div class="mp-modes"><button class="btn sm ' + (!MP.shuffle ? 'active' : '') + '" onclick="mpSetMode(false)">顺序</button>'
     + '    <button class="btn sm ' + (MP.shuffle ? 'active' : '') + '" onclick="mpSetMode(true)">随机</button></div>'
     + '  </div>'
+    + '  <div class="mp-now-next" id="mp-now-next">' + nxHtml + '</div>'
     + '  <div class="mp-now-top" onclick="mpSetNow(false)">▼ 回到歌单</div>'
     + '</div>';
+}
+
+/* R62：点播放页「接下来 3 首」里的某一行——按 id 在正在播的歌单里定位后播放 */
+function mpPlayNextRow(id) {
+  var pl = mpNowPl() || mpCurPl();
+  var arr = (pl && pl.songs) || [];
+  for (var i = 0; i < arr.length; i++) {
+    if (arr[i].id === id) {
+      if (MP.curSrc !== '本地' && !arr[i].blobId) { mpOpenExternal(arr[i]); return; }
+      mpPlaySong(arr[i], pl.id, i);
+      return;
+    }
+  }
 }
 
 /* R57：A 区来源图标（本地/QQ/网易云/网页歌单共用，拖拽排序属性一起挂） */
@@ -8301,7 +8368,8 @@ function mpWebSyncStage() {
   if ((st.getAttribute('data-cur') || '') !== key) {
     st.setAttribute('data-cur', key);
     st.innerHTML = mpWebStageHtml();
-    setTimeout(mpWebPlFit, 60);
+    /* R62：带着播放态重新渲染时卡片正在拉高，分几次补算；静态浏览一次就够 */
+    if (MPW.nowOpen) mpWebFitLater(); else setTimeout(mpWebPlFit, 60);
   }
   mpWebPlStatus();
 }
@@ -8374,7 +8442,7 @@ function mpWebNow(open) {
   MPW.nowOpen = !!open;
   var box = document.getElementById('mp-box');
   if (box) box.classList.toggle('show-webnow', !!open && !!MPW.cur);
-  setTimeout(mpWebPlFit, 380);
+  mpWebFitLater();
 }
 function mpWebPlPick(id) {
   /* 点正在播的那个歌单 = 回到播放页，不重新加载网页 */
@@ -8402,9 +8470,9 @@ function mpWebPlFit() {
   if (!f) return;
   var w = host.clientWidth || 0, h = host.clientHeight || 0;
   if (w < 50 || h < 50) return;
-  /* 虚拟视口的宽高比跟着框走：缩放后四周不留白，网页内容撑满整个框 */
-  var VW = 980, VH = Math.round(VW * h / w);
-  VH = Math.max(420, Math.min(900, VH));
+  /* R62：①VW 由 980 收到 560（贴近本地播放页 520 设计宽，缩放后字更大更清楚）；
+     ②VH 严格 = VW×框高/框宽，缩放后上下左右全都撑满——旧的 clamp(420~900) 会破坏撑满，只保留下限防变态扁框 */
+  var VW = 560, VH = Math.max(240, Math.round(VW * h / w));
   var sc = Math.min(w / VW, h / VH);
   if (!(sc > 0.15)) return;
   f.style.width = VW + 'px';
@@ -8413,8 +8481,13 @@ function mpWebPlFit() {
   f.style.left = Math.max(0, (w - VW * sc) / 2) + 'px';
   f.style.top = Math.max(0, (h - VH * sc) / 2) + 'px';
 }
+/* R62：卡片拉高动画（.34s）中途框的尺寸一直在变，fit 只跑一次会中途定值、底部留白——
+   开播放页后分几次补算，动画结束后再定格 */
+function mpWebFitLater() {
+  [80, 220, 400, 650, 1000].forEach(function (d) { setTimeout(mpWebPlFit, d); });
+}
 function mpWebPlBig() { toast('播放框现在就在卡片里，需要大屏点「在浏览器打开 ↗」'); }
-window.addEventListener('resize', function () { mpWebPlFit(); });
+window.addEventListener('resize', function () { mpWebPlFit(); if (typeof mpCatZone === 'function') mpCatZone(); });
 
 function mpWebPlStart() {
   var pl = mpWebPlById(MPW.queue[MPW.idx]);
@@ -8430,7 +8503,7 @@ function mpWebPlStart() {
   if (MPW.timer) clearInterval(MPW.timer);
   MPW.timer = setInterval(mpWebPlTick, 1000);
   if (MP.curSrc === '网页歌单') mpRender(); else mpSwitchSrc('网页歌单');
-  setTimeout(mpWebPlFit, 90);
+  mpWebFitLater();
 }
 function mpWebPlTick() {
   if (!MPW.cur) return;

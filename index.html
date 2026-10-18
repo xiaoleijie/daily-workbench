@@ -351,6 +351,14 @@
   .mi-count{font-size:12px;color:var(--muted)}
   #media-body .row select{width:auto;min-width:104px;max-width:172px;padding:6px 9px;font-size:12.5px}
   #media-body .row{align-items:center;justify-content:flex-end}
+/* R65 阅读区：三张竖条统计（删「均分」）+ 视图切换/筛选同一行 */
+#media-body .m-vrow select{width:auto;min-width:104px;max-width:172px;padding:6px 9px;font-size:12.5px}
+.m-statsrow{display:flex;align-items:center;gap:16px;margin-bottom:14px;flex-wrap:wrap}
+.m-stats3{flex:1 1 0;min-width:0;display:flex;gap:10px;align-items:stretch}
+.m-stats3 .stat{flex:0 0 auto;width:68px;min-height:83px;padding:9px 6px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;text-align:center}
+.m-stats3 .stat .k{font-size:11px;letter-spacing:0;line-height:1.25;flex-wrap:wrap;justify-content:center;row-gap:0}
+.m-stats3 .stat .v{font-size:22px;margin-top:2px}
+.m-vrow{flex:1 1 0;min-width:0;display:flex;align-items:center;gap:8px;justify-content:flex-end;flex-wrap:wrap}
 /* R45 书影音顶部：电影(左)+音乐(右) */
 .media-top{display:flex;gap:18px;margin-bottom:18px;flex-wrap:wrap;position:relative;z-index:6}
 .media-top .mt-col{flex:1;min-width:280px;background:#fff;border:1px solid #e8e8e8;border-radius:14px;padding:14px}
@@ -1786,7 +1794,7 @@
         <div id="shopping-body" data-page-node-id="BubJXjwm5ya3Ps7wQaOf0l"></div>
       </section>
       <section class="module" id="mod-media" data-sp-bindable="database" data-sp-database-id="XwBGD3AthDZziupFstknF4" data-page-node-id="wmE0Ozv4VPOxb1QNG9Gq81">
-        <div class="mod-head" data-page-node-id="ww8NZJbJ993jpKKtV5WKns"><h2 data-page-node-id="12stfYH9V0UA46lU8o3M7i">书影音</h2><span class="desc" data-page-node-id="LH5Tx5hHfiLB9V60VgZUjH">收藏、评分与年度统计，记录看过的好东西</span><span class="build-ver" title="页面版本">R64</span></div>
+        <div class="mod-head" data-page-node-id="ww8NZJbJ993jpKKtV5WKns"><h2 data-page-node-id="12stfYH9V0UA46lU8o3M7i">书影音</h2><span class="desc" data-page-node-id="LH5Tx5hHfiLB9V60VgZUjH">收藏、评分与年度统计，记录看过的好东西</span><span class="build-ver" title="页面版本">R65</span></div>
         <div id="media-body" data-page-node-id="MvHLGITKcoHEoc4n5mYw56"></div>
       </section>
       <section class="module" id="mod-report" data-sp-bindable="database" data-sp-database-id="VDJ7npH13yRDIkMBUcnQO4" data-page-node-id="zEMiJyVPF1imOLfhLXwOHu">
@@ -5361,8 +5369,6 @@ function renderMedia(rows){
   var books=rows.filter(function(r){ var t=r["类型"]||''; return t!=='电影'&&t!=='音乐'; });
   var thisYear=books.filter(function(r){ return dateSub(r["记录日期"]).substring(0,4)===String(yr); });
   var seen=thisYear.filter(function(r){return r["状态"]==='看过';});
-  var rated=books.filter(function(r){return r["评分"];});
-  var avgR = rated.length? (rated.reduce(function(s,r){return s+ratingStars(r["评分"]);},0)/rated.length).toFixed(1) : '—';
   var wantCnt=books.filter(function(r){return (r["状态"]||'想看')==='想看';}).length;
   var doingCnt=books.filter(function(r){return r["状态"]==='在读';}).length;
 
@@ -5375,11 +5381,12 @@ function renderMedia(rows){
       '<span class="m-hint">点「微信读书同步」选同步文件，一次把书架搬进来（已记过的自动跳过）</span>'+
     '</div>';
 
-  var stats='<div class="grid" style="grid-template-columns:repeat(4,1fr);margin-bottom:14px">'+
+  /* R65：三张竖条统计（删「均分」，高度不变只收宽） */
+  var stats3='<div class="m-stats3">'+
     stat(yr+' 读过', seen.length+'','')+
     stat('想读清单', wantCnt+'','accent')+
     stat('在读', doingCnt+'','blue')+
-    stat('均分', avgR+'<small> ★</small>','sage')+'</div>';
+  '</div>';
 
   var vtg='<div class="viewtoggle">'+
       '<button class="'+(mediaView==='board'?'on':'')+'" onclick="mediaSetView(\'board\')">看板</button>'+
@@ -5391,7 +5398,9 @@ function renderMedia(rows){
   if(mediaView!=='board'){
     fStatus='<select onchange="mediaStatusF=this.value;renderMedia(window.__media)"><option'+(mediaStatusF==='全部'?' selected':'')+'>全部</option>'+OPT.mediaStatus.map(function(c){return '<option'+(c===mediaStatusF?' selected':'')+'>'+c+'</option>';}).join('')+'</select>';
   }
-  var filterBar='<div class="row" style="margin-bottom:12px;align-items:center;gap:8px;justify-content:flex-end">'+vtg+fType+fSrc+fStatus+'</div>';
+  /* R65：视图切换 + 筛选上移，与三张竖条统计同一行（各占半行） */
+  var vrow='<div class="m-vrow">'+vtg+fType+fSrc+fStatus+'</div>';
+  var statsRow='<div class="m-statsrow">'+stats3+vrow+'</div>';
 
   var shown=rows.filter(function(r){
     var t=r["类型"]||''; if(t==='电影'||t==='音乐') return false;    var st=r["状态"]||'想看';
@@ -5429,7 +5438,7 @@ function renderMedia(rows){
       shown.map(function(r){ return '<tr style="cursor:pointer" onclick="openMediaEdit(\''+rid(r)+'\')"><td style="font-weight:600">'+esc(r["标题"]||'')+'</td><td><span class="badge">'+esc(r["类型"]||'')+'</span></td><td>'+mediaSrcBadge(r)+'</td><td><span class="badge '+esc(r["状态"]||'想看')+'">'+esc(r["状态"]||'想看')+'</span></td><td>'+(r["评分"]?'<span class="stars">'+esc(r["评分"])+'</span>':'—')+'</td><td style="color:var(--muted);max-width:240px">'+esc(r["短评"]||'')+'</td><td><button class="icon-btn" onclick="event.stopPropagation();openMediaEdit(\''+rid(r)+'\')">'+icon('edit')+'</button></td></tr>'; }).join('')+
       '</tbody></table></div>';
   }
-  setBody('media', renderMediaTop(rows)+actbar+stats+filterBar+content);
+  setBody('media', renderMediaTop(rows)+actbar+statsRow+content);
   if(typeof renderLocalPlayer==='function'){ renderLocalPlayer(); }
 }
 /* ---- 添加 / 修改 收藏 ---- */
@@ -7838,13 +7847,10 @@ function mpRender() {
   mpTick();
   mpVolApply(mpVolRead(MP_VOL_KEY, 1), true);   /* R63：重建后恢复音量（quiet：只同步不存） */
   mpCatZone();   /* R62：className 刚被重置过，让位状态要重算 */
-  /* R64：播放页列出整张歌单——歌多时卡片跟着长（≤4 首维持 204px，最多 520px，再多在列表里滚动）；
-     仅当当前播放行不在可见区时才滚过来（nearest 语义：看得见就不动，从第 1 首开始展示）。
-     注意：卡片 min-height 有 .3s 过渡，必须等过渡结束再测量列表区高度，否则会按旧布局误滚 */
+  /* R65：卡片不再随歌单长度长高（固定 204px，整张歌单列表自己在 .mp-now-next 里滚动）；
+     仍保留 nearest 滚动：当前播放行不在可见区时才滚过来（歌单短时从第 1 首开始展示＋不乱滚） */
   if (wantNow && MP.curSrc !== '网页歌单') {
-    var r64Pl = mpNowPl() || mpCurPl();
-    var r64N = (r64Pl && r64Pl.songs) ? r64Pl.songs.length : 0;
-    box.style.minHeight = r64N > 4 ? Math.min(204 + (r64N - 4) * 22, 520) + 'px' : '';
+    if (box.style.minHeight) box.style.minHeight = '';
     setTimeout(function () {
       var nxBox = document.getElementById('mp-now-next');
       var nxCur = nxBox && nxBox.querySelector('.mp-nx-row.cur');
@@ -7852,7 +7858,7 @@ function mpRender() {
       var top0 = nxCur.offsetTop, h0 = nxCur.offsetHeight, pad0 = 6;
       if (top0 - pad0 < nxBox.scrollTop) nxBox.scrollTop = Math.max(0, top0 - pad0);
       else if (top0 + h0 + pad0 > nxBox.scrollTop + nxBox.clientHeight) nxBox.scrollTop = top0 + h0 + pad0 - nxBox.clientHeight;
-    }, 340);
+    }, 380);
   } else if (box.style.minHeight) { box.style.minHeight = ''; }
 }
 

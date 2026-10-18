@@ -487,7 +487,7 @@
 #mpw-stage .mpw-empty{padding:22px 18px;text-align:center;color:#a9a291;font-size:12.5px;line-height:1.9}
 .mp-web-hint{margin-top:8px;font-size:11px;color:#b0a999;line-height:1.6}
 /* R58 网页歌单界面精简：控制框 2/3 宽、操作按钮上提一行、播放框填满卡片 */
-.mp.mp-web{max-width:66.67%}
+.mp.mp-web{max-width:100%}
 .mp.mp-web{display:flex;flex-direction:column;min-height:520px}
 .mp.mp-web .mp-row1{padding-right:0;flex-wrap:wrap;gap:6px}
 .mp.mp-web .mp-web-acts{display:flex;gap:5px;margin-left:auto;flex:0 0 auto}
@@ -1739,7 +1739,7 @@
         <div id="shopping-body" data-page-node-id="BubJXjwm5ya3Ps7wQaOf0l"></div>
       </section>
       <section class="module" id="mod-media" data-sp-bindable="database" data-sp-database-id="XwBGD3AthDZziupFstknF4" data-page-node-id="wmE0Ozv4VPOxb1QNG9Gq81">
-        <div class="mod-head" data-page-node-id="ww8NZJbJ993jpKKtV5WKns"><h2 data-page-node-id="12stfYH9V0UA46lU8o3M7i">书影音</h2><span class="desc" data-page-node-id="LH5Tx5hHfiLB9V60VgZUjH">收藏、评分与年度统计，记录看过的好东西</span><span class="build-ver" title="页面版本">R58</span></div>
+        <div class="mod-head" data-page-node-id="ww8NZJbJ993jpKKtV5WKns"><h2 data-page-node-id="12stfYH9V0UA46lU8o3M7i">书影音</h2><span class="desc" data-page-node-id="LH5Tx5hHfiLB9V60VgZUjH">收藏、评分与年度统计，记录看过的好东西</span><span class="build-ver" title="页面版本">R59</span></div>
         <div id="media-body" data-page-node-id="MvHLGITKcoHEoc4n5mYw56"></div>
       </section>
       <section class="module" id="mod-report" data-sp-bindable="database" data-sp-database-id="VDJ7npH13yRDIkMBUcnQO4" data-page-node-id="zEMiJyVPF1imOLfhLXwOHu">
@@ -8372,7 +8372,9 @@ function mpWebPlFit() {
   if (!f) return;
   var w = host.clientWidth || 0, h = host.clientHeight || 0;
   if (w < 50 || h < 50) return;
-  var VW = 980, VH = 620;
+  /* 虚拟视口的宽高比跟着框走：缩放后四周不留白，网页内容撑满整个框 */
+  var VW = 980, VH = Math.round(VW * h / w);
+  VH = Math.max(420, Math.min(900, VH));
   var sc = Math.min(w / VW, h / VH);
   if (!(sc > 0.15)) return;
   f.style.width = VW + 'px';

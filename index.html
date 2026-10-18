@@ -487,6 +487,13 @@
 .mpw-bar .mpw-out:hover{text-decoration:underline}
 .mpw-bar .mpw-btn{flex:0 0 auto;height:22px;padding:0 8px;font-size:11px;border:1px solid #e2ddcf;background:#fff;border-radius:6px;color:#5c6653;cursor:pointer;font-family:inherit;white-space:nowrap;line-height:1}
 .mpw-bar .mpw-btn:hover{background:#f5f3ea}
+/* R63：网页播放页音量——postMessage 遥控 iframe 播放页（仅本地歌单地址显示） */
+.mpw-bar .mpw-vol{display:flex;align-items:center;gap:6px;flex:0 0 auto}
+.mpw-bar .mpw-vol-btn{width:22px;height:22px;padding:0;border:1px solid #e2ddcf;background:#fff;border-radius:6px;font-size:11px;line-height:1;color:#5c6653;cursor:pointer}
+.mpw-bar .mpw-vol-btn:hover{background:#f5f3ea}
+.mpw-bar .mpw-vol input[type=range]{width:70px;height:4px;-webkit-appearance:none;appearance:none;background:#e6e2d6;border-radius:4px;outline:none;cursor:pointer}
+.mpw-bar .mpw-vol input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:11px;height:11px;border-radius:50%;background:#7E9A6B;border:none;cursor:pointer}
+.mpw-bar .mpw-vol input[type=range]::-moz-range-thumb{width:11px;height:11px;border-radius:50%;background:#7E9A6B;border:none;cursor:pointer}
 #mpw-frame{position:relative;flex:1;min-height:0;overflow:hidden;background:#fff}
 #mpw-frame iframe{position:absolute;left:0;top:0;width:100%;height:100%;border:0;transform-origin:0 0;background:#fff}
 #mpw-stage .mpw-tip{flex:0 0 auto;padding:4px 9px 5px;font-size:10.5px;color:#a9a291;background:#fcfbf6;border-top:1px solid #f2eee3;line-height:1.5}
@@ -597,6 +604,14 @@
 .mp-nx-n{flex:0 0 auto;width:15px;text-align:center;font-size:11px;opacity:.7;font-variant-numeric:tabular-nums}
 .mp-nx-t{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis}
 .mp-nx-d{flex:0 0 auto;font-size:11px;opacity:.75;font-variant-numeric:tabular-nums}
+/* R63：播放页音量调节——进度条行，播放按钮左边 */
+.mp-vol{flex:0 0 auto;display:flex;align-items:center;gap:6px}
+.mp-vol-btn{width:26px;height:26px;padding:0;border:1px solid #e3ded0;background:#fff;border-radius:8px;font-size:12px;line-height:1;color:#4a4a4a;cursor:pointer}
+.mp-vol-btn:hover{background:#f5f2e8}
+.mp-vol input[type=range]{width:76px;height:4px;-webkit-appearance:none;appearance:none;background:#e6e2d6;border-radius:4px;outline:none;cursor:pointer}
+.mp-vol input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:12px;height:12px;border-radius:50%;background:#7E9A6B;border:none;cursor:pointer}
+.mp-vol input[type=range]::-moz-range-thumb{width:12px;height:12px;border-radius:50%;background:#7E9A6B;border:none;cursor:pointer}
+@media (max-width:760px){.mp-vol input[type=range]{width:52px}}
 .mp-now-btns button:last-child{margin-right:2px}
 @media (max-width:760px){.mp-grid{grid-template-columns:repeat(2,1fr)}.mp-now-body{gap:8px}.mp-now-title{font-size:15px}}
 .btn.active{background:#7E9A6B;color:#fff;border-color:#7E9A6B}
@@ -1766,7 +1781,7 @@
         <div id="shopping-body" data-page-node-id="BubJXjwm5ya3Ps7wQaOf0l"></div>
       </section>
       <section class="module" id="mod-media" data-sp-bindable="database" data-sp-database-id="XwBGD3AthDZziupFstknF4" data-page-node-id="wmE0Ozv4VPOxb1QNG9Gq81">
-        <div class="mod-head" data-page-node-id="ww8NZJbJ993jpKKtV5WKns"><h2 data-page-node-id="12stfYH9V0UA46lU8o3M7i">书影音</h2><span class="desc" data-page-node-id="LH5Tx5hHfiLB9V60VgZUjH">收藏、评分与年度统计，记录看过的好东西</span><span class="build-ver" title="页面版本">R62</span></div>
+        <div class="mod-head" data-page-node-id="ww8NZJbJ993jpKKtV5WKns"><h2 data-page-node-id="12stfYH9V0UA46lU8o3M7i">书影音</h2><span class="desc" data-page-node-id="LH5Tx5hHfiLB9V60VgZUjH">收藏、评分与年度统计，记录看过的好东西</span><span class="build-ver" title="页面版本">R63</span></div>
         <div id="media-body" data-page-node-id="MvHLGITKcoHEoc4n5mYw56"></div>
       </section>
       <section class="module" id="mod-report" data-sp-bindable="database" data-sp-database-id="VDJ7npH13yRDIkMBUcnQO4" data-page-node-id="zEMiJyVPF1imOLfhLXwOHu">
@@ -7816,6 +7831,7 @@ function mpRender() {
     box.classList.add('show-now');
   }
   mpTick();
+  mpVolApply(mpVolRead(MP_VOL_KEY, 1), true);   /* R63：重建后恢复音量（quiet：只同步不存） */
   mpCatZone();   /* R62：className 刚被重置过，让位状态要重算 */
 }
 
@@ -7868,6 +7884,7 @@ function mpInner(pl) {
 
   /* R62：播放页「接下来 3 首」——取正在播的那张歌单里当前歌之后的 3 首（到头循环、去重），
      每首一行、字号同底部「1:14 / 4:42 共 N 首」；点某行直接播那首 */
+  var curVol = mpVolRead(MP_VOL_KEY, 1);
   var nxHtml = '';
   var nPl = nowPl || pl, nSongs = (nPl && nPl.songs) || [];
   if (nSongs.length > 1 && MP.idx >= 0) {
@@ -7911,6 +7928,8 @@ function mpInner(pl) {
     + '    <div class="mp-now-left"><div class="mp-now-src">' + (MP.curSrc === '本地' ? '本地音乐' : esc(MP.curSrc)) + '</div>'
     + '      <div class="mp-now-title">' + esc(now ? (now.title || now.name) : '未播放') + '</div></div>'
     + '    <div class="mp-now-prog" onclick="mpSeek(event)"><div class="mp-now-fill" id="mp-now-fill"></div></div>'
+    + '    <div class="mp-vol" id="mp-vol"><button class="mp-vol-btn" id="mp-vol-btn" onclick="mpVolToggle()" title="静音 / 恢复">' + mpVolIcon(curVol) + '</button>'
+    + '      <input type="range" id="mp-vol-range" min="0" max="100" value="' + Math.round(curVol * 100) + '" title="音量" oninput="mpVolSet(this.value)"></div>'
     + '    <div class="mp-now-btns">'
     + '      <button onclick="mpTogglePlay()" title="播放/暂停">' + (playing && a && !a.paused ? '⏸' : '▶') + '</button>'
     + '      <button onclick="mpPrev()" title="上一首">⏮</button>'
@@ -7924,6 +7943,86 @@ function mpInner(pl) {
     + '  <div class="mp-now-next" id="mp-now-next">' + nxHtml + '</div>'
     + '  <div class="mp-now-top" onclick="mpSetNow(false)">▼ 回到歌单</div>'
     + '</div>';
+}
+
+/* ---------------- R63：音量调节 ----------------
+   本地播放：直接控制 audio.volume；网页歌单：mpw-bar 滑块 postMessage 遥控 iframe 播放页 */
+var MP_VOL_KEY = 'lw_music_vol';      /* 本地播放音量 0~1 */
+var MP_VOLW_KEY = 'lw_music_volw';    /* 网页歌单遥控音量 0~1 */
+function mpVolRead(k, def) {
+  var v = null;
+  try { v = localStorage.getItem(k); } catch (e) { }
+  v = parseFloat(v);
+  return (isFinite(v) && v >= 0 && v <= 1) ? v : def;
+}
+function mpVolSave(k, v) { try { localStorage.setItem(k, String(v)); } catch (e) { } }
+function mpVolIcon(v) { return v <= 0 ? '\uD83D\uDD07' : (v < 0.5 ? '\uD83D\uDD09' : '\uD83D\uDD0A'); }
+/* 本地播放：滑块/静音 → audio.volume；quiet=只同步不存盘 */
+function mpVolApply(v, quiet) {
+  var a = null;
+  try { a = mpAudioEl(); } catch (e) { a = document.getElementById('mp-audio'); }
+  if (a) { try { a.volume = v; } catch (e) { } }
+  var btn = document.getElementById('mp-vol-btn'), rng = document.getElementById('mp-vol-range');
+  if (btn) btn.textContent = mpVolIcon(v);
+  if (rng && String(rng.value) !== String(Math.round(v * 100))) rng.value = Math.round(v * 100);
+  if (!quiet) mpVolSave(MP_VOL_KEY, v);
+}
+function mpVolSet(pct) { mpVolApply(Math.max(0, Math.min(100, parseInt(pct, 10) || 0)) / 100); }
+function mpVolToggle() {
+  var a = null;
+  try { a = mpAudioEl(); } catch (e) { a = document.getElementById('mp-audio'); }
+  var cur = a ? a.volume : mpVolRead(MP_VOL_KEY, 1);
+  if (!(cur > 0)) cur = 0;
+  var last = mpVolRead(MP_VOL_KEY + '_last', 0.8);
+  if (cur > 0) mpVolSave(MP_VOL_KEY + '_last', cur);
+  mpVolApply(cur > 0 ? 0 : (last > 0 ? last : 0.8));
+}
+/* 网页歌单：只有本机播放页（127.0.0.1/localhost）响应 postMessage，第三方页面控不了 */
+function mpwVolIsLocal(pl) {
+  return !!pl && /^https?:\/\/(127\.0\.0\.1|localhost|\[::1\])/i.test(pl.url || '');
+}
+function mpwVolSyncBar(pl) {
+  var wrap = document.getElementById('mpw-vol');
+  if (!wrap) return;
+  var on = mpwVolIsLocal(pl);
+  wrap.style.display = on ? '' : 'none';
+  if (on) {
+    var v = mpVolRead(MP_VOLW_KEY, 1);
+    var btn = document.getElementById('mpw-vol-btn'), rng = document.getElementById('mpw-vol-range');
+    if (btn) btn.textContent = mpVolIcon(v);
+    if (rng && String(rng.value) !== String(Math.round(v * 100))) rng.value = Math.round(v * 100);
+  }
+}
+function mpwVolPost(v) {
+  var st = document.getElementById('mpw-stage');
+  var fr = st ? st.querySelector('iframe') : null;
+  if (fr && fr.contentWindow) {
+    try { fr.contentWindow.postMessage({ type: 'mpw-vol', v: v }, '*'); } catch (e) { }
+  }
+}
+function mpwVolSet(pct) {
+  var v = Math.max(0, Math.min(100, parseInt(pct, 10) || 0)) / 100;
+  mpVolSave(MP_VOLW_KEY, v);
+  var btn = document.getElementById('mpw-vol-btn');
+  if (btn) btn.textContent = mpVolIcon(v);
+  var rng = document.getElementById('mpw-vol-range');
+  if (rng && String(rng.value) !== String(Math.round(v * 100))) rng.value = Math.round(v * 100);
+  mpwVolPost(v);
+}
+function mpwVolToggle() {
+  var cur = mpVolRead(MP_VOLW_KEY, 1);
+  var last = mpVolRead(MP_VOLW_KEY + '_last', 0.8);
+  if (cur > 0) mpVolSave(MP_VOLW_KEY + '_last', cur);
+  mpwVolSet(cur > 0 ? 0 : (last > 0 ? last : 0.8));
+}
+/* 播放页把自己的音量同步回 mpw-bar（iframe → 父） */
+function mpwVolSyncFromMsg(d) {
+  if (!d || typeof d.v !== 'number') return;
+  var v = Math.max(0, Math.min(1, d.v));
+  mpVolSave(MP_VOLW_KEY, v);
+  var btn = document.getElementById('mpw-vol-btn'), rng = document.getElementById('mpw-vol-range');
+  if (btn) btn.textContent = mpVolIcon(v);
+  if (rng && String(rng.value) !== String(Math.round(v * 100))) rng.value = Math.round(v * 100);
 }
 
 /* R62：点播放页「接下来 3 首」里的某一行——按 id 在正在播的歌单里定位后播放 */
@@ -8346,6 +8445,8 @@ function mpWebStageHtml() {
   }
   return '<div class="mpw-bar">'
     + '<span class="mpw-left" id="mpw-left"></span>'
+    + '<span class="mpw-vol" id="mpw-vol" style="display:none"><button class="mpw-vol-btn" id="mpw-vol-btn" onclick="mpwVolToggle()" title="静音 / 恢复">🔊</button>'
+    + '<input type="range" id="mpw-vol-range" min="0" max="100" value="100" title="播放页音量（发给网页播放器）" oninput="mpwVolSet(this.value)"></span>'
     + '<span style="flex:1"></span>'
     + '<a class="mpw-out" id="mpw-out" href="' + esc(pl.url) + '" target="_blank" rel="noopener" title="在浏览器里打开这个歌单">在浏览器打开 ↗</a>'
     + '<button class="mpw-btn" onclick="mpWebPlNext()" title="播下一个">下一个 ›</button>'
@@ -8372,6 +8473,7 @@ function mpWebSyncStage() {
     if (MPW.nowOpen) mpWebFitLater(); else setTimeout(mpWebPlFit, 60);
   }
   mpWebPlStatus();
+  mpwVolSyncBar(want);
 }
 
 /* ---------- 卡内「网页歌单」列表（结构与本地歌单一致） ---------- */
@@ -8586,6 +8688,7 @@ window.addEventListener('message', function (e) {
   if (!d) return;
   var t = (typeof d === 'string') ? d : d.type;
   if (t === 'mp-webpl-ended') mpWebPlNext(true);
+  if (t === 'mpw-vol-sync') mpwVolSyncFromMsg(d);
 });
 
 function mpPickFiles(relink) {
@@ -8853,6 +8956,7 @@ document.addEventListener('click', function (e) {
 
 /* 初始化 */
 mpLoad();
+mpVolApply(mpVolRead(MP_VOL_KEY, 1), true);   /* R63：恢复上次音量 */
 
 </script>
 </body>

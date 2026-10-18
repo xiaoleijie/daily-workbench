@@ -598,12 +598,17 @@
    正在播放区下方加「接下来 3 首」小字列表（字号同 1:14 / 4:42 共 N 首） */
 .mp.show-now:not(.mp-web){min-height:204px}
 .mp.show-now:not(.mp-web) .mp-grid{display:none}
-.mp-now-next{flex:1 1 auto;min-height:0;overflow:auto;display:flex;flex-direction:column;justify-content:flex-start;gap:1px;padding:3px 0 2px}
+.mp-now-next{position:relative;flex:1 1 auto;min-height:0;overflow:auto;display:flex;flex-direction:column;justify-content:flex-start;gap:1px;padding:3px 0 2px}
 .mp-nx-row{display:flex;align-items:center;gap:8px;padding:4px 2px;font-size:12px;line-height:1.35;color:var(--muted);cursor:pointer;border-radius:7px;white-space:nowrap}
 .mp-nx-row:hover{background:#f4f1e8;color:#5c6653}
 .mp-nx-n{flex:0 0 auto;width:15px;text-align:center;font-size:11px;opacity:.7;font-variant-numeric:tabular-nums}
 .mp-nx-t{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis}
 .mp-nx-d{flex:0 0 auto;font-size:11px;opacity:.75;font-variant-numeric:tabular-nums}
+/* R64：整张歌单列表——当前播放行高亮 */
+.mp-nx-row.cur{background:#eef5e9;color:#4d7a3b;font-weight:600}
+/* R64：本地歌单改名按钮（与网页歌单 ✎ 同款） */
+.mp-pl-ren{width:22px;height:22px;flex:0 0 auto;border:0;background:transparent;color:#a49d8c;font-size:12px;cursor:pointer;border-radius:5px;line-height:1;padding:0;font-family:inherit}
+.mp-pl-ren:hover{background:#f6f4ec;color:#5c6653}
 /* R63：播放页音量调节——进度条行，播放按钮左边 */
 .mp-vol{flex:0 0 auto;display:flex;align-items:center;gap:6px}
 .mp-vol-btn{width:26px;height:26px;padding:0;border:1px solid #e3ded0;background:#fff;border-radius:8px;font-size:12px;line-height:1;color:#4a4a4a;cursor:pointer}
@@ -1781,7 +1786,7 @@
         <div id="shopping-body" data-page-node-id="BubJXjwm5ya3Ps7wQaOf0l"></div>
       </section>
       <section class="module" id="mod-media" data-sp-bindable="database" data-sp-database-id="XwBGD3AthDZziupFstknF4" data-page-node-id="wmE0Ozv4VPOxb1QNG9Gq81">
-        <div class="mod-head" data-page-node-id="ww8NZJbJ993jpKKtV5WKns"><h2 data-page-node-id="12stfYH9V0UA46lU8o3M7i">书影音</h2><span class="desc" data-page-node-id="LH5Tx5hHfiLB9V60VgZUjH">收藏、评分与年度统计，记录看过的好东西</span><span class="build-ver" title="页面版本">R63</span></div>
+        <div class="mod-head" data-page-node-id="ww8NZJbJ993jpKKtV5WKns"><h2 data-page-node-id="12stfYH9V0UA46lU8o3M7i">书影音</h2><span class="desc" data-page-node-id="LH5Tx5hHfiLB9V60VgZUjH">收藏、评分与年度统计，记录看过的好东西</span><span class="build-ver" title="页面版本">R64</span></div>
         <div id="media-body" data-page-node-id="MvHLGITKcoHEoc4n5mYw56"></div>
       </section>
       <section class="module" id="mod-report" data-sp-bindable="database" data-sp-database-id="VDJ7npH13yRDIkMBUcnQO4" data-page-node-id="zEMiJyVPF1imOLfhLXwOHu">
@@ -7833,6 +7838,22 @@ function mpRender() {
   mpTick();
   mpVolApply(mpVolRead(MP_VOL_KEY, 1), true);   /* R63：重建后恢复音量（quiet：只同步不存） */
   mpCatZone();   /* R62：className 刚被重置过，让位状态要重算 */
+  /* R64：播放页列出整张歌单——歌多时卡片跟着长（≤4 首维持 204px，最多 520px，再多在列表里滚动）；
+     仅当当前播放行不在可见区时才滚过来（nearest 语义：看得见就不动，从第 1 首开始展示）。
+     注意：卡片 min-height 有 .3s 过渡，必须等过渡结束再测量列表区高度，否则会按旧布局误滚 */
+  if (wantNow && MP.curSrc !== '网页歌单') {
+    var r64Pl = mpNowPl() || mpCurPl();
+    var r64N = (r64Pl && r64Pl.songs) ? r64Pl.songs.length : 0;
+    box.style.minHeight = r64N > 4 ? Math.min(204 + (r64N - 4) * 22, 520) + 'px' : '';
+    setTimeout(function () {
+      var nxBox = document.getElementById('mp-now-next');
+      var nxCur = nxBox && nxBox.querySelector('.mp-nx-row.cur');
+      if (!nxBox || !nxCur) return;
+      var top0 = nxCur.offsetTop, h0 = nxCur.offsetHeight, pad0 = 6;
+      if (top0 - pad0 < nxBox.scrollTop) nxBox.scrollTop = Math.max(0, top0 - pad0);
+      else if (top0 + h0 + pad0 > nxBox.scrollTop + nxBox.clientHeight) nxBox.scrollTop = top0 + h0 + pad0 - nxBox.clientHeight;
+    }, 340);
+  } else if (box.style.minHeight) { box.style.minHeight = ''; }
 }
 
 function mpInner(pl) {
@@ -7844,7 +7865,8 @@ function mpInner(pl) {
   var items = list.map(function (p) {
     return '<div class="mp-pl-item' + (p.id === pl.id ? ' cur' : '') + '" onclick="mpPickPl(\'' + p.id + '\')">'
       + '<span class="mp-pl-n">' + esc(p.name) + '</span>'
-      + '<span class="mp-pl-c">' + ((p.songs || []).length) + ' 首</span></div>';
+      + '<span class="mp-pl-c">' + ((p.songs || []).length) + ' 首</span>'
+      + '<button class="mp-pl-ren" title="改名" onclick="event.stopPropagation();mpPlRename(\'' + p.id + '\')">✎</button></div>';
   }).join('');
   /* R54：QQ / 网易云不再走工作台内歌单，这里只留「新建歌单」 */
   items += '<div class="mp-pl-foot">'
@@ -7882,23 +7904,19 @@ function mpInner(pl) {
     + (playing ? '<span class="mp-chip-nm">' + esc(now.title || now.name || '') + '</span>' : '')
     + '</span>';
 
-  /* R62：播放页「接下来 3 首」——取正在播的那张歌单里当前歌之后的 3 首（到头循环、去重），
-     每首一行、字号同底部「1:14 / 4:42 共 N 首」；点某行直接播那首 */
+  /* R64：播放页列出整张歌单（原来是「接下来 3 首」）——正在播的那张歌单全部列出，
+     当前歌高亮、点任意一行直接切过去播；字号同底部「1:14 / 4:42 共 N 首」 */
   var curVol = mpVolRead(MP_VOL_KEY, 1);
   var nxHtml = '';
   var nPl = nowPl || pl, nSongs = (nPl && nPl.songs) || [];
-  if (nSongs.length > 1 && MP.idx >= 0) {
-    var seq = [];
-    for (var k = 1; k <= 3; k++) {
-      var s2 = nSongs[(MP.idx + k) % nSongs.length];
-      if (s2 && seq.length < 3 && !seq.some(function (x) { return x.id === s2.id; })) seq.push(s2);
-    }
-    nxHtml = seq.map(function (s2, j) {
+  if (nSongs.length) {
+    nxHtml = nSongs.map(function (s2, i) {
       var t2 = s2.title || String(s2.name || '').replace(/\.[^.]+$/, '') || '未命名';
       var a2 = s2.artist && s2.artist !== '本地' ? s2.artist : '';
       var full2 = t2 + (a2 ? ' · ' + a2 : '');
-      return '<div class="mp-nx-row" onclick="mpPlayNextRow(\'' + s2.id + '\')" title="播放：' + esc(full2) + '">'
-        + '<span class="mp-nx-n">' + (j + 1) + '</span>'
+      var isCur2 = (i === MP.idx && MP.playPl === nPl.id);
+      return '<div class="mp-nx-row' + (isCur2 ? ' cur' : '') + '" onclick="mpPlayNextRow(\'' + s2.id + '\')" title="播放：' + esc(full2) + '">'
+        + '<span class="mp-nx-n">' + (i + 1) + '</span>'
         + '<span class="mp-nx-t">' + esc(full2) + '</span>'
         + '<span class="mp-nx-d">' + (s2.dur ? fmtTime(s2.dur) : '') + '</span></div>';
     }).join('');
@@ -8150,6 +8168,32 @@ function mpNewPl() {
           MP.nowOpen = false;
           mpSave(); mpRender();
           toast('已新建歌单「' + name + '」');
+        }
+      }
+    ]
+  });
+}
+
+/* R64：本地歌单改名（歌单下拉里每项后面的 ✎） */
+function mpPlRename(id) {
+  var p = mpPlById(id);
+  if (!p) return;
+  mpClosePlMenu(null, 0);
+  appDialog({
+    app: '音乐歌单',
+    html: '<div style="font-size:13px;margin-bottom:8px">给歌单改个名字</div>'
+      + '<input id="mp-renpl-input" class="inp" style="width:100%;box-sizing:border-box" onfocus="this.select()" value="' + esc(p.name) + '">',
+    buttons: [
+      { label: '取消', cls: '' },
+      {
+        label: '保存', cls: 'primary', stay: true, onClick: function () {
+          var el = document.getElementById('mp-renpl-input');
+          var name = (el && el.value || '').trim();
+          if (!name) { toast('名字不能为空', true); return; }
+          p.name = name;
+          mpSave(); mpRender();
+          toast('已改名为「' + name + '」');
+          appDialogClose(true);
         }
       }
     ]

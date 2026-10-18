@@ -397,7 +397,7 @@
 .mp-pl-act:hover{background:#eaf3e1;border-color:#c6d8b2}
 .mp-pl-act.imp{background:#fff;border-color:#e2ddcf;color:#5c6653;font-weight:500}
 .mp-pl-act.imp:hover{background:#f7f5ee}
-.build-ver{margin-left:8px;font-size:11px;color:#c9c3b3;letter-spacing:.3px;vertical-align:middle}
+.build-ver{display:none}/* R61：版本号对用户无用，隐藏；留在 DOM 里仅供部署校验读取 */
 /* A 区：来源切换 */
 .mp-src{position:relative;flex:0 0 auto;width:42px;height:42px;z-index:35}
 .mp-src-cur{width:42px;height:42px;border-radius:50%;background:#fff;border:1px solid #e3ded0;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.18s}
@@ -493,7 +493,9 @@
 .mp-web-hint{margin-top:8px;font-size:11px;color:#b0a999;line-height:1.6}
 /* R58 网页歌单界面精简：控制框 2/3 宽、操作按钮上提一行、播放框填满卡片 */
 .mp.mp-web{max-width:100%}
-.mp.mp-web{display:flex;flex-direction:column;min-height:520px}
+/* R61：网页歌单默认（歌单页）不再撑到 520px 那么高——只有进入播放页(show-webnow)才拉高给 iframe */
+.mp.mp-web{display:flex;flex-direction:column;min-height:150px;transition:min-height .34s cubic-bezier(.22,.61,.36,1)}
+.mp.mp-web.show-webnow{min-height:520px}
 .mp.mp-web .mp-row1{padding-right:0;flex-wrap:wrap;gap:6px}
 .mp.mp-web .mp-web-acts{display:flex;gap:5px;margin-left:auto;flex:0 0 auto}
 .mp.mp-web .mp-web-acts .btn{height:28px;padding:0 8px;font-size:12px;white-space:nowrap}
@@ -1750,7 +1752,7 @@
         <div id="shopping-body" data-page-node-id="BubJXjwm5ya3Ps7wQaOf0l"></div>
       </section>
       <section class="module" id="mod-media" data-sp-bindable="database" data-sp-database-id="XwBGD3AthDZziupFstknF4" data-page-node-id="wmE0Ozv4VPOxb1QNG9Gq81">
-        <div class="mod-head" data-page-node-id="ww8NZJbJ993jpKKtV5WKns"><h2 data-page-node-id="12stfYH9V0UA46lU8o3M7i">书影音</h2><span class="desc" data-page-node-id="LH5Tx5hHfiLB9V60VgZUjH">收藏、评分与年度统计，记录看过的好东西</span><span class="build-ver" title="页面版本">R60</span></div>
+        <div class="mod-head" data-page-node-id="ww8NZJbJ993jpKKtV5WKns"><h2 data-page-node-id="12stfYH9V0UA46lU8o3M7i">书影音</h2><span class="desc" data-page-node-id="LH5Tx5hHfiLB9V60VgZUjH">收藏、评分与年度统计，记录看过的好东西</span><span class="build-ver" title="页面版本">R61</span></div>
         <div id="media-body" data-page-node-id="MvHLGITKcoHEoc4n5mYw56"></div>
       </section>
       <section class="module" id="mod-report" data-sp-bindable="database" data-sp-database-id="VDJ7npH13yRDIkMBUcnQO4" data-page-node-id="zEMiJyVPF1imOLfhLXwOHu">

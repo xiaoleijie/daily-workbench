@@ -1561,6 +1561,21 @@
 .m-quote .m-by{display:block;font-size:14px;color:#7a6f63;margin-top:5px;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei","Segoe UI",sans-serif}
   .m-quote .m-qic{position:absolute;right:0;bottom:0;font-size:12px;opacity:.75;line-height:1}
 
+  /* R66：每日一句 · 五类可切换 */
+  .m-qcard{padding-top:10px}
+  .m-qcats{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:9px}
+  .m-qcat{font:inherit;font-size:11.5px;line-height:1;padding:5px 9px;border-radius:999px;border:1px solid var(--line);background:var(--paper);color:var(--muted);cursor:pointer;white-space:nowrap;transition:background .15s,color .15s,border-color .15s}
+  .m-qcat:hover{border-color:var(--accent);color:var(--accent)}
+  .m-qcat.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+  .m-quote{padding-right:20px}
+  .m-quote.q-anim{animation:mqIn .3s cubic-bezier(.2,.7,.3,1)}
+  @keyframes mqIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+  .m-quote.is-en{font-size:16.5px;line-height:1.5;letter-spacing:.1px}
+  .m-quote.is-en .m-by{font-size:13px}
+  .m-quote .m-by{padding-right:18px}
+  .m-quote .m-qic{right:-2px;bottom:-2px;width:20px;height:20px;display:flex;align-items:center;justify-content:center;border-radius:50%;cursor:pointer;transition:transform .15s,opacity .15s,background .15s}
+  .m-quote .m-qic:hover{opacity:1;background:var(--accent-soft);transform:scale(1.12)}
+
 .m-wx{display:flex;gap:9px}
 .m-top{display:flex;gap:9px;align-items:stretch;margin-bottom:12px}
 .m-top .m-greet{flex:0 0 auto;margin-bottom:0;padding:10px 12px}
@@ -1794,7 +1809,7 @@
         <div id="shopping-body" data-page-node-id="BubJXjwm5ya3Ps7wQaOf0l"></div>
       </section>
       <section class="module" id="mod-media" data-sp-bindable="database" data-sp-database-id="XwBGD3AthDZziupFstknF4" data-page-node-id="wmE0Ozv4VPOxb1QNG9Gq81">
-        <div class="mod-head" data-page-node-id="ww8NZJbJ993jpKKtV5WKns"><h2 data-page-node-id="12stfYH9V0UA46lU8o3M7i">书影音</h2><span class="desc" data-page-node-id="LH5Tx5hHfiLB9V60VgZUjH">收藏、评分与年度统计，记录看过的好东西</span><span class="build-ver" title="页面版本">R65</span></div>
+        <div class="mod-head" data-page-node-id="ww8NZJbJ993jpKKtV5WKns"><h2 data-page-node-id="12stfYH9V0UA46lU8o3M7i">书影音</h2><span class="desc" data-page-node-id="LH5Tx5hHfiLB9V60VgZUjH">收藏、评分与年度统计，记录看过的好东西</span><span class="build-ver" title="页面版本">R66</span></div>
         <div id="media-body" data-page-node-id="MvHLGITKcoHEoc4n5mYw56"></div>
       </section>
       <section class="module" id="mod-report" data-sp-bindable="database" data-sp-database-id="VDJ7npH13yRDIkMBUcnQO4" data-page-node-id="zEMiJyVPF1imOLfhLXwOHu">
@@ -2651,6 +2666,174 @@ var MORNING_QUOTES=[
 
 ];
 
+/* ===== R66：每日一句 · 五类语料（诗词 / 励志 / 毒鸡汤 / 台词 / 英文） ===== */
+
+var MQ_POEM=[
+  {t:"长风破浪会有时，直挂云帆济沧海。",b:"李白《行路难》"},
+  {t:"莫听穿林打叶声，何妨吟啸且徐行。",b:"苏轼《定风波》"},
+  {t:"山重水复疑无路，柳暗花明又一村。",b:"陆游《游山西村》"},
+  {t:"沉舟侧畔千帆过，病树前头万木春。",b:"刘禹锡《酬乐天扬州初逢席上见赠》"},
+  {t:"千磨万击还坚劲，任尔东西南北风。",b:"郑燮《竹石》"},
+  {t:"不经一番寒彻骨，怎得梅花扑鼻香。",b:"黄檗禅师《上堂开示颂》"},
+  {t:"会当凌绝顶，一览众山小。",b:"杜甫《望岳》"},
+  {t:"自古逢秋悲寂寥，我言秋日胜春朝。",b:"刘禹锡《秋词》"},
+  {t:"天行健，君子以自强不息。",b:"《周易》"},
+  {t:"路漫漫其修远兮，吾将上下而求索。",b:"屈原《离骚》"},
+  {t:"纸上得来终觉浅，绝知此事要躬行。",b:"陆游《冬夜读书示子聿》"},
+  {t:"问渠那得清如许？为有源头活水来。",b:"朱熹《观书有感》"},
+  {t:"欲穷千里目，更上一层楼。",b:"王之涣《登鹳雀楼》"},
+  {t:"海内存知己，天涯若比邻。",b:"王勃《送杜少府之任蜀州》"},
+  {t:"落红不是无情物，化作春泥更护花。",b:"龚自珍《己亥杂诗》"},
+  {t:"此心安处是吾乡。",b:"苏轼《定风波》"},
+  {t:"一蓑烟雨任平生。",b:"苏轼《定风波》"},
+  {t:"青山遮不住，毕竟东流去。",b:"辛弃疾《菩萨蛮》"},
+  {t:"谁道人生无再少？门前流水尚能西。",b:"苏轼《浣溪沙》"},
+  {t:"合抱之木，生于毫末；九层之台，起于累土。",b:"《道德经》"},
+  {t:"功崇惟志，业广惟勤。",b:"《尚书》"},
+  {t:"非淡泊无以明志，非宁静无以致远。",b:"诸葛亮《诫子书》"},
+  {t:"老骥伏枥，志在千里。",b:"曹操《龟虽寿》"},
+  {t:"千里之行，始于足下。",b:"《道德经》"},
+  {t:"不畏浮云遮望眼，只缘身在最高层。",b:"王安石《登飞来峰》"},
+  {t:"莫愁前路无知己，天下谁人不识君。",b:"高适《别董大》"}
+];
+
+var MQ_TOXIC=[
+  {t:"别灰心，比你优秀的人还在努力，而你还在看这句话。",b:"毒鸡汤"},
+  {t:"你不努力一下，永远不知道什么叫绝望。",b:"毒鸡汤"},
+  {t:"人生就像心电图，一帆风顺说明你挂了。",b:"毒鸡汤"},
+  {t:"不是所有努力都有回报，但不努力真的很舒服。",b:"毒鸡汤"},
+  {t:"减肥这件事我已经开始第 37 次了，很有毅力。",b:"毒鸡汤"},
+  {t:"早睡早起身体好，晚睡晚起心情好，总得占一样。",b:"毒鸡汤"},
+  {t:"钱不是问题，问题是没钱。",b:"毒鸡汤"},
+  {t:"你以为的极限，可能只是别人的起点。",b:"毒鸡汤"},
+  {t:"今天解决不了的事，明天大概率还是解决不了。",b:"毒鸡汤"},
+  {t:"所谓的“差不多”，其实差很多。",b:"毒鸡汤"},
+  {t:"别怕失败，毕竟你也没那么容易成功。",b:"毒鸡汤"},
+  {t:"你的气质里，藏着你读过的书和熬夜刷过的剧。",b:"毒鸡汤"},
+  {t:"躺着很舒服，就是躺着躺着天就黑了。",b:"毒鸡汤"},
+  {t:"努力不一定成功，但不努力一定很轻松。",b:"毒鸡汤"},
+  {t:"“明天开始”是个神奇的日子，它永远不会到来。",b:"毒鸡汤"},
+  {t:"计划做得越漂亮，执行起来越心虚。",b:"毒鸡汤"},
+  {t:"每次想放弃的时候，想想当初为什么坚持到想放弃。",b:"毒鸡汤"},
+  {t:"你和梦想之间，隔着一个“再玩五分钟”。",b:"毒鸡汤"},
+  {t:"成年人的自控力，体现在“再看一集”之后还能睡着。",b:"毒鸡汤"},
+  {t:"鸡汤要趁热喝，凉了就成了毒鸡汤。",b:"毒鸡汤"}
+];
+
+var MQ_LINE=[
+  {t:"生活就像一盒巧克力，你永远不知道下一颗是什么味道。",b:"《阿甘正传》"},
+  {t:"希望是个好东西，也许是世上最好的东西。",b:"《肖申克的救赎》"},
+  {t:"有些鸟儿是关不住的，它们的羽毛太亮了。",b:"《肖申克的救赎》"},
+  {t:"要么忙着活，要么忙着死。",b:"《肖申克的救赎》"},
+  {t:"如果你有梦想，就要守护它。",b:"《当幸福来敲门》"},
+  {t:"别让别人告诉你，你成不了才。",b:"《当幸福来敲门》"},
+  {t:"我命由我不由天。",b:"《哪吒之魔童降世》"},
+  {t:"念念不忘，必有回响。",b:"《一代宗师》"},
+  {t:"人生若无悔，那该多无趣啊。",b:"《一代宗师》"},
+  {t:"一步难，一步佳；难一步，佳一步。",b:"《岁月神偷》"},
+  {t:"在幻变的生命里，岁月原是最大的小偷。",b:"《岁月神偷》"},
+  {t:"人生不能像做菜，把所有材料准备好了才下锅。",b:"《饮食男女》"},
+  {t:"不要回头，一直向前走。",b:"《千与千寻》"},
+  {t:"死亡不是生命的终点，遗忘才是。",b:"《寻梦环游记》"},
+  {t:"当你不能再拥有，唯一能做的就是不要忘记。",b:"《东邪西毒》"},
+  {t:"我们一路奋战，不是为了改变世界，而是不让世界改变我们。",b:"《熔炉》"},
+  {t:"天亮后便会很美的。",b:"《喜剧之王》"},
+  {t:"我们的征途是星辰大海。",b:"《银河英雄传说》"},
+  {t:"重要的东西，用眼睛是看不见的。",b:"《小王子》"},
+  {t:"这世界上只有一种病，就是穷病。",b:"《我不是药神》"},
+  {t:"我养你啊。",b:"《喜剧之王》"}
+];
+
+var MQ_EN=[
+  {t:"Done is better than perfect.",b:"完成，好过完美"},
+  {t:"The best time to plant a tree was twenty years ago. The second best time is now.",b:"种树最好的时机是二十年前，其次是现在"},
+  {t:"You don't have to be great to start, but you have to start to be great.",b:"不必很厉害才开始，要开始才会厉害"},
+  {t:"Fall seven times, stand up eight.",b:"跌倒七次，就第八次站起来"},
+  {t:"Progress, not perfection.",b:"求进步，不求完美"},
+  {t:"Small steps every day.",b:"每天一小步"},
+  {t:"The only way out is through.",b:"唯一的出路，是穿过去"},
+  {t:"What you do every day matters more than what you do once in a while.",b:"每天做的事，比偶尔做的事更重要"},
+  {t:"Comparison is the thief of joy.",b:"比较是偷走快乐的小偷"},
+  {t:"This too shall pass.",b:"这一切都会过去"},
+  {t:"Start where you are. Use what you have. Do what you can.",b:"从当下开始，用手边的，做能做的"},
+  {t:"Stay hungry, stay foolish.",b:"求知若饥，虚心若愚"},
+  {t:"It always seems impossible until it's done.",b:"在做成之前，一切看起来都不可能"},
+  {t:"Slow is smooth, smooth is fast.",b:"慢就是稳，稳就是快"},
+  {t:"Keep going. Everything you need will come to you at the perfect time.",b:"继续走，你需要的会在恰好的时候到来"},
+  {t:"You are what you do, not what you say you'll do.",b:"你是你做的事，不是你说要做的事"},
+  {t:"Discipline is choosing between what you want now and what you want most.",b:"自律，是在“现在想要”和“最想要”之间做选择"},
+  {t:"If you want to go far, go together.",b:"想走得远，就一起走"},
+  {t:"Be curious, not judgmental.",b:"保持好奇，别急着评判"},
+  {t:"One day or day one. You decide.",b:"“总有一天”还是“第一天”，由你决定"}
+];
+
+var MQ_CATS=[{k:"poem",nm:"诗词"},{k:"motto",nm:"励志"},{k:"toxic",nm:"毒鸡汤"},{k:"line",nm:"台词"},{k:"en",nm:"英文"}];
+var MQ={cat:"",last:{}};
+
+function mqLib(k){
+  if(k==="poem") return MQ_POEM;
+  if(k==="toxic") return MQ_TOXIC;
+  if(k==="line") return MQ_LINE;
+  if(k==="en") return MQ_EN;
+  return MORNING_QUOTES;
+}
+function mqOk(k){ for(var i=0;i<MQ_CATS.length;i++){ if(MQ_CATS[i].k===k) return true; } return false; }
+
+function mqEnsure(){
+  if(MQ.cat) return MQ.cat;
+  var s=""; try{ s=localStorage.getItem("lw_quote_cat")||""; }catch(e){}
+  if(!mqOk(s)){
+    var now=new Date(), st=new Date(now.getFullYear(),0,0);
+    var doy=Math.floor((now-st)/86400000);
+    s=MQ_CATS[doy%MQ_CATS.length].k;
+  }
+  MQ.cat=s; return s;
+}
+function mqPick(cat){
+  var lib=mqLib(cat), n=lib.length, i=Math.floor(Math.random()*n);
+  if(n>1 && i===MQ.last[cat]) i=(i+1)%n;
+  MQ.last[cat]=i;
+  try{ localStorage.setItem("lw_quote_day", today()+"|"+cat+"|"+i); }catch(e){}
+  return lib[i];
+}
+function mqCur(){
+  mqEnsure();
+  var lib=mqLib(MQ.cat), td=today(), raw="";
+  try{ raw=localStorage.getItem("lw_quote_day")||""; }catch(e){}
+  var p=raw.split("|");
+  if(p[0]===td && p[1]===MQ.cat && p[2]!==undefined && p[2]!=="" && lib[+p[2]]) return lib[+p[2]];
+  return mqPick(MQ.cat);
+}
+function mqByHTML(it){
+  return MQ.cat==="en" ? '<span class="m-by m-tr">译｜'+esc(it.b)+'</span>' : '<span class="m-by">—— '+esc(it.b)+'</span>';
+}
+function mqChipHTML(){
+  mqEnsure();
+  return MQ_CATS.map(function(c){
+    return '<button type="button" class="m-qcat'+(c.k===MQ.cat?" on":"")+'" data-k="'+c.k+'" onclick="mqSet(\''+c.k+'\')">'+c.nm+'</button>';
+  }).join("");
+}
+function mqPaint(anim){
+  var box=document.getElementById("m-quote"); if(!box) return;
+  var it=mqCur();
+  box.className="m-quote"+(MQ.cat==="en"?" is-en":"")+(anim?" q-anim":"");
+  box.innerHTML=esc(it.t)+mqByHTML(it)+'<span class="m-qic" onclick="mqNext()" title="换一句（同类随机）">💡</span>';
+  if(anim){ void box.offsetWidth; }
+  var chips=document.getElementById("m-qcats");
+  if(chips){
+    var bs=chips.querySelectorAll(".m-qcat");
+    for(var i=0;i<bs.length;i++){ if(bs[i].getAttribute("data-k")===MQ.cat) bs[i].classList.add("on"); else bs[i].classList.remove("on"); }
+  }
+}
+function mqSet(k){
+  if(!mqOk(k)) return;
+  if(k===MQ.cat){ mqNext(); return; }
+  MQ.cat=k;
+  try{ localStorage.setItem("lw_quote_cat",k); }catch(e){}
+  mqPaint(true);
+}
+function mqNext(){ mqPick(MQ.cat); mqPaint(true); }
+
 var MORNING_WX=[
 
   {nm:'上海',lat:31.23,lon:121.47},
@@ -2722,9 +2905,11 @@ function buildMorningLeft(tasks, works){
 
   var now=new Date(); var start=new Date(now.getFullYear(),0,0); var doy=Math.floor((now-start)/86400000);
 
-  var q=MORNING_QUOTES[doy % MORNING_QUOTES.length];
+  mqEnsure();
 
-  var quoteHTML=esc(q.t)+'<span class="m-by">—— '+esc(q.b)+'</span>';
+  var q=mqCur();
+
+  var quoteHTML=esc(q.t)+mqByHTML(q)+'<span class="m-qic" onclick="mqNext()" title="换一句（同类随机）">💡</span>';
 
   var h=now.getHours();
 
@@ -2735,7 +2920,7 @@ function buildMorningLeft(tasks, works){
 
   return ''+
 
-    '<div class="m-top">'+'<div class="m-card m-greet"><div class="m-hi">'+hi+'，'+esc(MY_UID||'小蕾姐')+'</div><div class="m-date">'+wd+' · '+td+'</div><div class="m-en">'+enHi+'</div></div>'+'<div class="m-wx" id="m-wx"><div class="m-empty">天气加载中…</div></div>'+'</div>'+'<div class="m-card"><div class="m-quote">'+quoteHTML+'<span class="m-qic">💡</span></div></div>'+
+    '<div class="m-top">'+'<div class="m-card m-greet"><div class="m-hi">'+hi+'，'+esc(MY_UID||'小蕾姐')+'</div><div class="m-date">'+wd+' · '+td+'</div><div class="m-en">'+enHi+'</div></div>'+'<div class="m-wx" id="m-wx"><div class="m-empty">天气加载中…</div></div>'+'</div>'+'<div class="m-card m-qcard" id="m-qcard"><div class="m-qcats" id="m-qcats">'+mqChipHTML()+'</div><div class="m-quote'+(MQ.cat==='en'?' is-en':'')+'" id="m-quote">'+quoteHTML+'</div></div>'+
 
     '<div class="m-card"><div class="m-ttl"><span class="m-ic">📅</span>今日日程<span class="m-sub">按开始时间</span></div><div class="m-rows">'+schedHTML+'</div></div>'+
 

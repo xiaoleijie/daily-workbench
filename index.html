@@ -345,6 +345,11 @@
   .m-prog-bar i{display:block;height:100%;background:var(--accent-grad);border-radius:3px}
   .m-prog-tx{font-size:10.5px;color:var(--muted);margin-top:3px}
   .mc-open{display:inline-block;margin-top:5px;font-size:11px;color:var(--accent);text-decoration:none}
+/* R67：书卡「打开阅读」行 + 删除按钮 */
+.mc-ops{display:flex;align-items:center;gap:12px;margin-top:5px;flex-wrap:wrap}
+.mc-ops .mc-open{margin-top:0}
+.mc-del{border:none;background:none;padding:0;font-family:inherit;font-size:11px;color:#b3563f;cursor:pointer;opacity:.85}
+.mc-del:hover{opacity:1;text-decoration:underline}
   .badge.src-wr{background:#e9f1fb;color:#2f6fb0;border-color:#c9ddf4}
   .badge.src-paper{background:#f2ecdf;color:#8a7a52;border-color:#e2d8c1}
   .badge.src-manual{background:var(--paper);color:var(--muted)}
@@ -355,13 +360,27 @@
 #media-body .m-vrow select{width:auto;min-width:104px;max-width:172px;padding:6px 9px;font-size:12.5px}
 .m-statsrow{display:flex;align-items:center;gap:16px;margin-bottom:14px;flex-wrap:wrap}
 .m-stats3{flex:1 1 0;min-width:0;display:flex;gap:10px;align-items:stretch}
-.m-stats3 .stat{flex:0 0 auto;width:68px;min-height:83px;padding:9px 6px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;text-align:center}
-.m-stats3 .stat .k{font-size:11px;letter-spacing:0;line-height:1.25;flex-wrap:wrap;justify-content:center;row-gap:0}
+/* R67：三格拉宽（68px → 均分半行），顺序 在读/在阅读清单/读过，每格年份可选 */
+.m-stats3 .stat{flex:1 1 0;min-width:0;width:auto;min-height:83px;padding:7px 8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;text-align:center}
+.m-stats3 .stat .k{font-size:11px;letter-spacing:0;line-height:1.25;flex-wrap:nowrap;justify-content:center;row-gap:0;gap:4px;max-width:100%}
 .m-stats3 .stat .v{font-size:22px;margin-top:2px}
+.stat-yr{border:1px solid var(--line);background:var(--paper);border-radius:7px;font-family:inherit;font-size:10.5px;line-height:1;padding:3px 2px 3px 4px;color:var(--muted);cursor:pointer;max-width:76px;flex:0 0 auto}
+.stat-yr:hover{border-color:var(--accent);color:var(--accent)}
 .m-vrow{flex:1 1 0;min-width:0;display:flex;align-items:center;gap:8px;justify-content:flex-end;flex-wrap:wrap}
 /* R45 书影音顶部：电影(左)+音乐(右) */
 .media-top{display:flex;gap:18px;margin-bottom:18px;flex-wrap:wrap;position:relative;z-index:6}
-.media-top .mt-col{flex:1;min-width:280px;background:#fff;border:1px solid #e8e8e8;border-radius:14px;padding:14px}
+.media-top .mt-col{flex:1;min-width:280px;background:#fff;border:1px solid #e8e8e8;border-radius:14px;padding:14px;display:flex;flex-direction:column;min-height:0}
+/* R67：顶部两卡统一压到 210px（用户黄框高度），电影列与歌曲网格各自内部滚动 */
+@media (min-width:900px){
+  .media-top .mt-col{min-height:210px;height:auto}
+  .media-top .mt-head{flex:0 0 auto;margin-bottom:8px}
+  .media-top .movie-cols{flex:1 1 auto;height:140px;min-height:140px;overflow:auto;align-content:flex-start}
+  .media-top .mt-col>.mp{flex:0 0 auto;height:180px;min-height:0;padding-top:8px;padding-bottom:8px}
+  .media-top .mt-col>.mp .mp-body{display:flex;flex-direction:column;height:100%;min-height:0}
+  .media-top .mt-col>.mp .mp-grid{flex:1 1 auto;min-height:0;max-height:none;overflow:auto}
+  /* 播放态保留 R65 的 204px（整张歌单在内滚动），容器跟着长高，不裁切 */
+  .media-top .mt-col>.mp.show-now:not(.mp-web){height:204px;min-height:204px}
+}
 .mt-head{display:flex;align-items:center;gap:10px;margin-bottom:10px}
 .mt-head h4{margin:0;font-size:15px}
 .mt-add{font-size:12px}
@@ -1809,7 +1828,7 @@
         <div id="shopping-body" data-page-node-id="BubJXjwm5ya3Ps7wQaOf0l"></div>
       </section>
       <section class="module" id="mod-media" data-sp-bindable="database" data-sp-database-id="XwBGD3AthDZziupFstknF4" data-page-node-id="wmE0Ozv4VPOxb1QNG9Gq81">
-        <div class="mod-head" data-page-node-id="ww8NZJbJ993jpKKtV5WKns"><h2 data-page-node-id="12stfYH9V0UA46lU8o3M7i">书影音</h2><span class="desc" data-page-node-id="LH5Tx5hHfiLB9V60VgZUjH">收藏、评分与年度统计，记录看过的好东西</span><span class="build-ver" title="页面版本">R66</span></div>
+        <div class="mod-head" data-page-node-id="ww8NZJbJ993jpKKtV5WKns"><h2 data-page-node-id="12stfYH9V0UA46lU8o3M7i">书影音</h2><span class="desc" data-page-node-id="LH5Tx5hHfiLB9V60VgZUjH">收藏、评分与年度统计，记录看过的好东西</span><span class="build-ver" title="页面版本">R67</span></div>
         <div id="media-body" data-page-node-id="MvHLGITKcoHEoc4n5mYw56"></div>
       </section>
       <section class="module" id="mod-report" data-sp-bindable="database" data-sp-database-id="VDJ7npH13yRDIkMBUcnQO4" data-page-node-id="zEMiJyVPF1imOLfhLXwOHu">
@@ -5501,8 +5520,19 @@ function mediaCard(r){
         '<div class="mc-title">'+esc(r["标题"]||'')+'</div>'+
         '<div class="mc-meta">'+mediaSrcBadge(r)+star+'</div>'+
         mediaProgHTML(r)+
-        mediaReadBtn(r)+
+        '<div class="mc-ops">'+mediaReadBtn(r)+
+          '<button class="mc-del" onclick="event.stopPropagation();mediaDeleteBook(\''+id+'\')" title="从清单中删除这本书">删除</button>'+
+        '</div>'+
       '</div></div>';
+}
+function mediaDeleteBook(id){
+  if(!id) return;
+  var r=(window.__media||[]).filter(function(x){return rid(x)===id;})[0]||null;
+  var nm=(r&&r["标题"])?('《'+r["标题"]+'》'):'这本书';
+  myConfirm('把'+nm+'从这个清单里删除？（记录会一并删掉）', function(){
+    delRec(DB.media, id).then(function(){ LOADERS.media(); toast('已删除'); })
+      .catch(function(e){ toast('删除失败：'+((e&&e.message)||'错误'),true); });
+  });
 }
 function mediaCol(status,color,hint,shown){
   var list=shown.filter(function(r){ return (r["状态"]||'想看')===status; });
@@ -5548,14 +5578,58 @@ function movieMarkSeen(id){
 }
 function openMovieAdd(){ mediaFormModal(null, '电影'); }
 function openMusicAdd(){ mediaFormModal(null, '音乐'); }
+/* ===== R67：阅读统计三格的年份筛选（默认今年，可切往年/全部） ===== */
+var MEDIA_YEAR_KEY = 'lw_media_year';
+var mediaYear = (function () {
+  var y = String(new Date().getFullYear());
+  var d = { doing: y, want: y, seen: y };
+  try {
+    var raw = localStorage.getItem(MEDIA_YEAR_KEY);
+    var o = raw ? JSON.parse(raw) : null;
+    if (o) { ['doing', 'want', 'seen'].forEach(function (k) { if (o[k]) d[k] = String(o[k]); }); }
+  } catch (e) { }
+  return d;
+})();
+function mediaYears() {
+  var set = {}, cur = String(new Date().getFullYear());
+  (window.__media || []).forEach(function (r) {
+    var y = dateSub(r["记录日期"]).substring(0, 4);
+    if (/^\d{4}$/.test(y)) set[y] = 1;
+  });
+  set[cur] = 1;
+  return Object.keys(set).sort().reverse();
+}
+function mediaYearOpts(k) {
+  return '<option value="全部"' + (mediaYear[k] === '全部' ? ' selected' : '') + '>全部</option>'
+    + mediaYears().map(function (y) {
+      return '<option value="' + y + '"' + (mediaYear[k] === y ? ' selected' : '') + '>' + y + '</option>';
+    }).join('');
+}
+function mediaSetYear(k, v) {
+  mediaYear[k] = v || '全部';
+  try { localStorage.setItem(MEDIA_YEAR_KEY, JSON.stringify(mediaYear)); } catch (e) { }
+  renderMedia(window.__media);
+}
+function mediaYearMatch(r, k) {
+  var y = mediaYear[k];
+  if (!y || y === '全部') return true;
+  return dateSub(r["记录日期"]).substring(0, 4) === y;
+}
+function statYear(label, val, cls, key) {
+  return '<div class="stat ' + (cls || '') + '">'
+    + '<div class="k"><select class="stat-yr" title="切换统计年份" onchange="mediaSetYear(\'' + key + '\',this.value)">' + mediaYearOpts(key) + '</select>'
+    + '<span class="k-txt">' + label + '</span></div>'
+    + '<div class="v">' + val + '</div></div>';
+}
+
 function renderMedia(rows){
   rows=rows||[];
   var yr=new Date().getFullYear();
   var books=rows.filter(function(r){ var t=r["类型"]||''; return t!=='电影'&&t!=='音乐'; });
-  var thisYear=books.filter(function(r){ return dateSub(r["记录日期"]).substring(0,4)===String(yr); });
-  var seen=thisYear.filter(function(r){return r["状态"]==='看过';});
-  var wantCnt=books.filter(function(r){return (r["状态"]||'想看')==='想看';}).length;
-  var doingCnt=books.filter(function(r){return r["状态"]==='在读';}).length;
+  /* R67：三格各自按年份过滤（默认今年，可切往年/全部） */
+  var seenCnt=books.filter(function(r){return r["状态"]==='看过'&&mediaYearMatch(r,'seen');}).length;
+  var wantCnt=books.filter(function(r){return (r["状态"]||'想看')==='想看'&&mediaYearMatch(r,'want');}).length;
+  var doingCnt=books.filter(function(r){return r["状态"]==='在读'&&mediaYearMatch(r,'doing');}).length;
 
   var actbar='<div class="m-actbar">'+
       '<button class="btn sm primary" onclick="openWeRead()">打开微信读书 ↗</button>'+
@@ -5566,11 +5640,11 @@ function renderMedia(rows){
       '<span class="m-hint">点「微信读书同步」选同步文件，一次把书架搬进来（已记过的自动跳过）</span>'+
     '</div>';
 
-  /* R65：三张竖条统计（删「均分」，高度不变只收宽） */
+  /* R67：顺序改为 在读 / 在阅读清单 / 读过，三格拉宽，每格带年份下拉 */
   var stats3='<div class="m-stats3">'+
-    stat(yr+' 读过', seen.length+'','')+
-    stat('想读清单', wantCnt+'','accent')+
-    stat('在读', doingCnt+'','blue')+
+    statYear('在读', doingCnt+'','blue','doing')+
+    statYear('在阅读清单', wantCnt+'','accent','want')+
+    statYear('读过', seenCnt+'','','seen')+
   '</div>';
 
   var vtg='<div class="viewtoggle">'+

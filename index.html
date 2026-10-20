@@ -361,9 +361,9 @@
 .m-statsrow{display:flex;align-items:center;gap:16px;margin-bottom:14px;flex-wrap:wrap}
 .m-stats3{flex:0 0 auto;min-width:0;display:flex;gap:10px;align-items:stretch}
 /* R67：三格拉宽（68px → 均分半行），顺序 在读/在阅读清单/读过，每格年份可选 */
-.m-stats3 .stat{position:relative;flex:0 0 auto;width:186px;min-width:0;min-height:60px;padding:7px 8px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:1px;text-align:center}
+.m-stats3 .stat{position:relative;flex:0 0 auto;width:196px;min-width:0;min-height:60px;padding:7px 8px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:1px;text-align:center}
 .m-stats3 .stat .k{position:absolute;top:6px;left:8px;right:8px;font-size:11px;letter-spacing:0;line-height:1.25;flex-wrap:nowrap;justify-content:flex-start;row-gap:0;gap:4px;max-width:100%;text-align:left}
-.m-stats3 .stat .v{font-size:22px;margin:auto;width:100%;text-align:center}
+.m-stats3 .stat .v{font-size:32px;line-height:1;margin:auto 6px auto auto;text-align:right}
 .stat-yr{border:1px solid rgba(0,0,0,.13);background:transparent;border-radius:7px;font-family:inherit;font-size:10.5px;line-height:1;padding:3px 2px 3px 4px;color:var(--muted);cursor:pointer;max-width:76px;flex:0 0 auto}
 .stat-yr:hover{border-color:var(--accent);color:var(--accent)}
 .m-vrow{flex:1 1 0;min-width:0;display:flex;align-items:center;gap:8px;justify-content:flex-end;flex-wrap:wrap}
@@ -1828,7 +1828,7 @@
         <div id="shopping-body" data-page-node-id="BubJXjwm5ya3Ps7wQaOf0l"></div>
       </section>
       <section class="module" id="mod-media" data-sp-bindable="database" data-sp-database-id="XwBGD3AthDZziupFstknF4" data-page-node-id="wmE0Ozv4VPOxb1QNG9Gq81">
-        <div class="mod-head" data-page-node-id="ww8NZJbJ993jpKKtV5WKns"><h2 data-page-node-id="12stfYH9V0UA46lU8o3M7i">书影音</h2><span class="desc" data-page-node-id="LH5Tx5hHfiLB9V60VgZUjH">收藏、评分与年度统计，记录看过的好东西</span><span class="build-ver" title="页面版本">R69</span></div>
+        <div class="mod-head" data-page-node-id="ww8NZJbJ993jpKKtV5WKns"><h2 data-page-node-id="12stfYH9V0UA46lU8o3M7i">书影音</h2><span class="desc" data-page-node-id="LH5Tx5hHfiLB9V60VgZUjH">收藏、评分与年度统计，记录看过的好东西</span><span class="build-ver" title="页面版本">R70</span></div>
         <div id="media-body" data-page-node-id="MvHLGITKcoHEoc4n5mYw56"></div>
       </section>
       <section class="module" id="mod-report" data-sp-bindable="database" data-sp-database-id="VDJ7npH13yRDIkMBUcnQO4" data-page-node-id="zEMiJyVPF1imOLfhLXwOHu">
@@ -7932,6 +7932,7 @@ function mpLoad() {
   }
   if (!MP.lib) MP.lib = {};
   if (!Array.isArray(MP.webpl)) MP.webpl = [];
+  mpWebPlFixAll();   /* R70：把旧的 52600 会话地址改写成 8777 常驻服务 */
   MP.srcOrder = mpSrcOrder(MP.srcOrder);   /* R56：补齐缺失 / 去掉无效 / 去重 */
   MP_SRC.forEach(function (s) {
     if (!MP.lib[s.k] || !MP.lib[s.k].length) {
@@ -8681,6 +8682,19 @@ function mpWebPlFromUrl(u) {
 function mpWebPlHost(u) {
   try { return String(u || '').replace(/^https?:\/\//i, '').split('/')[0]; } catch (e) { return ''; }
 }
+/* R70：52600 是 WorkBuddy 的会话级静态托管（WorkBuddy 一关就「127.0.0.1 拒绝连接」）→ 自动改指本机 8777 常驻播放器 */
+function mpWebPlMigrateUrl(u) {
+  var s = String(u || '');
+  return s.replace(/^(https?:\/\/)(127\.0\.0\.1|localhost):52600\/static-html\/[^/?#]+\//i, '$1$2:8777/');
+}
+function mpWebPlFixAll() {
+  var a = mpWebPlList(), n = 0;
+  for (var i = 0; i < a.length; i++) {
+    var nu = mpWebPlMigrateUrl(a[i].url);
+    if (nu !== a[i].url) { a[i].url = nu; n++; }
+  }
+  return n;
+}
 /* R57：老的「打开面板」入口统一转成「切到这个来源」 */
 function mpWebPlToggleMenu(e) { if (e) e.stopPropagation(); mpWebPlEnter(); }
 function mpWebPlHideMenu() { }
@@ -8750,18 +8764,19 @@ function mpWebStageHtml() {
   var pl = MPW.cur ? mpWebPlById(MPW.cur) : null;
   if (!pl) {
     return '<div class="mpw-empty">选一个网页歌单：点上面「选择网页歌单」里的名字，它就会在下面这个框里打开。<br>'
-      + '勾选多个再点「▶ 连播选中」，就会一个接一个播下去；每行的 ↗ 可以直接在浏览器里打开。</div>';
+      + '勾选多个再点「▶ 连播选中」，就会一个接一个播下去；每行的 ↗ 可以直接在浏览器里打开。'
+      + '<br><span style="font-size:11px;color:#b6ae9c">若框里显示「127.0.0.1 拒绝连接」：双击 C:\\Users\\火娃\\WorkBuddy\\light-music-player\\start_8777.bat 把播放器服务起起来，再刷新本页。</span></div>';
   }
   return '<div class="mpw-bar">'
     + '<span class="mpw-left" id="mpw-left"></span>'
     + '<span class="mpw-vol" id="mpw-vol" style="display:none"><button class="mpw-vol-btn" id="mpw-vol-btn" onclick="mpwVolToggle()" title="静音 / 恢复">🔊</button>'
     + '<input type="range" id="mpw-vol-range" min="0" max="100" value="100" title="播放页音量（发给网页播放器）" oninput="mpwVolSet(this.value)"></span>'
     + '<span style="flex:1"></span>'
-    + '<a class="mpw-out" id="mpw-out" href="' + esc(pl.url) + '" target="_blank" rel="noopener" title="在浏览器里打开这个歌单">在浏览器打开 ↗</a>'
+    + '<a class="mpw-out" id="mpw-out" href="' + esc(mpWebPlMigrateUrl(pl.url)) + '" target="_blank" rel="noopener" title="在浏览器里打开这个歌单">在浏览器打开 ↗</a>'
     + '<button class="mpw-btn" onclick="mpWebPlNext()" title="播下一个">下一个 ›</button>'
     + '<button class="mpw-btn" onclick="mpWebPlStop()" title="停止并关掉网页">停止</button>'
     + '</div>'
-    + '<div class="mpw-frame" id="mpw-frame"><iframe src="' + esc(pl.url) + '" allow="autoplay; encrypted-media; fullscreen" referrerpolicy="no-referrer-when-downgrade"></iframe></div>'
+    + '<div class="mpw-frame" id="mpw-frame"><iframe src="' + esc(mpWebPlMigrateUrl(pl.url)) + '" allow="autoplay; encrypted-media; fullscreen" referrerpolicy="no-referrer-when-downgrade"></iframe></div>'
     + '<div class="mpw-back" onclick="mpWebNow(false)">▼ 回到歌单</div>';
 }
 function mpWebSyncStage() {

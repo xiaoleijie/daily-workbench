@@ -964,8 +964,18 @@
   }
   /* ===== 本月事项：入口按钮 + 弹窗表单 + 多选日期 ===== */
   .mc-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
-  .mc-head h3{margin:0;font-size:15px}
-  .sched-add-btn{white-space:nowrap;font-weight:700;padding:6px 12px}
+  .mc-head h3{margin:0;font-size:15px;white-space:nowrap;flex:0 0 auto}
+  /* R74：月份切换（▲上月 / ▼下月）——紧跟「＋本月事项」按钮，h3 仍为末位子元素 */
+  .mc-navs{display:flex;align-items:center;gap:4px;margin-right:auto;flex:0 0 auto}
+  .mc-nav{width:26px;height:26px;display:flex;align-items:center;justify-content:center;padding:0;line-height:1;
+    border:1px solid var(--line2);border-radius:8px;background:var(--surface);color:var(--ink);font-size:10px;cursor:pointer;
+    transition:background .15s,border-color .15s,color .15s,transform .12s}
+  .mc-nav:hover{background:var(--accent-soft);border-color:var(--accent);color:var(--accent);transform:translateY(-1px)}
+  .mc-nav:active{transform:none}
+  .mc-head h3{cursor:default}
+  .mc-head h3.mc-off{color:var(--accent);cursor:pointer}
+  .mc-head h3.mc-off:hover{text-decoration:underline}
+  .sched-add-btn{white-space:nowrap;font-weight:700;padding:6px 12px;flex:0 0 auto}
   .sched-add-card{width:720px;max-width:94vw;max-height:90vh;overflow:auto}
   .sched-add-card .form{background:none;border:none;box-shadow:none;padding:0;margin:0}
   .sched-add-card .sa-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
@@ -996,6 +1006,8 @@
   .sa-right>.fld{margin:0}
   .sa-right>.fld>label{display:block;margin-bottom:5px;font-size:12px;color:var(--muted)}
   .sa-right>.sched-grid{margin-bottom:0}
+  /* R74：备注改多行文本框，右下角可向下拉高（resize:vertical，宽度不可改） */
+  .sa-right .s-note-ta{height:112px;min-height:72px;max-height:60vh;line-height:1.6;font-size:13.5px;resize:vertical;box-sizing:border-box;display:block}
   .sa-cal>.fld{margin-bottom:11px}
   .sa-ops-2{display:grid;grid-template-columns:1fr 1fr;gap:6px;min-width:0}
   .s-batchbar{display:flex;align-items:center;gap:10px;padding:7px 2px;font-size:12.5px;color:var(--muted);border-bottom:1px dashed var(--line);flex-wrap:wrap;row-gap:6px}
@@ -1837,7 +1849,7 @@
         <div id="shopping-body" data-page-node-id="BubJXjwm5ya3Ps7wQaOf0l"></div>
       </section>
       <section class="module" id="mod-media" data-sp-bindable="database" data-sp-database-id="XwBGD3AthDZziupFstknF4" data-page-node-id="wmE0Ozv4VPOxb1QNG9Gq81">
-        <div class="mod-head" data-page-node-id="ww8NZJbJ993jpKKtV5WKns"><h2 data-page-node-id="12stfYH9V0UA46lU8o3M7i">书影音</h2><span class="desc" data-page-node-id="LH5Tx5hHfiLB9V60VgZUjH">收藏、评分与年度统计，记录看过的好东西</span><span class="build-ver" title="页面版本">R73</span></div>
+        <div class="mod-head" data-page-node-id="ww8NZJbJ993jpKKtV5WKns"><h2 data-page-node-id="12stfYH9V0UA46lU8o3M7i">书影音</h2><span class="desc" data-page-node-id="LH5Tx5hHfiLB9V60VgZUjH">收藏、评分与年度统计，记录看过的好东西</span><span class="build-ver" title="页面版本">R74</span></div>
         <div id="media-body" data-page-node-id="MvHLGITKcoHEoc4n5mYw56"></div>
       </section>
       <section class="module" id="mod-report" data-sp-bindable="database" data-sp-database-id="VDJ7npH13yRDIkMBUcnQO4" data-page-node-id="zEMiJyVPF1imOLfhLXwOHu">
@@ -4189,6 +4201,8 @@ function saveBodySettings(){
 
 /* ============ 5. 日程统筹 ============ */
 var schedFilter='全部', schedSelDate=null, schedStatusF='全部状态', schedRange=null;
+/* R74：迷你月历当前展示的月份（'' = 跟随今天）；切换上下月不改动日程日期或筛选逻辑 */
+var schedCalMon='';
 LOADERS.schedule=function(){
   var body=getBody('schedule'); body.innerHTML=statusHTML(true);
   return q(DB.schedule,{sorts:[{property:"日期",direction:"ascending"}]}).then(function(rows){ renderSchedule(rows); })
@@ -4477,18 +4491,38 @@ function revPanelHTML(){
     '</div>'+
   '</div>';
 }
+/* R74：迷你月历月份切换（▲ 上月 / ▼ 下月 / 点标题回本月） */
+function schedCalMonKey(){ return schedCalMon || today().substring(0,7); }
+function schedCalShift(n){
+  var k=schedCalMonKey();
+  var y=Number(k.substring(0,4)), m=Number(k.substring(5,7))-1+(n||0);
+  var d=new Date(y,m,1);
+  schedCalMon=d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2);
+  // 只换月历展示；已选日期/筛选保持不动（切回该月可继续看到原选中高亮）
+  renderSchedule(window.__sched);
+}
+function schedCalReset(){
+  schedCalMon='';
+  renderSchedule(window.__sched);
+}
 function renderSchedule(rows){
   window.__sched = rows;
   var td=today();
+  var calKey=schedCalMonKey();
   // 表单已移入弹窗（点「＋ 本月事项」打开）：见 schedFormHTML() / openSchedAddModal()
 
   // ===== 左：放大版迷你月历 + 下方填日程列表（保留原交互链路） =====
   var haveDates={}, dayCount={}; rows.forEach(function(r){ var k=dateSub(r["日期"]); if(k){ haveDates[k]=1; dayCount[k]=(dayCount[k]||0)+1; } });
-  var y=Number(td.substring(0,4)), mo=Number(td.substring(5,7))-1;
+  var y=Number(calKey.substring(0,4)), mo=Number(calKey.substring(5,7))-1;
   var days=new Date(y,mo+1,0).getDate();
   var first=new Date(y,mo,1); var startDay=(first.getDay()+6)%7;
   var mini='<div class="panel mini-cal-panel" style="padding:14px">'+
-    '<div class="mc-head"><button class="btn sm primary sched-add-btn" onclick="openSchedAddModal()" title="添加事项，可一次选中多个日期">＋ 本月事项</button><h3 style="font-size:18px">'+td.substring(0,7)+'</h3></div>'+
+    '<div class="mc-head"><button class="btn sm primary sched-add-btn" onclick="openSchedAddModal()" title="添加事项，可一次选中多个日期">＋ 本月事项</button>'+
+      '<span class="mc-navs">'+
+        '<button type="button" class="mc-nav" id="mc-prev" onclick="schedCalShift(-1)" title="上月事项" aria-label="上月事项">▲</button>'+
+        '<button type="button" class="mc-nav" id="mc-next" onclick="schedCalShift(1)" title="下月事项" aria-label="下月事项">▼</button>'+
+      '</span>'+
+      '<h3 style="font-size:18px"'+(calKey===td.substring(0,7)?'':' class="mc-off" onclick="schedCalReset()" title="当前看的是 '+calKey+'，点此回到本月"')+'>'+calKey+'</h3></div>'+
     '<div class="monthcal"><div class="wd">一</div><div class="wd">二</div><div class="wd">三</div><div class="wd">四</div><div class="wd">五</div><div class="wd">六</div><div class="wd">日</div>';
   for(var i=0;i<startDay;i++) mini+='<div class="d"></div>';
   for(var d=1;d<=days;d++){ var ds=y+'-'+('0'+(mo+1)).slice(-2)+'-'+('0'+d).slice(-2); var isPast=ds<td, isHave=!!haveDates[ds], isSel=schedSelDate===ds; var cls='d'+(isHave?' have':'')+(isSel?' sel':'')+(isPast?' past':''); var tint=(isPast)?ACTION_PALETTE_TINT[(d-1)%7]:''; var dc=dayCount[ds]||0; mini+='<div class="'+cls+'"'+(tint?' style="background:'+tint+'"':'')+' onclick="schedSelDate=\''+ds+'\';renderSchedule(window.__sched)">'+d+(dc?'<span class="d-cnt">'+dc+'</span>':'')+'</div>'; }
@@ -4714,7 +4748,7 @@ function schedFormHTML(){
           '</div>'+
           '<div class="fld"><label>重要/紧急</label><select id="s-quad">'+quadOptions('Q1')+'</select></div>'+
           '<div class="fld"><label>地点</label><input id="s-place" placeholder="选填"></div>'+
-          '<div class="fld"><label>备注</label><input id="s-note" placeholder="选填"></div>'+
+          '<div class="fld note-fld"><label>备注</label><textarea id="s-note" class="s-note-ta" rows="4" placeholder="选填" title="右下角小斜线可向下拉高（宽度固定不可调）"></textarea></div>'+
         '</div>'+
       '</div>'+
     '</div>'+

@@ -1429,7 +1429,7 @@ setTimeout(()=>{
 
 
 
-  T('R5① 迷你月历标题只留年月（无「本月日程」后缀）',()=>html.indexOf("td.substring(0,7)+'</h3></div>'")>=0 && html.indexOf("· 本月日程</h3>")<0);
+  T('R5① 迷你月历标题只留年月（无「本月日程」后缀）',()=>html.indexOf("calKey+'</h3></div>'")>=0 && html.indexOf("· 本月日程</h3>")<0);
 
 
 
@@ -3595,7 +3595,10 @@ console.log('--- 回归 ---');
   T('R44-2: 批量条撤销按钮文案「撤销」+悬停 title「撤销上次批量修改」',()=> html.indexOf('title="撤销上次批量修改" style="flex:0 0 auto">撤销</button>')>=0);
   T('R44-3: 批量操作组(完成/待办/删除)默认隐藏 + 三个 batch 函数齐全',()=> html.indexOf('id="s-sel-ops" style="display:none"')>=0 && /function batchSchedDone/.test(html) && /function batchSchedTodo/.test(html) && /function batchSchedDel/.test(html));
   T('R44-4: schedSelCount 按勾选数切换 #s-sel-ops 显隐',()=> html.indexOf("var ops=document.getElementById('s-sel-ops')")>=0 && html.indexOf("ops.style.display=n>0?'inline-flex':'none'")>=0);
-  T('R44-5: 本月日程 mc-head 按钮与月份互换 + 月份字号 18px',()=>{ var iBtn=html.indexOf('mc-head"><button'), iH3=html.indexOf('<h3 style="font-size:18px">'); return (iBtn>=0 && iH3>iBtn) ? 'ok' : false; });
+  T('R44-5: 本月日程 mc-head 按钮与月份互换 + 月份字号 18px',()=>{ var iBtn=html.indexOf('mc-head"><button'), iH3=html.indexOf('<h3 style="font-size:18px"'); return (iBtn>=0 && iH3>iBtn) ? 'ok' : false; });
+  T('R74-1: mc-head 含 ▲/▼ 月份切换按钮（title 上月事项/下月事项）',()=>{ var ih=html.indexOf('class="mc-head"'), ie=html.indexOf('</h3>', ih); var seg=html.slice(ih, ie>ih?ie:ih+1200); return seg.indexOf('schedCalShift(-1)')>=0 && seg.indexOf('schedCalShift(1)')>=0 && seg.indexOf('title="上月事项"')>=0 && seg.indexOf('title="下月事项"')>=0; });
+  T('R74-2: 备注为可下拉高的 textarea（id=s-note, class=s-note-ta）',()=>/id="s-note" class="s-note-ta"/.test(html) && /\.s-note-ta\{[^}]*resize:vertical/.test(html));
+  T('R74-3: schedCalShift/schedCalReset/schedCalMonKey 三个函数齐全',()=>['function schedCalMonKey','function schedCalShift','function schedCalReset'].every(k=>html.indexOf(k)>=0));
   T('R44-6(功能): 全选后 #s-sel-ops 显示 且 getSchedSelIds 命中全部',()=>{
     try{
       var _t=w.today();

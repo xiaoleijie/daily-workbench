@@ -1580,20 +1580,20 @@
 .m-quote .m-by{display:block;font-size:14px;color:#7a6f63;margin-top:5px;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei","Segoe UI",sans-serif}
   .m-quote .m-qic{position:absolute;right:0;bottom:0;font-size:12px;opacity:.75;line-height:1}
 
-  /* R66：每日一句 · 五类可切换 */
-  .m-qcard{padding-top:10px}
-  .m-qcats{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:9px}
+  /* R66：每日一句 · 五类可切换（R71：正文在上，标签行 + 💡 置底、靠右、同一行） */
+  .m-qcard{padding-top:8px}
+  .m-qcats{display:flex;gap:5px;flex-wrap:wrap;margin:0;justify-content:flex-end}
   .m-qcat{font:inherit;font-size:11.5px;line-height:1;padding:5px 9px;border-radius:999px;border:1px solid var(--line);background:var(--paper);color:var(--muted);cursor:pointer;white-space:nowrap;transition:background .15s,color .15s,border-color .15s}
   .m-qcat:hover{border-color:var(--accent);color:var(--accent)}
   .m-qcat.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
-  .m-quote{padding-right:20px}
+  .m-quote{padding-right:0}
   .m-quote.q-anim{animation:mqIn .3s cubic-bezier(.2,.7,.3,1)}
   @keyframes mqIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
   .m-quote.is-en{font-size:16.5px;line-height:1.5;letter-spacing:.1px}
   .m-quote.is-en .m-by{font-size:13px}
-  .m-quote .m-by{padding-right:18px}
-  .m-quote .m-qic{right:-2px;bottom:-2px;width:20px;height:20px;display:flex;align-items:center;justify-content:center;border-radius:50%;cursor:pointer;transition:transform .15s,opacity .15s,background .15s}
-  .m-quote .m-qic:hover{opacity:1;background:var(--accent-soft);transform:scale(1.12)}
+  .m-qfoot{display:flex;align-items:center;gap:9px;margin-top:9px;justify-content:flex-end}
+  .m-qfoot .m-qic{flex:0 0 auto;font-size:13px;opacity:.78;line-height:1;width:22px;height:22px;display:flex;align-items:center;justify-content:center;border-radius:50%;cursor:pointer;transition:transform .15s,opacity .15s,background .15s}
+  .m-qfoot .m-qic:hover{opacity:1;background:var(--accent-soft);transform:scale(1.12)}
 
 .m-wx{display:flex;gap:9px}
 .m-top{display:flex;gap:9px;align-items:stretch;margin-bottom:12px}
@@ -1828,7 +1828,7 @@
         <div id="shopping-body" data-page-node-id="BubJXjwm5ya3Ps7wQaOf0l"></div>
       </section>
       <section class="module" id="mod-media" data-sp-bindable="database" data-sp-database-id="XwBGD3AthDZziupFstknF4" data-page-node-id="wmE0Ozv4VPOxb1QNG9Gq81">
-        <div class="mod-head" data-page-node-id="ww8NZJbJ993jpKKtV5WKns"><h2 data-page-node-id="12stfYH9V0UA46lU8o3M7i">书影音</h2><span class="desc" data-page-node-id="LH5Tx5hHfiLB9V60VgZUjH">收藏、评分与年度统计，记录看过的好东西</span><span class="build-ver" title="页面版本">R70</span></div>
+        <div class="mod-head" data-page-node-id="ww8NZJbJ993jpKKtV5WKns"><h2 data-page-node-id="12stfYH9V0UA46lU8o3M7i">书影音</h2><span class="desc" data-page-node-id="LH5Tx5hHfiLB9V60VgZUjH">收藏、评分与年度统计，记录看过的好东西</span><span class="build-ver" title="页面版本">R71</span></div>
         <div id="media-body" data-page-node-id="MvHLGITKcoHEoc4n5mYw56"></div>
       </section>
       <section class="module" id="mod-report" data-sp-bindable="database" data-sp-database-id="VDJ7npH13yRDIkMBUcnQO4" data-page-node-id="zEMiJyVPF1imOLfhLXwOHu">
@@ -2836,7 +2836,7 @@ function mqPaint(anim){
   var box=document.getElementById("m-quote"); if(!box) return;
   var it=mqCur();
   box.className="m-quote"+(MQ.cat==="en"?" is-en":"")+(anim?" q-anim":"");
-  box.innerHTML=esc(it.t)+mqByHTML(it)+'<span class="m-qic" onclick="mqNext()" title="换一句（同类随机）">💡</span>';
+  box.innerHTML=esc(it.t)+mqByHTML(it);
   if(anim){ void box.offsetWidth; }
   var chips=document.getElementById("m-qcats");
   if(chips){
@@ -2928,7 +2928,7 @@ function buildMorningLeft(tasks, works){
 
   var q=mqCur();
 
-  var quoteHTML=esc(q.t)+mqByHTML(q)+'<span class="m-qic" onclick="mqNext()" title="换一句（同类随机）">💡</span>';
+  var quoteHTML=esc(q.t)+mqByHTML(q);
 
   var h=now.getHours();
 
@@ -2939,7 +2939,7 @@ function buildMorningLeft(tasks, works){
 
   return ''+
 
-    '<div class="m-top">'+'<div class="m-card m-greet"><div class="m-hi">'+hi+'，'+esc(MY_UID||'小蕾姐')+'</div><div class="m-date">'+wd+' · '+td+'</div><div class="m-en">'+enHi+'</div></div>'+'<div class="m-wx" id="m-wx"><div class="m-empty">天气加载中…</div></div>'+'</div>'+'<div class="m-card m-qcard" id="m-qcard"><div class="m-qcats" id="m-qcats">'+mqChipHTML()+'</div><div class="m-quote'+(MQ.cat==='en'?' is-en':'')+'" id="m-quote">'+quoteHTML+'</div></div>'+
+    '<div class="m-top">'+'<div class="m-card m-greet"><div class="m-hi">'+hi+'，'+esc(MY_UID||'小蕾姐')+'</div><div class="m-date">'+wd+' · '+td+'</div><div class="m-en">'+enHi+'</div></div>'+'<div class="m-wx" id="m-wx"><div class="m-empty">天气加载中…</div></div>'+'</div>'+'<div class="m-card m-qcard" id="m-qcard"><div class="m-quote'+(MQ.cat==='en'?' is-en':'')+'" id="m-quote">'+quoteHTML+'</div><div class="m-qfoot" id="m-qfoot"><div class="m-qcats" id="m-qcats">'+mqChipHTML()+'</div><span class="m-qic" id="m-qic" onclick="mqNext()" title="换一句（同类随机）">💡</span></div></div>'+
 
     '<div class="m-card"><div class="m-ttl"><span class="m-ic">📅</span>今日日程<span class="m-sub">按开始时间</span></div><div class="m-rows">'+schedHTML+'</div></div>'+
 

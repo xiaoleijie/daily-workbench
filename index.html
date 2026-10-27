@@ -1042,7 +1042,8 @@
   .sticky-note{background:#FFF7C2;border:1px solid #EADF8E;box-shadow:0 8px 18px rgba(0,0,0,.12);border-radius:6px;padding:12px 14px;transform:none;margin:0;height:100%;display:flex;flex-direction:column}
   .sticky-note .sticky-rule{height:0;border-top:1.5px dashed rgba(122,106,42,.45);margin:2px 0 10px}
   /* 记事本横格：line-height(30px) 与横线周期(30px) 一致，文字正好落在横线上 */
-  .sticky-note .sticky-area{width:100%;min-height:150px;flex:1;border:none;resize:vertical;
+  /* R72：只允许向下拉长——flex-basis 改 auto 让拖拽写入的 height 生效（原 flex:1 的 basis:0 会覆盖 inline height，导致拖了立即回弹）；宽度锁死不可横向拉 */
+  .sticky-note .sticky-area{width:100%;min-height:150px;flex:1 1 auto;max-width:100%;box-sizing:border-box;border:none;resize:vertical;
     font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;
     font-size:15px;color:#5a4f1e;outline:none;line-height:30px;padding:0;margin:0;
     background-color:transparent;
@@ -1828,7 +1829,7 @@
         <div id="shopping-body" data-page-node-id="BubJXjwm5ya3Ps7wQaOf0l"></div>
       </section>
       <section class="module" id="mod-media" data-sp-bindable="database" data-sp-database-id="XwBGD3AthDZziupFstknF4" data-page-node-id="wmE0Ozv4VPOxb1QNG9Gq81">
-        <div class="mod-head" data-page-node-id="ww8NZJbJ993jpKKtV5WKns"><h2 data-page-node-id="12stfYH9V0UA46lU8o3M7i">书影音</h2><span class="desc" data-page-node-id="LH5Tx5hHfiLB9V60VgZUjH">收藏、评分与年度统计，记录看过的好东西</span><span class="build-ver" title="页面版本">R71</span></div>
+        <div class="mod-head" data-page-node-id="ww8NZJbJ993jpKKtV5WKns"><h2 data-page-node-id="12stfYH9V0UA46lU8o3M7i">书影音</h2><span class="desc" data-page-node-id="LH5Tx5hHfiLB9V60VgZUjH">收藏、评分与年度统计，记录看过的好东西</span><span class="build-ver" title="页面版本">R72</span></div>
         <div id="media-body" data-page-node-id="MvHLGITKcoHEoc4n5mYw56"></div>
       </section>
       <section class="module" id="mod-report" data-sp-bindable="database" data-sp-database-id="VDJ7npH13yRDIkMBUcnQO4" data-page-node-id="zEMiJyVPF1imOLfhLXwOHu">
@@ -4512,7 +4513,8 @@ function renderSchedule(rows){
   var filterBar='<div class="filter-row sched-filters" id="schedFilters">'+
     loadFilterOrder().map(function(k){ return filterCells[k]||''; }).join('')+
     '</div>';
-  var sticky='<div class="sticky-note"><div class="sticky-rule"></div><textarea class="sticky-area" id="month-note" onchange="saveMonthNote(this.value)" placeholder="还没定下日期的安排，先记在这里…">'+esc(getMonthNote())+'</textarea></div>';
+  var _sh=stickyHGet();
+  var sticky='<div class="sticky-note"><div class="sticky-rule"></div><textarea class="sticky-area" id="month-note"'+(_sh?' style="height:'+_sh+'px"':'')+' onchange="saveMonthNote(this.value);stickyHSave(this)" onmouseup="stickyHSave(this)" title="右下角小斜线可向下拉长（宽度固定不可调）" placeholder="还没定下日期的安排，先记在这里…">'+esc(getMonthNote())+'</textarea></div>';
   var shown=rows.filter(function(r){ var st=schedStatus(r); return (schedFilter==='全部'||r["分类"]===schedFilter) && (schedRange===null?(!schedSelDate||dateSub(r["日期"])===schedSelDate):(schedRange==='today'?dateSub(r["日期"])===td:(schedRange==='month'?dateSub(r["日期"]).indexOf(td.substring(0,7))===0:dateSub(r["日期"]).indexOf(td.substring(0,4))===0))) && (schedStatusF==='全部状态'||(schedStatusF==='待办'&&(st==='todo'||st==='overdue'))||(schedStatusF==='已完成'&&st==='done')); });
   shown.sort(function(a,b){ var da=dateSub(a["日期"])||'',db=dateSub(b["日期"])||''; if(da!==db) return da<db?-1:1; var ta=a["开始时间"]||'',tb=b["开始时间"]||''; return ta<tb?-1:(ta>tb?1:0); });
   var list='<div class="panel sched-list-panel"><div class="s-batchbar"><span class="s-total" id="s-total">共 '+shown.length+' 项</span><button class="btn sm s-add-item" onclick="openSchedAddModal()" title="添加事项，可一次选中多个日期">+事项</button><input type="checkbox" id="s-sel-all" class="s-sel-all-cb" style="margin-left:auto" onclick="toggleSelAll(this.checked)"><label class="s-selall" for="s-sel-all">全选</label><span id="s-sel-cnt"></span><span id="s-sel-ops" style="display:none"><button class="btn sm" onclick="batchSchedDone()" title="把勾选的事项标记为已完成">完成</button><button class="btn sm" onclick="batchSchedTodo()" title="把勾选的事项恢复为待办">待办</button><button class="btn sm danger" onclick="batchSchedDel()" title="删除勾选的事项">删除</button></span><button class="btn sm" onclick="schedUndoLast()" title="撤销上次批量修改" style="flex:0 0 auto">撤销</button></div><div class="list">';
@@ -6819,6 +6821,18 @@ function getSchedCats(){
 function setSchedCats(a){ try{ localStorage.setItem(SCHED_CATS_KEY, JSON.stringify(a)); }catch(e){} }
 function getMonthNote(){ try{ return localStorage.getItem('lw_monthnote')||''; }catch(e){ return ''; } }
 function saveMonthNote(v){ try{ localStorage.setItem('lw_monthnote', v||''); }catch(e){} }
+/* R72：便利贴高度记忆（只向下拉长，宽度不可变） */
+function stickyHGet(){
+  var n=0; try{ n=parseInt(localStorage.getItem('lw_sticky_h')||'0',10); }catch(e){}
+  if(!(n>=80 && n<=1600)) n=0;
+  return n;
+}
+function stickyHSave(el){
+  if(!el) return;
+  var h=Math.round(el.getBoundingClientRect().height);
+  if(!(h>=80 && h<=1600)) return;
+  try{ localStorage.setItem('lw_sticky_h', String(h)); }catch(e){}
+}
 function getDIY(k,def){ try{ var v=localStorage.getItem('lw_diy_'+k); return v===null?def:v; }catch(e){ return def; } }
 function saveDIY(k,v){ try{ localStorage.setItem('lw_diy_'+k, v||''); }catch(e){} }
 function lwLoadJSON(k){ try{ return JSON.parse(localStorage.getItem(k)); }catch(e){ return null; } }

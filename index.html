@@ -1051,6 +1051,14 @@
       transparent 0,transparent 29px,
       rgba(168,148,52,.30) 29px,rgba(168,148,52,.30) 30px);
     background-attachment:local;background-position:0 0}
+  /* R73：便利贴字体缩放工具条（A- / 数值 / A+），仅纵向不影响宽度 */
+  .sticky-note .sticky-bar{display:flex;align-items:center;justify-content:flex-end;margin:0 0 4px}
+  .sticky-note .sticky-fs{display:flex;align-items:center;gap:6px}
+  .sticky-note .sf-btn{flex:0 0 auto;width:22px;height:22px;line-height:1;border:1px solid #EADF8E;border-radius:5px;background:#fff;color:#7a6a2a;cursor:pointer;font-size:12px;padding:0;transition:background .12s,transform .1s}
+  .sticky-note .sf-btn:hover:not(:disabled){background:#fffdf0;transform:translateY(-1px)}
+  .sticky-note .sf-btn:active:not(:disabled){transform:translateY(0)}
+  .sticky-note .sf-btn:disabled{opacity:.35;cursor:not-allowed}
+  .sticky-note .sf-val{font-size:12px;color:#7a6a2a;min-width:18px;text-align:center;font-variant-numeric:tabular-nums}
   .filter-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
   /* 下拉控件与选项一律居左，视觉更舒服 */
   select.filt-btn,select.filt-btn option{text-align:left;text-align-last:left}
@@ -1829,7 +1837,7 @@
         <div id="shopping-body" data-page-node-id="BubJXjwm5ya3Ps7wQaOf0l"></div>
       </section>
       <section class="module" id="mod-media" data-sp-bindable="database" data-sp-database-id="XwBGD3AthDZziupFstknF4" data-page-node-id="wmE0Ozv4VPOxb1QNG9Gq81">
-        <div class="mod-head" data-page-node-id="ww8NZJbJ993jpKKtV5WKns"><h2 data-page-node-id="12stfYH9V0UA46lU8o3M7i">书影音</h2><span class="desc" data-page-node-id="LH5Tx5hHfiLB9V60VgZUjH">收藏、评分与年度统计，记录看过的好东西</span><span class="build-ver" title="页面版本">R72</span></div>
+        <div class="mod-head" data-page-node-id="ww8NZJbJ993jpKKtV5WKns"><h2 data-page-node-id="12stfYH9V0UA46lU8o3M7i">书影音</h2><span class="desc" data-page-node-id="LH5Tx5hHfiLB9V60VgZUjH">收藏、评分与年度统计，记录看过的好东西</span><span class="build-ver" title="页面版本">R73</span></div>
         <div id="media-body" data-page-node-id="MvHLGITKcoHEoc4n5mYw56"></div>
       </section>
       <section class="module" id="mod-report" data-sp-bindable="database" data-sp-database-id="VDJ7npH13yRDIkMBUcnQO4" data-page-node-id="zEMiJyVPF1imOLfhLXwOHu">
@@ -4514,7 +4522,10 @@ function renderSchedule(rows){
     loadFilterOrder().map(function(k){ return filterCells[k]||''; }).join('')+
     '</div>';
   var _sh=stickyHGet();
-  var sticky='<div class="sticky-note"><div class="sticky-rule"></div><textarea class="sticky-area" id="month-note"'+(_sh?' style="height:'+_sh+'px"':'')+' onchange="saveMonthNote(this.value);stickyHSave(this)" onmouseup="stickyHSave(this)" title="右下角小斜线可向下拉长（宽度固定不可调）" placeholder="还没定下日期的安排，先记在这里…">'+esc(getMonthNote())+'</textarea></div>';
+  var _fs=stickyFSGet();
+  var _fstyle=stickyFSStyle(_fs);
+  var _style=(_sh?('height:'+_sh+'px;'):'')+_fstyle;
+  var sticky='<div class="sticky-note">'+stickyBar(_fs)+'<div class="sticky-rule"></div><textarea class="sticky-area" id="month-note"'+(_style?' style="'+_style+'"':'')+' onchange="saveMonthNote(this.value);stickyHSave(this)" onmouseup="stickyHSave(this)" title="右下角小斜线可向下拉长（宽度固定不可调）" placeholder="还没定下日期的安排，先记在这里…">'+esc(getMonthNote())+'</textarea></div>';
   var shown=rows.filter(function(r){ var st=schedStatus(r); return (schedFilter==='全部'||r["分类"]===schedFilter) && (schedRange===null?(!schedSelDate||dateSub(r["日期"])===schedSelDate):(schedRange==='today'?dateSub(r["日期"])===td:(schedRange==='month'?dateSub(r["日期"]).indexOf(td.substring(0,7))===0:dateSub(r["日期"]).indexOf(td.substring(0,4))===0))) && (schedStatusF==='全部状态'||(schedStatusF==='待办'&&(st==='todo'||st==='overdue'))||(schedStatusF==='已完成'&&st==='done')); });
   shown.sort(function(a,b){ var da=dateSub(a["日期"])||'',db=dateSub(b["日期"])||''; if(da!==db) return da<db?-1:1; var ta=a["开始时间"]||'',tb=b["开始时间"]||''; return ta<tb?-1:(ta>tb?1:0); });
   var list='<div class="panel sched-list-panel"><div class="s-batchbar"><span class="s-total" id="s-total">共 '+shown.length+' 项</span><button class="btn sm s-add-item" onclick="openSchedAddModal()" title="添加事项，可一次选中多个日期">+事项</button><input type="checkbox" id="s-sel-all" class="s-sel-all-cb" style="margin-left:auto" onclick="toggleSelAll(this.checked)"><label class="s-selall" for="s-sel-all">全选</label><span id="s-sel-cnt"></span><span id="s-sel-ops" style="display:none"><button class="btn sm" onclick="batchSchedDone()" title="把勾选的事项标记为已完成">完成</button><button class="btn sm" onclick="batchSchedTodo()" title="把勾选的事项恢复为待办">待办</button><button class="btn sm danger" onclick="batchSchedDel()" title="删除勾选的事项">删除</button></span><button class="btn sm" onclick="schedUndoLast()" title="撤销上次批量修改" style="flex:0 0 auto">撤销</button></div><div class="list">';
@@ -6833,6 +6844,36 @@ function stickyHSave(el){
   if(!(h>=80 && h<=1600)) return;
   try{ localStorage.setItem('lw_sticky_h', String(h)); }catch(e){}
 }
+/* R73：便利贴字体缩放（A- / A+，11~24px，默认 15），行高=字号×2，横格线同步缩放 */
+var STICKY_FS_MIN=11, STICKY_FS_MAX=24, STICKY_FS_DEF=15;
+function stickyFSGet(){
+  var n=STICKY_FS_DEF; try{ n=parseInt(localStorage.getItem('lw_sticky_fs')||'',10); }catch(e){}
+  if(!(n>=STICKY_FS_MIN && n<=STICKY_FS_MAX)) n=STICKY_FS_DEF;
+  return n;
+}
+function stickyFSStyle(fs){
+  var L=fs*2;
+  return 'font-size:'+fs+'px;line-height:'+L+'px;'+
+    'background-image:repeating-linear-gradient(to bottom,transparent 0,transparent '+(L-1)+'px,rgba(168,148,52,.30) '+(L-1)+'px,rgba(168,148,52,.30) '+L+'px)';
+}
+function stickyBar(fs){
+  return '<div class="sticky-bar"><span class="sticky-fs">'+
+    '<button type="button" id="sfMinus" class="sf-btn" '+(fs<=STICKY_FS_MIN?'disabled':'')+' onclick="stickyFS(-1)" title="缩小字体">A&#8722;</button>'+
+    '<span class="sf-val" id="sfVal">'+fs+'</span>'+
+    '<button type="button" id="sfPlus" class="sf-btn" '+(fs>=STICKY_FS_MAX?'disabled':'')+' onclick="stickyFS(1)" title="放大字体">A+</button>'+
+    '</span></div>';
+}
+function stickyFSSet(fs){
+  if(!(fs>=STICKY_FS_MIN && fs<=STICKY_FS_MAX)) return;
+  try{ localStorage.setItem('lw_sticky_fs', String(fs)); }catch(e){}
+  var ta=document.getElementById('month-note');
+  if(ta) applyStickyFS(ta,fs);
+  var v=document.getElementById('sfVal'); if(v) v.textContent=fs;
+  var pm=document.getElementById('sfMinus'); if(pm) pm.disabled=(fs<=STICKY_FS_MIN);
+  var pp=document.getElementById('sfPlus'); if(pp) pp.disabled=(fs>=STICKY_FS_MAX);
+}
+function stickyFS(delta){ stickyFSSet(stickyFSGet()+delta); }
+function applyStickyFS(ta,fs){ if(!ta) return; ta.style.fontSize=fs+'px'; ta.style.lineHeight=(fs*2)+'px'; var L=fs*2; ta.style.backgroundImage='repeating-linear-gradient(to bottom,transparent 0,transparent '+(L-1)+'px,rgba(168,148,52,.30) '+(L-1)+'px,rgba(168,148,52,.30) '+L+'px)'; }
 function getDIY(k,def){ try{ var v=localStorage.getItem('lw_diy_'+k); return v===null?def:v; }catch(e){ return def; } }
 function saveDIY(k,v){ try{ localStorage.setItem('lw_diy_'+k, v||''); }catch(e){} }
 function lwLoadJSON(k){ try{ return JSON.parse(localStorage.getItem(k)); }catch(e){ return null; } }

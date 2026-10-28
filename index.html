@@ -4,6 +4,7 @@
 <meta charset="UTF-8" data-page-node-id="vbxNcTk8EJMEttwLPzzwbg" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" data-page-node-id="DI5q4TyNWImOwMwhHyCRVZ" />
 <title>日常集 · 生活工作台</title>
+  <meta name="theme-color" id="metaThemeColor" content="#B5654A">
   <link rel="manifest" href="./manifest.webmanifest">
 <style>
   :root{
@@ -224,17 +225,18 @@
 
 .qc-hint{font-size:12px;color:var(--muted);text-align:right;line-height:1.4}
   .quad-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-  .q{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 10px 12px;min-height:160px;display:flex;flex-direction:column;transition:background .15s,border-color .15s}
+  .q{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 10px 12px;min-height:160px;display:flex;flex-direction:column;transition:background .15s,border-color .15s}
+  .q::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;border-radius:12px 0 0 12px;background:var(--line2)}
   .q.drag-over{border-color:var(--accent);background:var(--accent-soft);box-shadow:0 0 0 2px var(--accent-soft) inset}
   .q-head{font-size:13px;font-weight:700;display:flex;align-items:center;gap:6px;margin-bottom:9px;flex-wrap:wrap}
 
 .q-default{font-size:10.5px;font-weight:600;color:#c0392b;background:#fdecea;border:1px solid #f5c6c0;border-radius:999px;padding:1px 7px;margin-left:4px;white-space:nowrap}
   .q-head .q-sub{font-size:11px;font-weight:600;color:var(--muted)}
-  .q-head .q-cnt{margin-left:auto;font-size:11px;font-weight:700;color:#fff;background:rgba(0,0,0,.2);border-radius:999px;min-width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center;padding:0 5px}
-  .q1{background:#fdf1ef;border-color:#f0d3cd}.q1 .q-head{color:#c0392b}
-  .q2{background:#eef7f2;border-color:#d3e8df}.q2 .q-head{color:#2e7d6b}
-  .q3{background:#fdf8ea;border-color:#f0e6c4}.q3 .q-head{color:#b8860b}
-  .q4{background:#f3f4f6;border-color:#e2e4e9}.q4 .q-head{color:#6b7280}
+  .q-head .q-cnt{margin-left:auto;font-size:11px;font-weight:700;color:var(--on-accent);background:color-mix(in srgb,var(--accent) 82%,#fff);border-radius:999px;min-width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center;padding:0 5px}
+  .q1{background:var(--accent-soft);border-color:var(--accent-line)}.q1 .q-head{color:var(--accent-deep)}.q1::before{background:var(--accent)}
+  .q2{background:var(--surface);border-color:var(--line2)}.q2 .q-head{color:var(--ink)}.q2::before{background:color-mix(in srgb,var(--accent) 55%,#fff)}
+  .q3{background:#FBF9F5;border-color:var(--line)}.q3 .q-head{color:#6F685E}.q3::before{background:color-mix(in srgb,var(--accent) 28%,#fff)}
+  .q4{background:#F4F3F0;border-color:#E6E4DE}.q4 .q-head{color:var(--muted)}.q4::before{background:#E2E0DA}
   .q-body{display:flex;flex-wrap:wrap;gap:12px;align-content:flex-start;flex:1}
   .q-empty{font-size:12px;color:var(--muted);opacity:.7;padding:10px 4px;width:100%;text-align:center;border:1px dashed var(--line2);border-radius:8px}
   .note{position:relative;width:140px;min-height:72px;background:linear-gradient(180deg,#fff7b0,#fff0a0);box-shadow:0 6px 14px rgba(120,100,40,.18);border-radius:3px;padding:12px 8px 8px;transform:rotate(-1.2deg);transition:transform .15s,box-shadow .15s;cursor:grab}
@@ -1655,15 +1657,15 @@
 .m-ops .m-rev-btn{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;line-height:1;color:var(--muted);border:1px solid var(--line2);background:var(--paper);cursor:pointer;padding:0}
 .m-ops .m-rev-btn:hover{background:var(--surface);color:var(--ink)}
 
-.m-city{flex:1;background:#fff4e0;border-radius:11px;position:relative;padding:15px 6px 8px;text-align:center}
+.m-city{flex:1;background:linear-gradient(160deg,var(--accent-soft),color-mix(in srgb,var(--accent-soft) 55%,#fff));border:1px solid var(--accent-line);border-radius:11px;position:relative;padding:15px 6px 8px;text-align:center}
 
-.m-city-nm{position:absolute;top:5px;left:8px;font-size:10.5px;font-weight:700;color:#a9710a;opacity:.9}
+.m-city-nm{position:absolute;top:5px;left:8px;font-size:10.5px;font-weight:700;color:var(--accent-deep);opacity:.75}
 
-.m-city-tmp{font-size:17px;font-weight:800;line-height:1.1;margin:0;color:#7a5610}
+.m-city-tmp{font-size:17px;font-weight:800;line-height:1.1;margin:0;color:var(--accent-deep)}
 
-.m-city-cd{font-size:11.5px;color:#9a6c12}
+.m-city-cd{font-size:11.5px;color:var(--accent-deep);opacity:.82}
 
-.m-city-hl{font-size:10.5px;color:#b0821d;margin-top:2px}
+.m-city-hl{font-size:10.5px;color:var(--accent-deep);opacity:.66;margin-top:2px}
 
 .m-rev-sum{display:flex;align-items:center;gap:11px;margin-bottom:7px}
 
@@ -1878,7 +1880,7 @@
         <div id="shopping-body" data-page-node-id="BubJXjwm5ya3Ps7wQaOf0l"></div>
       </section>
       <section class="module" id="mod-media" data-sp-bindable="database" data-sp-database-id="XwBGD3AthDZziupFstknF4" data-page-node-id="wmE0Ozv4VPOxb1QNG9Gq81">
-        <div class="mod-head" data-page-node-id="ww8NZJbJ993jpKKtV5WKns"><h2 data-page-node-id="12stfYH9V0UA46lU8o3M7i">书影音</h2><span class="desc" data-page-node-id="LH5Tx5hHfiLB9V60VgZUjH">收藏、评分与年度统计，记录看过的好东西</span><span class="build-ver" title="页面版本">R75</span></div>
+        <div class="mod-head" data-page-node-id="ww8NZJbJ993jpKKtV5WKns"><h2 data-page-node-id="12stfYH9V0UA46lU8o3M7i">书影音</h2><span class="desc" data-page-node-id="LH5Tx5hHfiLB9V60VgZUjH">收藏、评分与年度统计，记录看过的好东西</span><span class="build-ver" title="页面版本">R76</span></div>
         <div id="media-body" data-page-node-id="MvHLGITKcoHEoc4n5mYw56"></div>
       </section>
       <section class="module" id="mod-report" data-sp-bindable="database" data-sp-database-id="VDJ7npH13yRDIkMBUcnQO4" data-page-node-id="zEMiJyVPF1imOLfhLXwOHu">
@@ -2392,6 +2394,17 @@ function applyTheme(k){
   Array.prototype.forEach.call(dots,function(d){ d.style.opacity = (d.getAttribute('data-k')===k)?'1':'0.45'; });
   var nm=document.getElementById('themeName'); if(nm) nm.textContent='当前：'+(THEMES[k]?THEMES[k].name:'高级红');
   var td=document.getElementById('themeDot'); if(td) td.style.background=THEMES[k]?THEMES[k].accent:'#B5654A';
+  syncThemeColor();
+}
+/* 让窗口抬头（应用/浏览器标题栏）跟着主题走：写入 meta theme-color */
+function syncThemeColor(){
+  try{
+    var mc=document.getElementById('metaThemeColor'); if(!mc) return;
+    var cs=getComputedStyle(document.documentElement);
+    var a=(cs.getPropertyValue('--accent')||'').trim();
+    if(!a) a='#B5654A';
+    mc.setAttribute('content', a);
+  }catch(e){}
 }
 function openPanelNear(btnId, panelId){
   var b=document.getElementById(btnId), c=document.getElementById(panelId);

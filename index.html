@@ -218,7 +218,8 @@
   .tl-quad{font-size:12px;color:var(--muted)}
   .tl-ops{display:flex;gap:6px;justify-content:flex-end}
   /* 今日安排·四象限白板 + 传统便利贴 */
-  .quad-wrap{margin:4px 0 10px;background:#eef0f2;border:1px solid #e2e5ea;border-radius:14px;padding:12px}
+  /* R77：只有这块「底板」跟着主题走（原来是固定天蓝 #eef0f2）；里面四个象限恢复固定红绿黄蓝 */
+  .quad-wrap{margin:4px 0 10px;background:var(--accent-soft);border:1px solid var(--accent-line);border-radius:14px;padding:12px}
   .quad-cap{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin:0 0 8px}
 
 .qc-date{font-size:15px;font-weight:700;color:#2b2620;white-space:nowrap}
@@ -226,17 +227,17 @@
 .qc-hint{font-size:12px;color:var(--muted);text-align:right;line-height:1.4}
   .quad-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
   .q{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 10px 12px;min-height:160px;display:flex;flex-direction:column;transition:background .15s,border-color .15s}
-  .q::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;border-radius:12px 0 0 12px;background:var(--line2)}
   .q.drag-over{border-color:var(--accent);background:var(--accent-soft);box-shadow:0 0 0 2px var(--accent-soft) inset}
   .q-head{font-size:13px;font-weight:700;display:flex;align-items:center;gap:6px;margin-bottom:9px;flex-wrap:wrap}
 
 .q-default{font-size:10.5px;font-weight:600;color:#c0392b;background:#fdecea;border:1px solid #f5c6c0;border-radius:999px;padding:1px 7px;margin-left:4px;white-space:nowrap}
   .q-head .q-sub{font-size:11px;font-weight:600;color:var(--muted)}
-  .q-head .q-cnt{margin-left:auto;font-size:11px;font-weight:700;color:var(--on-accent);background:color-mix(in srgb,var(--accent) 82%,#fff);border-radius:999px;min-width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center;padding:0 5px}
-  .q1{background:var(--accent-soft);border-color:var(--accent-line)}.q1 .q-head{color:var(--accent-deep)}.q1::before{background:var(--accent)}
-  .q2{background:var(--surface);border-color:var(--line2)}.q2 .q-head{color:var(--ink)}.q2::before{background:color-mix(in srgb,var(--accent) 55%,#fff)}
-  .q3{background:#FBF9F5;border-color:var(--line)}.q3 .q-head{color:#6F685E}.q3::before{background:color-mix(in srgb,var(--accent) 28%,#fff)}
-  .q4{background:#F4F3F0;border-color:#E6E4DE}.q4 .q-head{color:var(--muted)}.q4::before{background:#E2E0DA}
+  .q-head .q-cnt{margin-left:auto;font-size:11px;font-weight:700;color:#fff;background:rgba(0,0,0,.2);border-radius:999px;min-width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center;padding:0 5px}
+  /* R77：四象限恢复固定「红 / 绿 / 黄 / 蓝」——不跟主题变，层级靠本色区分 */
+  .q1{background:#fdf1ef;border-color:#f0d3cd}.q1 .q-head{color:#c0392b}
+  .q2{background:#eef7f2;border-color:#d3e8df}.q2 .q-head{color:#2e7d6b}
+  .q3{background:#fdf8ea;border-color:#f0e6c4}.q3 .q-head{color:#b8860b}
+  .q4{background:#eef3f9;border-color:#dbe6f2}.q4 .q-head{color:#4b7398}
   .q-body{display:flex;flex-wrap:wrap;gap:12px;align-content:flex-start;flex:1}
   .q-empty{font-size:12px;color:var(--muted);opacity:.7;padding:10px 4px;width:100%;text-align:center;border:1px dashed var(--line2);border-radius:8px}
   .note{position:relative;width:140px;min-height:72px;background:linear-gradient(180deg,#fff7b0,#fff0a0);box-shadow:0 6px 14px rgba(120,100,40,.18);border-radius:3px;padding:12px 8px 8px;transform:rotate(-1.2deg);transition:transform .15s,box-shadow .15s;cursor:grab}
@@ -639,19 +640,34 @@
 .mp.show-now .mp-now{transform:translateY(0);opacity:1;pointer-events:auto}
 .mp-now-top{height:30px;flex:0 0 auto;display:flex;align-items:center;justify-content:center;gap:6px;margin:8px -14px -10px;font-size:11.5px;color:#8a8574;cursor:pointer;border-radius:0 0 14px 14px;background:#faf9f4;border-top:1px solid #f0ece0;transition:background .18s,color .18s}
 .mp-now-top:hover{background:#f2efe4;color:#5c6653}
-.mp-now-body{flex:0 0 auto;display:flex;align-items:center;gap:14px;padding-top:4px;padding-right:16px;min-height:0}
+.mp-now-body{flex:0 0 auto;display:flex;align-items:center;gap:12px;padding-top:6px;padding-right:16px;min-height:0}
 .mp.cat-zone .mp-now-body{padding-right:88px}
-.mp-now-left{flex:0 0 auto;max-width:32%;min-width:0}
-.mp-now-src{font-size:11px;color:var(--muted)}
-.mp-now-title{font-size:19px;font-weight:700;color:#2b2b2b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.mp-now-prog{flex:1 1 auto;min-width:60px;height:6px;background:#e6e2d6;border-radius:6px;cursor:pointer;position:relative;overflow:hidden}
-.mp-now-fill{height:100%;width:0;background:#7E9A6B;border-radius:6px}
-.mp-now-btns{flex:0 0 auto;display:flex;gap:6px}
-.mp-now-btns button{width:38px;height:34px;border:1px solid #e3ded0;background:#fff;border-radius:9px;font-size:13px;color:#4a4a4a;cursor:pointer}
-.mp-now-btns button:hover{background:#f5f2e8}
-.mp-now-foot{flex:0 0 auto;display:flex;align-items:center;gap:12px;font-size:12px;color:var(--muted);padding-top:8px;padding-right:16px}
+/* R77：去掉「本地音乐」小字，歌名区加高放大（对齐用户黑框高度） */
+.mp-now-left{flex:0 0 auto;max-width:34%;min-width:0;display:flex;align-items:center;min-height:52px}
+.mp-now-title{font-size:22px;font-weight:800;line-height:1.16;letter-spacing:.2px;color:#2b2b2b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* R77：中间竖排——上=随节奏跳动的频谱，下=进度条 */
+.mp-now-right{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:7px}
+.mp-now-wave{height:28px;display:flex;align-items:flex-end;gap:2px;overflow:hidden}
+.mp-now-wave i{flex:1 1 0;min-width:2px;height:14%;border-radius:2px 2px 1px 1px;background:linear-gradient(180deg,var(--accent-line),var(--accent));transition:height .08s linear}
+.mp-now-wave.idle i{transition:height .3s ease}
+.mp-now-prog{flex:0 0 auto;width:100%;height:6px;background:#e6e2d6;border-radius:6px;cursor:pointer;position:relative;overflow:hidden}
+.mp-now-fill{height:100%;width:0;background:linear-gradient(90deg,var(--accent-grad),var(--accent));border-radius:6px}
+/* R77：上一首/下一首/播放——宽度×1.5（38→57），主题色立体渐变 */
+.mp-now-btns{flex:0 1 auto;min-width:0;display:flex;gap:8px}
+.mp-now-btns button{width:57px;min-width:34px;flex:0 1 auto;height:36px;border-radius:10px;font-size:15px;color:var(--accent-deep);cursor:pointer;font-family:inherit;
+  border:1px solid color-mix(in srgb,var(--accent) 46%,#fff);
+  background:linear-gradient(180deg,color-mix(in srgb,var(--accent) 26%,#fff) 0%,color-mix(in srgb,var(--accent) 8%,#fff) 100%);
+  box-shadow:0 1px 0 rgba(255,255,255,.95) inset,0 -2px 0 color-mix(in srgb,var(--accent) 16%,transparent) inset,0 2px 3px rgba(70,58,40,.14),0 1px 0 color-mix(in srgb,var(--accent) 30%,#fff);
+  transition:transform .1s,box-shadow .1s,filter .15s}
+.mp-now-btns button:hover{filter:brightness(1.05)}
+.mp-now-btns button:active{transform:translateY(1px);box-shadow:0 1px 2px rgba(70,58,40,.16) inset,0 1px 0 color-mix(in srgb,var(--accent) 26%,#fff)}
+.mp-now-foot{flex:0 0 auto;display:flex;align-items:center;gap:10px;font-size:12px;color:var(--muted);padding-top:6px;padding-right:16px}
+.mp-now-foot>span{white-space:nowrap;flex:0 0 auto}
+.mp-now-foot .mp-modes .btn{white-space:nowrap}
 .mp.cat-zone .mp-now-foot{padding-right:88px}
-.mp-now-foot .mp-modes{display:flex;gap:6px;margin-left:auto}
+/* R77：音量条从第一行挪到这一行（时间右边、顺序/随机左边） */
+.mp-now-foot .mp-vol{margin-left:auto;flex:0 1 auto;min-width:0}
+.mp-now-foot .mp-modes{display:flex;gap:6px;margin-left:0}
 /* R62：播放页高度收紧——歌单位（被浮层盖住）不再撑高卡片，内容不拉伸；
    正在播放区下方加「接下来 3 首」小字列表（字号同 1:14 / 4:42 共 N 首） */
 .mp.show-now:not(.mp-web){min-height:204px}
@@ -667,16 +683,21 @@
 /* R64：本地歌单改名按钮（与网页歌单 ✎ 同款） */
 .mp-pl-ren{width:22px;height:22px;flex:0 0 auto;border:0;background:transparent;color:#a49d8c;font-size:12px;cursor:pointer;border-radius:5px;line-height:1;padding:0;font-family:inherit}
 .mp-pl-ren:hover{background:#f6f4ec;color:#5c6653}
-/* R63：播放页音量调节——进度条行，播放按钮左边 */
+/* R63：音量调节——R77 起在播放页第二行（时间/共N首 右侧） */
 .mp-vol{flex:0 0 auto;display:flex;align-items:center;gap:6px}
-.mp-vol-btn{width:26px;height:26px;padding:0;border:1px solid #e3ded0;background:#fff;border-radius:8px;font-size:12px;line-height:1;color:#4a4a4a;cursor:pointer}
+.mp-vol-btn{width:26px;height:26px;padding:0;border:1px solid color-mix(in srgb,var(--accent) 26%,#e3ded0);background:#fff;border-radius:8px;font-size:12px;line-height:1;color:#4a4a4a;cursor:pointer}
 .mp-vol-btn:hover{background:#f5f2e8}
-.mp-vol input[type=range]{width:76px;height:4px;-webkit-appearance:none;appearance:none;background:#e6e2d6;border-radius:4px;outline:none;cursor:pointer}
-.mp-vol input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:12px;height:12px;border-radius:50%;background:#7E9A6B;border:none;cursor:pointer}
-.mp-vol input[type=range]::-moz-range-thumb{width:12px;height:12px;border-radius:50%;background:#7E9A6B;border:none;cursor:pointer}
-@media (max-width:760px){.mp-vol input[type=range]{width:52px}}
+.mp-vol input[type=range]{width:132px;max-width:132px;min-width:44px;flex:1 1 auto;height:4px;-webkit-appearance:none;appearance:none;background:#e6e2d6;border-radius:4px;outline:none;cursor:pointer}
+.mp-vol input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:12px;height:12px;border-radius:50%;background:var(--accent);border:none;cursor:pointer}
+.mp-vol input[type=range]::-moz-range-thumb{width:12px;height:12px;border-radius:50%;background:var(--accent);border:none;cursor:pointer}
+@media (max-width:900px){.mp-vol input[type=range]{width:88px}}
+@media (max-width:760px){.mp-vol input[type=range]{width:56px}}
 .mp-now-btns button:last-child{margin-right:2px}
-@media (max-width:760px){.mp-grid{grid-template-columns:repeat(2,1fr)}.mp-now-body{gap:8px}.mp-now-title{font-size:15px}}
+@media (max-width:1240px){.mp-now-title{font-size:18px}.mp-now-left{min-height:44px}.mp-now-btns button{width:48px;font-size:13px}
+  .mp-now-foot #mp-now-cnt{display:none}.mp-now-foot .mp-vol input{min-width:36px}}
+@media (max-width:900px){.mp-now-foot>.mp-modes{display:none}}
+@media (max-width:760px){.mp-grid{grid-template-columns:repeat(2,1fr)}.mp-now-body{gap:8px}.mp-now-title{font-size:15px;}
+  .mp-now-btns button{width:40px;min-width:30px}.mp-now-wave{height:20px}}
 .btn.active{background:#7E9A6B;color:#fff;border-color:#7E9A6B}
 
 
@@ -1880,7 +1901,7 @@
         <div id="shopping-body" data-page-node-id="BubJXjwm5ya3Ps7wQaOf0l"></div>
       </section>
       <section class="module" id="mod-media" data-sp-bindable="database" data-sp-database-id="XwBGD3AthDZziupFstknF4" data-page-node-id="wmE0Ozv4VPOxb1QNG9Gq81">
-        <div class="mod-head" data-page-node-id="ww8NZJbJ993jpKKtV5WKns"><h2 data-page-node-id="12stfYH9V0UA46lU8o3M7i">书影音</h2><span class="desc" data-page-node-id="LH5Tx5hHfiLB9V60VgZUjH">收藏、评分与年度统计，记录看过的好东西</span><span class="build-ver" title="页面版本">R76</span></div>
+        <div class="mod-head" data-page-node-id="ww8NZJbJ993jpKKtV5WKns"><h2 data-page-node-id="12stfYH9V0UA46lU8o3M7i">书影音</h2><span class="desc" data-page-node-id="LH5Tx5hHfiLB9V60VgZUjH">收藏、评分与年度统计，记录看过的好东西</span><span class="build-ver" title="页面版本">R77</span></div>
         <div id="media-body" data-page-node-id="MvHLGITKcoHEoc4n5mYw56"></div>
       </section>
       <section class="module" id="mod-report" data-sp-bindable="database" data-sp-database-id="VDJ7npH13yRDIkMBUcnQO4" data-page-node-id="zEMiJyVPF1imOLfhLXwOHu">
@@ -8237,6 +8258,7 @@ function mpRender() {
   }
   mpTick();
   mpVolApply(mpVolRead(MP_VOL_KEY, 1), true);   /* R63：重建后恢复音量（quiet：只同步不存） */
+  if (wantNow && MP.curSrc !== '网页歌单') mpWaveStart(); else mpWaveStop();   /* R77：频谱循环 */
   mpCatZone();   /* R62：className 刚被重置过，让位状态要重算 */
   /* R65：卡片不再随歌单长度长高（固定 204px，整张歌单列表自己在 .mp-now-next 里滚动）；
      仍保留 nearest 滚动：当前播放行不在可见区时才滚过来（歌单短时从第 1 首开始展示＋不乱滚） */
@@ -8340,11 +8362,11 @@ function mpInner(pl) {
     + '<div class="mp-grid">' + cells + '</div>'
     + '<div class="mp-now">'
     + '  <div class="mp-now-body">'
-    + '    <div class="mp-now-left"><div class="mp-now-src">' + (MP.curSrc === '本地' ? '本地音乐' : esc(MP.curSrc)) + '</div>'
-    + '      <div class="mp-now-title">' + esc(now ? (now.title || now.name) : '未播放') + '</div></div>'
-    + '    <div class="mp-now-prog" onclick="mpSeek(event)"><div class="mp-now-fill" id="mp-now-fill"></div></div>'
-    + '    <div class="mp-vol" id="mp-vol"><button class="mp-vol-btn" id="mp-vol-btn" onclick="mpVolToggle()" title="静音 / 恢复">' + mpVolIcon(curVol) + '</button>'
-    + '      <input type="range" id="mp-vol-range" min="0" max="100" value="' + Math.round(curVol * 100) + '" title="音量" oninput="mpVolSet(this.value)"></div>'
+    + '    <div class="mp-now-left"><div class="mp-now-title">' + esc(now ? (now.title || now.name) : '未播放') + '</div></div>'
+    + '    <div class="mp-now-right">'
+    + '      <div class="mp-now-wave" id="mp-now-wave">' + mpWaveBars(28) + '</div>'
+    + '      <div class="mp-now-prog" onclick="mpSeek(event)"><div class="mp-now-fill" id="mp-now-fill"></div></div>'
+    + '    </div>'
     + '    <div class="mp-now-btns">'
     + '      <button onclick="mpTogglePlay()" title="播放/暂停">' + (playing && a && !a.paused ? '⏸' : '▶') + '</button>'
     + '      <button onclick="mpPrev()" title="上一首">⏮</button>'
@@ -8352,6 +8374,8 @@ function mpInner(pl) {
     + '    </div>'
     + '  </div>'
     + '  <div class="mp-now-foot"><span id="mp-now-time">0:00 / 0:00</span><span id="mp-now-cnt">共 ' + total + ' 首</span>'
+    + '    <div class="mp-vol" id="mp-vol"><button class="mp-vol-btn" id="mp-vol-btn" onclick="mpVolToggle()" title="静音 / 恢复">' + mpVolIcon(curVol) + '</button>'
+    + '      <input type="range" id="mp-vol-range" min="0" max="100" value="' + Math.round(curVol * 100) + '" title="音量" oninput="mpVolSet(this.value)"></div>'
     + '    <div class="mp-modes"><button class="btn sm ' + (!MP.shuffle ? 'active' : '') + '" onclick="mpSetMode(false)">顺序</button>'
     + '    <button class="btn sm ' + (MP.shuffle ? 'active' : '') + '" onclick="mpSetMode(true)">随机</button></div>'
     + '  </div>'
@@ -8359,6 +8383,87 @@ function mpInner(pl) {
     + '  <div class="mp-now-top" onclick="mpSetNow(false)">▼ 回到歌单</div>'
     + '</div>';
 }
+
+/* ---------------- R77：播放页「随节奏跳动的频谱」 ----------------
+   优先用 Web Audio 的真实频谱；AudioContext 若不是 running 就不接（避免音频被路由到挂起的 ctx 变哑巴），
+   退化成「跟着播放状态起伏的合成波形」，视觉上照样活。 */
+var MPWV = { bars: [], seed: [], raf: 0, last: 0, an: null, ctx: null, data: null, tried: false, ok: false };
+function mpWaveBars(n) { var s = ''; for (var i = 0; i < n; i++) s += '<i></i>'; return s; }
+function mpWaveEl() { return document.getElementById('mp-now-wave'); }
+function mpWaveSync() {
+  var el = mpWaveEl();
+  if (!el) { MPWV.bars = []; return 0; }
+  var kids = el.children;
+  /* 重建 innerHTML 后要重新收集（旧引用已成孤儿节点） */
+  if (MPWV.bars.length !== kids.length || (MPWV.bars.length && MPWV.bars[0].parentNode !== el)) {
+    MPWV.bars = Array.prototype.slice.call(kids);
+    MPWV.seed = MPWV.bars.map(function (_, i) { return { f: 0.62 + (i % 7) * 0.19, p: i * 1.37 }; });
+  }
+  return MPWV.bars.length;
+}
+function mpWaveAudioTry() {
+  if (MPWV.tried) return; MPWV.tried = true;
+  try {
+    var AC = window.AudioContext || window.webkitAudioContext; if (!AC) return;
+    var a = document.getElementById('mp-audio'); if (!a) return;
+    var ctx = new AC();
+    if (ctx.state !== 'running') { try { ctx.close(); } catch (e) { } return; }
+    var src = ctx.createMediaElementSource(a);
+    var an = ctx.createAnalyser(); an.fftSize = 128; an.smoothingTimeConstant = 0.76;
+    src.connect(an); an.connect(ctx.destination);
+    MPWV.ctx = ctx; MPWV.an = an; MPWV.data = new Uint8Array(an.frequencyBinCount); MPWV.ok = true;
+  } catch (e) { MPWV.ok = false; }
+}
+function mpWaveSynth(k, t, playing) {
+  var s = MPWV.seed[k] || { f: 1, p: 0 };
+  var base = playing ? 0.30 : 0.09, amp = playing ? 0.52 : 0.05;
+  var v = base + amp * (0.55 + 0.45 * Math.sin(t / 330 * s.f + s.p)) * (0.72 + 0.28 * Math.sin(t / 115 + s.p * 1.7));
+  return Math.max(0.06, Math.min(1, v));
+}
+function mpWaveFrame(t) {
+  var bars = MPWV.bars; if (!bars.length) return;
+  var a = null; try { a = mpAudioEl(); } catch (e) { }
+  var playing = !!(a && !a.paused && !a.ended);
+  var el = mpWaveEl(); if (el) el.classList.toggle('idle', !playing);
+  var useReal = false;
+  if (MPWV.ok && playing) {
+    try { MPWV.an.getByteFrequencyData(MPWV.data); useReal = true; } catch (e) { MPWV.ok = false; }
+  }
+  var n = bars.length, k, vals = [];
+  if (useReal) {
+    var bins = MPWV.data.length;
+    for (k = 0; k < n; k++) {
+      var frac = k / n;
+      var idx = Math.min(bins - 1, Math.floor(Math.pow(frac, 0.82) * bins));
+      /* 高频补增益；再叠一点合成起伏——纯 FFT 在轻音乐上右半边常年是 0，看着像断了 */
+      var real = MPWV.data[idx] / 205 * (0.95 + 2.15 * frac);
+      var v = real * (0.90 - 0.42 * frac) + mpWaveSynth(k, t, playing) * (0.34 + 0.52 * frac);
+      vals.push(Math.max(0.1, Math.min(1, v)));
+    }
+  } else {
+    for (k = 0; k < n; k++) vals.push(mpWaveSynth(k, t, playing));
+  }
+  for (k = 0; k < n; k++) bars[k].style.height = (vals[k] * 100).toFixed(1) + '%';
+}
+function mpWaveTick() {
+  MPWV.raf = requestAnimationFrame(mpWaveTick);
+  if (!mpWaveSync()) { mpWaveStop(); return; }
+  var t = performance.now();
+  if (t - MPWV.last < 70) return;   /* 约 14 帧/秒，够顺滑又不费电 */
+  MPWV.last = t;
+  mpWaveFrame(t);
+}
+function mpWaveStart() { if (!MPWV.raf && mpWaveSync()) mpWaveTick(); }
+function mpWaveStop() { if (MPWV.raf) { cancelAnimationFrame(MPWV.raf); MPWV.raf = 0; } }
+/* 兜底看门狗：只要播放页露着就跑，收起就停（不依赖各处 render 钩子，重建多少次都能自愈） */
+setInterval(function () {
+  var box = document.getElementById('mp-box');
+  var on = !!(box && box.classList.contains('show-now') && mpWaveEl());
+  if (on) { if (!MPWV.raf) mpWaveStart(); }
+  else if (MPWV.raf) mpWaveStop();
+}, 600);
+/* 接真实频谱只能在用户手势里做（否则 AudioContext 会挂起） */
+document.addEventListener('click', function () { try { mpWaveAudioTry(); } catch (e) { } }, true);
 
 /* ---------------- R63：音量调节 ----------------
    本地播放：直接控制 audio.volume；网页歌单：mpw-bar 滑块 postMessage 遥控 iframe 播放页 */
@@ -9417,6 +9522,7 @@ function mpSetNow(open) {
   }
   mpSave();
   mpTick();
+  if (open && MP.curSrc !== '网页歌单') mpWaveStart(); else mpWaveStop();   /* R77：频谱只在播放页跑 */
 }
 
 /* ---------------- 与旧「书影音」音乐记录同步 ---------------- */

@@ -2597,7 +2597,12 @@ setTimeout(()=>{
 
 
 
-  T('R16-今日安排板: quad-wrap 灰色底纹(background:#eef0f2)',()=> html.indexOf('.quad-wrap{margin:4px 0 10px;background:#eef0f2')>=0);
+  T('R16-今日安排板: quad-wrap 底板（R77 起跟主题 accent-soft）',()=> html.indexOf('.quad-wrap{margin:4px 0 10px;background:var(--accent-soft)')>=0);
+  T('R77-四象限恢复固定红绿黄蓝（不跟主题）',()=> html.indexOf('.q1{background:#fdf1ef')>=0 && html.indexOf('.q2{background:#eef7f2')>=0 && html.indexOf('.q3{background:#fdf8ea')>=0 && html.indexOf('.q4{background:#eef3f9')>=0);
+  T('R77-播放页: 频谱容器 + 28 柱占位',()=> html.indexOf('class="mp-now-wave" id="mp-now-wave"')>=0 && html.indexOf('mpWaveBars(28)')>=0);
+  T('R77-播放页: 音量条移入第二行（.mp-now-foot .mp-vol）',()=> html.indexOf('.mp-now-foot .mp-vol{margin-left:auto')>=0);
+  T('R77-播放页: 按钮加宽到 57px（1.5x）+ 主题渐变',()=> html.indexOf('.mp-now-btns button{width:57px')>=0 && html.indexOf('linear-gradient(180deg,color-mix(in srgb,var(--accent) 26%,#fff)')>=0);
+  T('R77-播放页: 去掉「本地音乐」小字',()=> html.indexOf("mp-now-src\">")<0);
 
 
 

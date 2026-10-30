@@ -2667,6 +2667,10 @@ setTimeout(()=>{
   T('R82-14 看板·封面墙·列表三连按钮居中：三栏 grid + m-ab-mid justify-self:center',()=> /'\.m-actbar\{display:grid;grid-template-columns:minmax\(0,1fr\) auto minmax\(0,1fr\)/.test(html.replace(/\s{2}/g,'')) || (html.indexOf('grid-template-columns:minmax(0,1fr) auto minmax(0,1fr)')>=0 && html.indexOf('.m-actbar .m-ab-mid{display:flex;align-items:center;gap:8px;justify-self:center}')>=0));
   T('R82-15 actbar 三组结构（左按钮 / 中切换 / 右提示），.spacer 已撤',()=> /'<div class="m-ab-left">'\+/.test(html) && /'<div class="m-ab-mid">'\+vtg\+'<\/div>'\+/.test(html) && /'<div class="m-ab-right">/.test(html) && !/'<span class="spacer"><\/span>'\+/.test(html));
   T('R82-16 窄屏（≤1180）退回「按钮在左、切换靠右」的旧排法',()=> /@media \(max-width:1180px\)\{\s*\.m-actbar\{display:flex;flex-wrap:wrap\}/.test(html) && /\.m-actbar \.m-ab-mid\{margin-left:auto\}/.test(html));
+  /* ============ R83：播放键尺寸缩小 ============ */
+  T('R83-1 播放键缩到 32px（宽/高/min-width 三处同步，不再留 40px）',()=>{ const m=html.match(/\.mp-playbtn\{[^}]*\}/); if(!m) return false; const s=m[0]; return s.indexOf('width:32px')>=0 && s.indexOf('height:32px')>=0 && s.indexOf('min-width:32px')>=0 && s.indexOf('40px')<0; });
+  T('R83-2 图标 svg 也同步 32px（viewBox 仍 0 0 40 40，等比缩放）',()=> /\.mp-pb-ic\{width:32px;height:32px/.test(html) && html.indexOf('mp-pb-play" viewBox="0 0 40 40"')>=0);
+  T('R83-3 敲定尺寸后圆环/描边不变（仍 50% 圆角 + 1px 描边）',()=>{ const m=html.match(/\.mp-playbtn\{[^}]*\}/); if(!m) return false; const s=m[0]; return s.indexOf('border-radius:50%')>=0 && s.indexOf('border:1px solid color-mix(in srgb,var(--accent) 30%,#fff)')>=0; });
 
 
 

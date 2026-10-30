@@ -412,19 +412,25 @@
 .mp-pl-label{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .mp-caret{color:#b9b2a0;font-size:11px;flex:0 0 auto;transition:transform .18s ease}
 .mp-pl-btn.on .mp-caret{transform:rotate(180deg)}
-.mp-pl-menu{position:absolute;left:0;right:0;top:calc(100% + 4px);z-index:30;background:#fff;border:1px solid #e6e1d3;border-radius:10px;box-shadow:0 12px 26px rgba(0,0,0,.12);padding:5px;max-height:300px;overflow:auto;opacity:0;visibility:hidden;transform:translateY(-6px);pointer-events:none;transition:opacity .18s ease,transform .18s ease,visibility .18s ease}
+.mp-pl-menu{position:absolute;left:0;right:0;top:calc(100% + 4px);z-index:30;min-width:min(342px,calc(100vw - 48px));display:flex;flex-direction:column;background:#fff;border:1px solid #e6e1d3;border-radius:10px;box-shadow:0 12px 26px rgba(0,0,0,.12);padding:5px;max-height:302px;overflow:hidden;opacity:0;visibility:hidden;transform:translateY(-6px);pointer-events:none;transition:opacity .18s ease,transform .18s ease,visibility .18s ease}
+/* R80：歌单列表单独滚动，底部按钮常驻不被裁（原来整块 overflow:auto + sticky 会把「删除选中」切掉一半） */
+.mp-pl-scroll{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding-right:1px}
+.mp-pl-scroll{scrollbar-width:thin;scrollbar-color:#ddd6c5 transparent}
+.mp-pl-scroll::-webkit-scrollbar{width:7px}
+.mp-pl-scroll::-webkit-scrollbar-thumb{background:#ddd6c5;border-radius:4px}
 .mp-pl-menu.open{opacity:1;visibility:visible;transform:translateY(0);pointer-events:auto}
 .mp-pl-item{display:flex;align-items:center;gap:8px;padding:8px 9px;border-radius:8px;font-size:13px;cursor:pointer}
 .mp-pl-item:hover{background:#f6f4ec}
 .mp-pl-item.cur{background:#eef5e9;font-weight:600}
 .mp-pl-n{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.mp-pl-c{font-size:11px;color:var(--muted);flex:0 0 auto}
+.mp-pl-c{font-size:11px;color:var(--muted);flex:0 0 auto;font-variant-numeric:tabular-nums}
 .mp-pl-new{border-top:1px dashed #ece7da;margin-top:4px;padding-top:9px;color:#7E9A6B;font-weight:600}
 .mp-pl-imp{color:#7f8a76;font-size:12.5px}
 /* R53：新建/导入固定在下拉底部，歌单再多也不会被滚出可视区 */
-.mp-pl-foot{position:sticky;bottom:-5px;z-index:2;display:flex;gap:6px;margin:6px -5px -5px;padding:7px 6px 6px;background:linear-gradient(180deg,rgba(255,255,255,.62),#fff 42%);border-top:1px solid #ece7da;border-radius:0 0 10px 10px}
-.mp-pl-act{flex:1;display:flex;align-items:center;justify-content:center;gap:4px;height:30px;padding:0 8px;border:1px solid #dfe4d3;background:#f4f8ef;color:#4d7a3b;font-size:12.5px;font-weight:600;border-radius:8px;cursor:pointer;font-family:inherit;white-space:nowrap;transition:.15s}
-.mp-pl-act:hover{background:#eaf3e1;border-color:#c6d8b2}
+.mp-pl-foot{flex:0 0 auto;display:flex;gap:4px;margin:0 -5px -5px;padding:5px 6px 4px;background:#fff;border-top:1px solid #f0ebde;border-radius:0 0 10px 10px}
+.mp-pl-act{flex:1;min-width:0;display:flex;align-items:center;justify-content:center;gap:4px;height:28px;padding:0 8px;border:1px solid #e6e1d3;background:#fff;color:#6b7a5e;font-size:12px;font-weight:600;border-radius:8px;cursor:pointer;font-family:inherit;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:background .15s,border-color .15s,color .15s,transform .12s}
+.mp-pl-act svg{width:14px;height:14px;flex:0 0 auto;display:block}   /* R80：铺满后 svg 会被 flex 拉伸，必须定尺寸 */
+.mp-pl-act:hover{background:#f6f9f2;border-color:#cfdcc0;color:#4d7a3b}
 .mp-pl-act.imp{background:#fff;border-color:#e2ddcf;color:#5c6653;font-weight:500}
 .mp-pl-act.imp:hover{background:#f7f5ee}
 .build-ver{display:none}/* R61：版本号对用户无用，隐藏；留在 DOM 里仅供部署校验读取 */
@@ -586,11 +592,15 @@
 .mpw-ico:hover{background:#eee9db;color:#5c6653}
 .mpw-none2{padding:16px 10px;text-align:center;color:#a9a291;font-size:12px;line-height:1.8}
 .mp-pl-foot.col{flex-direction:column;gap:5px}
+.mp-pl-foot .row2{display:flex;gap:6px}
+.mp-pl-foot.col .row2 .mp-pl-act{flex:1 1 0}   /* R80：R78 的 flex:0 0 auto 会把它压成内容宽，这里提特异性铺满一行 */
 .mp-pl-foot.col .mp-pl-act{flex:0 0 auto}
+.mp-pl-foot .mp-pl-row{display:flex}
+.mp-pl-foot .mp-pl-row .mp-pl-act{flex:1 1 0;height:28px}
 .mp-pl-row{display:flex;gap:5px}
-.mp-pl-act.del{background:#fff;border-color:#e8d9d9;color:#a05454}
-.mp-pl-act.del:hover{background:#fbeeee;border-color:#dcc3c3}
-.mp-pl-act:disabled{opacity:.42;cursor:not-allowed;background:#f7f6f0;border-color:#e6e2d6;color:#b0a999}
+.mp-pl-act.del{background:transparent;border-color:transparent;color:#b08a86;font-weight:500;height:24px;font-size:11.5px}
+.mp-pl-act.del:hover:not(:disabled){background:#fdf3f2;border-color:#ecd8d6;color:#a05454}
+.mp-pl-act:disabled{opacity:.55;cursor:not-allowed;background:transparent;border-color:transparent;color:#a89f8d}
 .mp-src-opt:hover{background:#f6f4ec}
 .mp-src-opt.cur{border-color:#c9c1ab;background:#f2f6ee}
 /* B 行 */
@@ -682,7 +692,7 @@
 /* R64：整张歌单列表——当前播放行高亮 */
 .mp-nx-row.cur{background:#eef5e9;color:#4d7a3b;font-weight:600}
 /* R64：本地歌单改名按钮（与网页歌单 ✎ 同款） */
-.mp-pl-ren{width:22px;height:22px;flex:0 0 auto;border:0;background:transparent;color:#a49d8c;font-size:12px;cursor:pointer;border-radius:5px;line-height:1;padding:0;font-family:inherit}
+.mp-pl-ren{width:20px;height:20px;flex:0 0 auto;border:0;background:transparent;color:#a49d8c;font-size:11.5px;cursor:pointer;border-radius:5px;line-height:1;padding:0;font-family:inherit}
 .mp-pl-ren:hover{background:#f6f4ec;color:#5c6653}
 /* R63：音量调节——R77 起在播放页第二行（时间/共N首 右侧） */
 .mp-vol{flex:0 0 auto;display:flex;align-items:center;gap:6px}
@@ -783,10 +793,10 @@
   box-shadow:0 1px 0 #fff inset,0 -2px 0 rgba(120,110,90,.10) inset,0 3px 0 #efece1,0 5px 10px rgba(70,58,40,.10)}
 .sb-n{font-variant-numeric:tabular-nums;opacity:.8;margin-left:3px}
 /* E 区：歌单下拉里的勾选框 / 垃圾桶 / 拖拽排序 */
-.mp-pl-item{cursor:grab;gap:7px;padding:8px 7px}
+.mp-pl-item{cursor:grab;gap:6px;padding:7px 6px;border-radius:8px}
 .mp-pl-item.sel{background:#eef5e9}
 .mp-pl-ck{width:15px;height:15px;margin:0;flex:0 0 auto;cursor:pointer;accent-color:var(--accent)}
-.mp-pl-del{width:22px;height:22px;flex:0 0 auto;border:0;background:transparent;color:#b3ab99;font-size:12px;cursor:pointer;border-radius:5px;line-height:1;padding:0;font-family:inherit}
+.mp-pl-del{width:20px;height:20px;flex:0 0 auto;border:0;background:transparent;color:#b3ab99;font-size:11.5px;cursor:pointer;border-radius:5px;line-height:1;padding:0;font-family:inherit}
 .mp-pl-del:hover{background:#fbeeee;color:#a05454}
 .mp-pl-item.dragging{opacity:.38;cursor:grabbing}
 .mp-pl-item.over-a{box-shadow:inset 0 3px 0 -1px #8fbf6a}
@@ -2002,7 +2012,7 @@
         <div id="shopping-body" data-page-node-id="BubJXjwm5ya3Ps7wQaOf0l"></div>
       </section>
       <section class="module" id="mod-media" data-sp-bindable="database" data-sp-database-id="XwBGD3AthDZziupFstknF4" data-page-node-id="wmE0Ozv4VPOxb1QNG9Gq81">
-        <div class="mod-head" data-page-node-id="ww8NZJbJ993jpKKtV5WKns"><h2 data-page-node-id="12stfYH9V0UA46lU8o3M7i">书影音</h2><span class="desc" data-page-node-id="LH5Tx5hHfiLB9V60VgZUjH">收藏、评分与年度统计，记录看过的好东西</span><span class="build-ver" title="页面版本">R79</span></div>
+        <div class="mod-head" data-page-node-id="ww8NZJbJ993jpKKtV5WKns"><h2 data-page-node-id="12stfYH9V0UA46lU8o3M7i">书影音</h2><span class="desc" data-page-node-id="LH5Tx5hHfiLB9V60VgZUjH">收藏、评分与年度统计，记录看过的好东西</span><span class="build-ver" title="页面版本">R80</span></div>
         <div id="media-body" data-page-node-id="MvHLGITKcoHEoc4n5mYw56"></div>
       </section>
       <section class="module" id="mod-report" data-sp-bindable="database" data-sp-database-id="VDJ7npH13yRDIkMBUcnQO4" data-page-node-id="zEMiJyVPF1imOLfhLXwOHu">
@@ -8546,7 +8556,7 @@ function mpInner(pl) {
       + ' onclick="mpPickPl(\'' + p.id + '\')" draggable="true"'
       + ' ondragstart="mpPlDragStart(event,\'' + p.id + '\')" ondragover="mpPlDragOver(event,\'' + p.id + '\')"'
       + ' ondragleave="mpPlDragLeave(event)" ondrop="mpPlDrop(event,\'' + p.id + '\')" ondragend="mpPlDragEnd(event)"'
-      + ' title="点一下切换到这个歌单 · 按住可拖动排序">'
+      + ' title="' + esc(p.name) + ' · ' + ((p.songs || []).length) + ' 首（点一下切换，按住可拖动排序）">'
       + '<label class="mp-pl-ck-l" onclick="event.stopPropagation()"><input type="checkbox" class="mp-pl-ck"' + (psel ? ' checked' : '')
       + ' onchange="mpPlCheck(this,\'' + p.id + '\')" title="选中这个歌单"></label>'
       + '<span class="mp-pl-n">' + esc(p.name) + '</span>'
@@ -8556,9 +8566,12 @@ function mpInner(pl) {
   }).join('');
   /* R78：添加/清空/删除选中 移出主界面 —— 这里只留「新建歌单」+「删除选中歌单」 */
   var nPlSel = mpPlSelCount();
-  items += '<div class="mp-pl-foot col">'
+  /* R80：底部按钮不再跟列表一起滚 —— 列表进 .mp-pl-scroll，按钮固定在下面一行，永不裁切 */
+  var plFoot = '<div class="mp-pl-foot col">'
+    + '<div class="row2">'
     + '<button class="mp-pl-act add" onclick="event.stopPropagation();mpClosePlMenu(null,0);mpAddSongs()" title="选本机音频文件（可多选）加到当前歌单">' + MP_ICON['下载'] + ' 添加歌曲</button>'
-    + '<button class="mp-pl-act new" onclick="event.stopPropagation();mpNewPl()">＋ 新建歌单</button>'
+    + '<button class="mp-pl-act new" onclick="event.stopPropagation();mpNewPl()" title="新建一个空歌单">＋ 新建歌单</button>'
+    + '</div>'
     + '<button class="mp-pl-act del" onclick="event.stopPropagation();mpDelSelPls()"' + (nPlSel ? '' : ' disabled') + '>🗑 删除选中歌单'
     + (nPlSel ? ' (' + nPlSel + ')' : '') + '</button>'
     + '</div>';
@@ -8633,7 +8646,8 @@ function mpInner(pl) {
     + '  ' + mpSrcBoxHtml()
     + '  <div class="mp-drop">'
     + '    <button class="mp-pl-btn" onclick="mpTogglePlMenu(event)"><span class="mp-pl-label">' + esc(pl.name || '选择歌单') + '</span><span class="mp-caret">▾</span></button>'
-    + '    <div class="mp-pl-menu" id="mp-pl-menu" onclick="event.stopPropagation()">' + items + '</div>'
+    + '    <div class="mp-pl-menu" id="mp-pl-menu" onclick="event.stopPropagation()">'
+    + '      <div class="mp-pl-scroll">' + items + '</div>' + plFoot + '</div>'
     + '  </div>'
     + '  <div class="mp-playwrap">'
     + '    <button class="mp-playbtn' + (playing ? ' playing' : '') + '" onclick="mpPlayAll()" title="播放整张歌单（共 ' + total + ' 首）">▶</button>'
@@ -8929,6 +8943,20 @@ function mpPlById2(src, id) {
   for (var i = 0; i < arr.length; i++) if (arr[i].id === id) return arr[i];
   return null;
 }
+/* R80：菜单比歌单框宽，靠右时会顶出视口 —— 打开时向左挪到视口内（窄屏也不出门） */
+function mpPlMenuFit() {
+  var m = document.getElementById('mp-pl-menu');
+  if (!m || !m.parentNode) return;
+  m.style.left = ''; m.style.right = ''; m.style.width = '';
+  if (!m.classList.contains('open')) return;
+  var d = m.parentNode.getBoundingClientRect();
+  var mw = m.getBoundingClientRect().width;
+  var over = d.left + mw - (window.innerWidth - 12);
+  if (over > 0) { m.style.width = mw + 'px'; m.style.right = 'auto'; m.style.left = (-over) + 'px'; }
+  var under = d.left + (over > 0 ? mw - over : 0) - 12;
+  if (under < 0) { if (!m.style.width) m.style.width = mw + 'px'; m.style.right = 'auto'; m.style.left = (parseFloat(m.style.left || 0) - under) + 'px'; }
+}
+window.addEventListener('resize', function () { mpPlMenuFit(); });
 function mpTogglePlMenu(e) {
   if (e) e.stopPropagation();
   var m = document.getElementById('mp-pl-menu');
@@ -8937,12 +8965,13 @@ function mpTogglePlMenu(e) {
     var on = !m.classList.contains('open');
     m.classList.toggle('open', on);
     if (b) b.classList.toggle('on', on);
+    if (on) requestAnimationFrame(mpPlMenuFit); else mpPlMenuFit();
   }
 }
 function mpClosePlMenu(cb, delay) {
   var m = document.getElementById('mp-pl-menu');
   var b = m && m.parentNode ? m.parentNode.querySelector('.mp-pl-btn') : null;
-  if (m) m.classList.remove('open');
+  if (m) { m.classList.remove('open'); m.style.left = ''; m.style.right = ''; m.style.width = ''; }
   if (b) b.classList.remove('on');
   if (cb) setTimeout(cb, delay == null ? 180 : delay);
 }
@@ -9399,7 +9428,8 @@ function mpInnerWeb() {
     + '  ' + mpSrcBoxHtml()
     + '  <div class="mp-drop">'
     + '    <button class="mp-pl-btn" onclick="mpTogglePlMenu(event)"><span class="mp-pl-label">' + esc(cur ? cur.name : '选择网页歌单') + '</span><span class="mp-caret">▾</span></button>'
-    + '    <div class="mp-pl-menu" id="mp-pl-menu" onclick="event.stopPropagation()">' + rows + foot + '</div>'
+    + '    <div class="mp-pl-menu" id="mp-pl-menu" onclick="event.stopPropagation()">'
+    + '      <div class="mp-pl-scroll">' + rows + '</div>' + foot + '</div>'
     + '  </div>'
     + '  <div class="mp-web-acts">'
     + '    <button class="btn sm" onclick="mpWebPlAdd()">＋ 添加歌单网址</button>'

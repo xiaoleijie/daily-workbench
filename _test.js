@@ -2612,6 +2612,17 @@ setTimeout(()=>{
   T('R78-2 来源按钮带文字标签（mp-src-lb）',()=>{ const h=w.mpInner(mpDemoPl()); return h.indexOf('class="mp-src-lb"')>=0 && h.indexOf('>本地<')>=0 && html.indexOf('var MP_SRC_SHORT')>=0; });
   T('R78-3/R79 第一行：来源圆钮 + 歌单目录 + 圆形播放 + 小字提示',()=>{ const h=w.mpInner(mpDemoPl()); return h.indexOf('class="mp-src" id="mp-src"')>=0 && h.indexOf('class="mp-pl-btn"')>=0 && h.indexOf('class="mp-playbtn')>=0 && h.indexOf('class="mp-playtip"')>=0 && h.indexOf('点击播放此歌单')>=0; });
   T('R79-4 「添加歌曲」收进歌单目录（mp-pl-act add）',()=>{ const h=w.mpInner(mpDemoPl()); return h.indexOf('mp-pl-act add')>=0 && h.indexOf('mpAddSongs()')>=0; });
+  /* ---- R80：歌单下拉「滚动区 + 固定底部」，底部按钮不再被裁 ---- */
+  T('R80-1 菜单两段式：列表进 .mp-pl-scroll，按钮在 .mp-pl-foot',()=>{ const h=w.mpInner(mpDemoPl()); return h.indexOf('class="mp-pl-scroll"')>=0 && h.indexOf('class="mp-pl-foot col"')>=0 && h.indexOf('mp-pl-scroll">')<h.indexOf('mp-pl-foot col'); });
+  T('R80-2 菜单本体 flex 列 + overflow:hidden（滚动交给内部）',()=> html.indexOf('.mp-pl-menu{position:absolute')>=0 && /display:flex;flex-direction:column;background:#fff;border:1px solid #e6e1d3;border-radius:10px;box-shadow:0 12px 26px rgba\(0,0,0,\.12\);padding:5px;max-height:302px;overflow:hidden/.test(html));
+  T('R80-3 滚动区独立 overflow-y:auto + min-height:0',()=> html.indexOf('.mp-pl-scroll{flex:1 1 auto;min-height:0;overflow-y:auto')>=0);
+  T('R80-4 底部区不再 sticky（原来 sticky+bottom:-5px 把按钮切一半）',()=> html.indexOf('.mp-pl-foot{flex:0 0 auto;display:flex;gap:4px;')>=0 && html.indexOf('.mp-pl-foot{position:sticky')<0);
+  T('R80-5 添加/新建并排在 .row2，删除单独一行',()=>{ const h=w.mpInner(mpDemoPl()); return h.indexOf('class="row2"')>=0 && h.indexOf('mp-pl-act add')>=0 && h.indexOf('mp-pl-act new')>=0 && h.indexOf('mp-pl-act del')>=0; });
+  T('R80-6 底部按钮改成白底描边（不再是浅绿实心块）',()=>{ const m=html.match(/\.mp-pl-act\{[^}]*\}/); return !!m && m[0].indexOf('background:#fff')>=0 && m[0].indexOf('#f4f8ef')<0 && m[0].indexOf('background:#fff;color:#6b7a5e;font-size:12px')>=0; });
+  T('R80-7 删除按钮透明底 + 禁用态仍可见（opacity .55）',()=> html.indexOf('.mp-pl-act.del{background:transparent')>=0 && html.indexOf('.mp-pl-act:disabled{opacity:.55')>=0);
+  T('R80-8 菜单最小宽度 + 长歌名 title 带全名',()=> html.indexOf('min-width:min(342px,calc(100vw - 48px))')>=0 && /esc\(p\.name\) \+ ' · ' \+ \(\(p\.songs \|\| \[\]\)\.length\)/.test(html));
+  T('R80-9 网页歌单菜单同样两段式',()=>{ const h=w.mpInnerWeb(); return h.indexOf('class="mp-pl-scroll"')>=0 && h.indexOf('mp-pl-foot col')>=0; });
+  T('R80-10 菜单视口钳制：mpPlMenuFit + 关闭时清内联定位',()=> typeof w.mpPlMenuFit==='function' && /function mpPlMenuFit\(\)/.test(html) && /m\.style\.left = ''; m\.style\.right = ''; m\.style\.width = ''/.test(html) && /window\.addEventListener\('resize', function \(\) \{ mpPlMenuFit\(\); \}\)/.test(html));
   T('R78-4 网格改四列 + 歌名字号缩到 13px',()=> html.indexOf('.mp-grid{grid-template-columns:repeat(4,1fr)')>=0 && html.indexOf('.mp-song-name{font-size:13px')>=0);
   T('R78-5 添加/清空/删除选中 已移出主界面',()=>{ const h=w.mpInner(mpDemoPl()); return h.indexOf('mpAddSongs()">＋ 添加')<0 && h.indexOf('onclick="mpClear()"')<0 && h.indexOf('>清空<')<0 && h.indexOf('btn sm" onclick="mpDeleteSel()')<0 && h.indexOf('btn sm" onclick="mpAddSongs()')<0; });
   T('R78-6 勾选浮出条：三按钮齐全',()=>{ const h=w.mpInner(mpDemoPl()); return h.indexOf('id="mp-selbar"')>=0 && h.indexOf('播放选中')>=0 && h.indexOf('删除选中')>=0 && h.indexOf('清空勾选')>=0; });

@@ -2633,7 +2633,23 @@ setTimeout(()=>{
   T('R78-11 新增函数齐全（勾选/拖拽/仅播选中）',()=> ['mpSelCount','mpSelBarSync','mpPlaySel','mpOnlyStep','mpPlSelCount','mpPlCheck','mpDelPl','mpDelSelPls','mpPlDragStart','mpPlDragOver','mpPlDrop','mpPlDragEnd','mpClearSel'].every(f=> typeof w[f]==='function'));
   T('R78-12 勾选/取消：mpTogglePick 只切类名不整块重建',()=>{ w.mpSel={}; w.mpTogglePick('sg1'); const a=!!w.mpSel.sg1; w.mpTogglePick('sg1'); const b=!w.mpSel.sg1; w.mpSel={}; return a && b && /function mpTogglePick\(id\) \{\s*if \(mpSel\[id\]\) delete mpSel\[id\]; else mpSel\[id\] = true;\s*var el = document\.querySelector/.test(html); });
   T('R78-13 仅播选中：MP.only 队列 + 上/下一首走队列',()=> Array.isArray(w.MP.only) && /MP\.only = picks\.map/.test(html) && /var st = mpOnlyStep\(1\)/.test(html) && /var st = mpOnlyStep\(-1\)/.test(html));
-  T('R78-14 3D 按钮：圆形播放/浮出条都有 inset 高光 + 落影',()=> html.indexOf('.mp-playbtn{')>=0 && html.indexOf('.mp-playbtn{')>=0 && html.indexOf('.sb-btn{')>=0 && html.indexOf('.mp-playbtn.playing{animation:mpPulse')>=0);
+  T('R78-14 3D 按钮：浮出条按钮仍带 inset 高光 + 落影（播放键 R81 已改成纯 ▶）',()=> html.indexOf('.sb-btn{')>=0 && html.indexOf('inset,0 -2px 0 rgba(0,0,0,.10) inset')>=0 && html.indexOf('.mp-playbtn.playing{animation:mpPulse')>=0);
+
+  /* ============ R81：播放键去圆底 / 网页歌单第一行 / 歌单列表悬停收 / 卡片拉高 / 阅读区重排 ============ */
+  T('R81-1 播放键去掉外圈圆底（无 50% 圆角/无渐变底/无 inset 高光）',()=>{ const m=html.match(/\.mp-playbtn\{[^}]*\}/); if(!m) return false; const s=m[0]; return s.indexOf('width:auto')>=0 && s.indexOf('height:auto')>=0 && s.indexOf('border-radius:50%')<0 && s.indexOf('background:radial-gradient')<0 && s.indexOf('box-shadow:0 1px 0 rgba(255,255,255,.95) inset')<0 && s.indexOf('border:0')>=0; });
+  T('R81-2 播放键悬停放大 + 播放时呼吸（都走 transform）',()=> /\.mp-playbtn:hover\{[^}]*transform:scale\(1\.12\)/.test(html) && /@keyframes mpPulse\{0%,100%\{transform:scale\(1\)/.test(html));
+  T('R81-3 网页歌单第一行＝ 来源圆钮|歌单框|▶（顶行两个按钮只在列表底部）',()=>{ const h=w.mpInnerWeb(); const seg=h.slice(h.indexOf('class="mp-row1"'), h.indexOf('class="mpw-nowcard')); return h.indexOf('mp-web-acts')<0 && seg.indexOf('mp-src')>=0 && seg.indexOf('mp-drop')>=0 && seg.indexOf('mp-playwrap')>=0 && seg.indexOf('mp-playbtn')>=0 && h.indexOf('id="mpw-delsel"')>h.indexOf('mp-pl-foot'); });
+  T('R81-4 网页歌单也有 ▶ 播放键（mpWebPlayBtn）',()=> typeof w.mpWebPlayBtn==='function' && /onclick="mpWebPlayBtn\(\)"/.test(html));
+  T('R81-5 网页歌单列表底部三个按钮：连播选中 / 添加歌单网址 / 删除选中',()=>{ const h=w.mpInnerWeb(); const foot=h.slice(h.indexOf('mp-pl-foot')); return foot.indexOf('▶ 连播选中')>=0 && foot.indexOf('＋ 添加歌单网址')>=0 && foot.indexOf('🗑 删除选中')>=0; });
+  T('R81-6 网页歌单的来源圆钮点击＝打开歌单列表（mpSrcOpenMenu）',()=>{ const a=w.mpInner(mpDemoPl()); const b=w.mpInnerWeb(); return typeof w.mpSrcOpenMenu==='function' && a.indexOf('onclick="mpToggleSrc(event)"')>=0 && b.indexOf('onclick="mpSrcOpenMenu(event)"')>=0 && /function mpSrcBoxHtml\(pickMenu\)/.test(html); });
+  T('R81-7 菜单开着时压掉「切换来源」弹层（.hidepop）',()=> html.indexOf('.mp-src.hidepop .mp-src-list{display:none}')>=0 && /s\.classList\.toggle\('hidepop', on\)/.test(html));
+  T('R81-8 歌单列表鼠标移开自动收回（document mousemove + 520ms 缓冲）',()=> typeof w.mpMenuHoverMove==='function' && /document\.addEventListener\('mousemove', mpMenuHoverMove\)/.test(html) && /}, 520\);/.test(html) && /if \(mm && mm\.classList\.contains\('open'\)\) mpClosePlMenu\(\);/.test(html));
+  T('R81-9 菜单/来源弹层都是「进快退慢」（淡出 0.4s / 0.42s）',()=> /\.mp-pl-menu\{[^}]*transition:opacity \.4s ease,transform \.4s ease,visibility \.4s ease\}/.test(html) && /\.mp-pl-menu\.open\{[^}]*transition:opacity \.18s ease/.test(html) && html.indexOf('transition:opacity .42s ease,transform .42s ease}')>=0);
+  T('R81-10 电影/歌单卡拉高：整卡 250 / 音乐卡 220 / 电影列 168',()=> html.indexOf('.media-top .mt-col{min-height:250px;height:auto}')>=0 && html.indexOf('.media-top .mt-col>.mp{flex:0 0 auto;height:220px')>=0 && html.indexOf('.media-top .movie-cols{flex:1 1 auto;height:168px;min-height:168px')>=0);
+  T('R81-11 阅读区：视图切换进第一行、三格单独一行的结构',()=> /var actbar='<div class="m-actbar">'/.test(html) && /vtg \+ fStatus \+/.test(html) && /var statsRow='<div class="m-statsrow">'\+stats3\+'<\/div>'/.test(html) && html.indexOf('var vrow=')<0);
+  T('R81-12 阅读区「类型/来源」两个「全部」下拉已删除',()=> html.indexOf('var fType=')<0 && html.indexOf('var fSrc=')<0 && html.indexOf('mediaSrcF=this.value')<0 && html.indexOf('mediaTypeF=this.value')<0);
+  T('R81-13 网页歌单框默认＝最后一次播过的歌单（持久化 MP.curPl）',()=> /var curId = MPW\.cur \|\| MP\.curPl\['网页歌单'\] \|\| '';/.test(html) && /MP\.curPl\['网页歌单'\] = pl\.id;/.test(html) && /if \(MP\.curSrc !== '网页歌单' && \(!MP\.curPl\[MP\.curSrc\]/.test(html));
+
 
 
 

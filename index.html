@@ -328,6 +328,11 @@
   .m-actbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px}
   .m-actbar .spacer{flex:1}
   .m-actbar .m-hint{font-size:11.5px;color:var(--muted)}
+  /* R81：视图切换搬进这一行（与「打开微信读书」同排），提示文字留在最右 */
+  .m-actbar .viewtoggle{flex:0 0 auto}
+  .m-actbar select{width:auto;min-width:104px;max-width:172px;padding:6px 9px;font-size:12.5px}
+  .m-actbar .m-hint{margin-left:14px}
+  @media (max-width:1000px){.m-actbar .m-hint{display:none}}
   .mboard{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;align-items:start}
   .mcol{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:10px}
   .mcol-head{display:flex;align-items:center;gap:7px;margin-bottom:9px;padding:0 2px}
@@ -373,12 +378,13 @@
 /* R45 书影音顶部：电影(左)+音乐(右) */
 .media-top{display:flex;gap:18px;margin-bottom:18px;flex-wrap:wrap;position:relative;z-index:6}
 .media-top .mt-col{flex:1;min-width:280px;background:#fff;border:1px solid #e8e8e8;border-radius:14px;padding:14px;display:flex;flex-direction:column;min-height:0}
-/* R67：顶部两卡统一压到 210px（用户黄框高度），电影列与歌曲网格各自内部滚动 */
+/* R67：顶部两卡统一压到 210px（用户黄框高度），电影列与歌曲网格各自内部滚动
+   R81：用户要「拉到黄线框那么高」——整卡 210→250px（音乐卡 192→220，电影列 140→168） */
 @media (min-width:900px){
-  .media-top .mt-col{min-height:210px;height:auto}
+  .media-top .mt-col{min-height:250px;height:auto}
   .media-top .mt-head{flex:0 0 auto;margin-bottom:8px}
-  .media-top .movie-cols{flex:1 1 auto;height:140px;min-height:140px;overflow:auto;align-content:flex-start}
-  .media-top .mt-col>.mp{flex:0 0 auto;height:192px;min-height:0;padding-top:7px;padding-bottom:7px}
+  .media-top .movie-cols{flex:1 1 auto;height:168px;min-height:168px;overflow:auto;align-content:flex-start}
+  .media-top .mt-col>.mp{flex:0 0 auto;height:220px;min-height:0;padding-top:7px;padding-bottom:7px}
   .media-top .mt-col>.mp .mp-body{display:flex;flex-direction:column;height:100%;min-height:0}
   .media-top .mt-col>.mp .mp-grid{flex:1 1 auto;min-height:0;max-height:none;overflow:auto}
   /* 播放态保留 R65 的 204px（整张歌单在内滚动），容器跟着长高，不裁切 */
@@ -412,13 +418,14 @@
 .mp-pl-label{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .mp-caret{color:#b9b2a0;font-size:11px;flex:0 0 auto;transition:transform .18s ease}
 .mp-pl-btn.on .mp-caret{transform:rotate(180deg)}
-.mp-pl-menu{position:absolute;left:0;right:0;top:calc(100% + 4px);z-index:30;min-width:min(342px,calc(100vw - 48px));display:flex;flex-direction:column;background:#fff;border:1px solid #e6e1d3;border-radius:10px;box-shadow:0 12px 26px rgba(0,0,0,.12);padding:5px;max-height:302px;overflow:hidden;opacity:0;visibility:hidden;transform:translateY(-6px);pointer-events:none;transition:opacity .18s ease,transform .18s ease,visibility .18s ease}
+.mp-pl-menu{position:absolute;left:0;right:0;top:calc(100% + 4px);z-index:30;min-width:min(342px,calc(100vw - 48px));display:flex;flex-direction:column;background:#fff;border:1px solid #e6e1d3;border-radius:10px;box-shadow:0 12px 26px rgba(0,0,0,.12);padding:5px;max-height:302px;overflow:hidden;opacity:0;visibility:hidden;transform:translateY(-6px);pointer-events:none;transition:opacity .4s ease,transform .4s ease,visibility .4s ease}
 /* R80：歌单列表单独滚动，底部按钮常驻不被裁（原来整块 overflow:auto + sticky 会把「删除选中」切掉一半） */
 .mp-pl-scroll{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding-right:1px}
 .mp-pl-scroll{scrollbar-width:thin;scrollbar-color:#ddd6c5 transparent}
 .mp-pl-scroll::-webkit-scrollbar{width:7px}
 .mp-pl-scroll::-webkit-scrollbar-thumb{background:#ddd6c5;border-radius:4px}
-.mp-pl-menu.open{opacity:1;visibility:visible;transform:translateY(0);pointer-events:auto}
+.mp-pl-menu.open{opacity:1;visibility:visible;transform:translateY(0);pointer-events:auto;
+  transition:opacity .18s ease,transform .18s ease,visibility .18s ease}   /* R81：开快关慢 */
 .mp-pl-item{display:flex;align-items:center;gap:8px;padding:8px 9px;border-radius:8px;font-size:13px;cursor:pointer}
 .mp-pl-item:hover{background:#f6f4ec}
 .mp-pl-item.cur{background:#eef5e9;font-weight:600}
@@ -569,9 +576,12 @@
 .mpw-nc-go:hover{background:#6d8a5b;border-color:#6d8a5b;transform:translateY(-1px);box-shadow:0 5px 14px rgba(126,154,107,.3)}
 .mpw-nowcard.idle{background:#fbfaf5;border-style:dashed;border-color:#e8e3d4}
 .mpw-nc-tip{font-size:10.5px;color:#b6ae9c;margin-top:4px;line-height:1.5}
-.mp.mp-web .mp-row1{padding-right:0;flex-wrap:wrap;gap:6px}
-.mp.mp-web .mp-web-acts{display:flex;gap:5px;margin-left:auto;flex:0 0 auto}
-.mp.mp-web .mp-web-acts .btn{height:28px;padding:0 8px;font-size:12px;white-space:nowrap}
+/* R81：网页歌单第一行改成和本地歌单同一套排布——来源圆钮 | 歌单框 | ▶ 播放键
+   （原「＋添加歌单网址 / 删除选中」两个按钮已挪进歌单下拉菜单底部） */
+.mp.mp-web .mp-row1{padding-right:0;flex-wrap:nowrap;gap:9px;align-items:center}
+.mp.cat-zone.mp-web .mp-row1{padding-right:88px}   /* R81：网页歌单也做猫让位（▶ 在行右端） */
+.mp.mp-web .mp-pl-btn{border-radius:12px;padding:11px 13px;font-size:14.5px;
+  box-shadow:0 1px 0 #fff inset,0 2px 4px rgba(70,58,40,.06)}
 .mp.mp-web .mp-pl-menu{min-width:300px}
 /* R60：本地歌单栏缩窄 + 四个操作按钮并入第一行（参考网页歌单）
    R62：歌单栏 flex:1 拉宽填满中间空地，四按钮靠右；猫让位改动态（.cat-zone，见 mpCatZone） */
@@ -597,6 +607,9 @@
 .mp-pl-foot.col .mp-pl-act{flex:0 0 auto}
 .mp-pl-foot .mp-pl-row{display:flex}
 .mp-pl-foot .mp-pl-row .mp-pl-act{flex:1 1 0;height:28px}
+/* R81：网页歌单底部两个按钮按用户图并排等宽、都带白底描边（禁用只降透明度，不要一个有色一个透明） */
+.mp-pl-foot.col .row2 .mp-pl-act.del{background:#fff;border-color:#e6e1d3;color:#a05454}
+.mp-pl-foot.col .row2 .mp-pl-act.del:hover:not(:disabled){background:#fdf3f2;border-color:#ecd8d6}
 .mp-pl-row{display:flex;gap:5px}
 .mp-pl-act.del{background:transparent;border-color:transparent;color:#b08a86;font-weight:500;height:24px;font-size:11.5px}
 .mp-pl-act.del:hover:not(:disabled){background:#fdf3f2;border-color:#ecd8d6;color:#a05454}
@@ -721,8 +734,10 @@
 .mp-src-cur.playing{background:linear-gradient(180deg,#fff,color-mix(in srgb,var(--accent) 10%,#fff))}
 .mp-src-list{position:absolute;left:-6px;top:100%;z-index:30;padding-top:8px;
   opacity:0;transform:translateY(-8px);pointer-events:none;
-  transition:opacity .2s ease,transform .2s ease}   /* R79：进出场沿用原竖排参数 */
-.mp-src:hover .mp-src-list,.mp-src.open .mp-src-list,.mp-src.dragging .mp-src-list{opacity:1;transform:translateY(0);pointer-events:auto}
+  transition:opacity .42s ease,transform .42s ease}   /* R81：收起改成慢速渐隐（.42s），进场仍在 open 规则里 .2s */
+.mp-src:hover .mp-src-list,.mp-src.open .mp-src-list,.mp-src.dragging .mp-src-list{opacity:1;transform:translateY(0);pointer-events:auto;
+  transition:opacity .2s ease,transform .2s ease}   /* 进场快、退场慢 */
+.mp-src.hidepop .mp-src-list{display:none}   /* R81：歌单下拉菜单开着时不要再冒出「切换来源」弹层 */
 .mp-src-pill{display:flex;flex-direction:row;gap:6px;padding:7px;background:#fff;border:1px solid #e6e1d3;
   border-radius:18px;box-shadow:0 12px 28px rgba(70,58,40,.16);white-space:nowrap}
 .mp-src-opt{width:auto;min-width:0;height:32px;padding:0 12px;border-radius:16px;gap:6px;font-size:12px;font-weight:600;color:#7a7566;background:#fbfaf5;
@@ -757,17 +772,17 @@
 .mp:not(.mp-web) .mp-pl-btn{border-radius:12px;padding:11px 13px;font-size:14.5px;
   box-shadow:0 1px 0 #fff inset,0 2px 4px rgba(70,58,40,.06)}
 .mp-playwrap{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:1px}
-.mp-playbtn{position:relative;width:46px;height:46px;border-radius:50%;padding:0;cursor:pointer;font-family:inherit;
-  display:flex;align-items:center;justify-content:center;font-size:17px;line-height:1;color:var(--accent-deep);text-indent:2px;
-  border:1px solid color-mix(in srgb,var(--accent) 58%,#fff);
-  background:radial-gradient(circle at 50% 26%,color-mix(in srgb,var(--accent) 42%,#fff) 0%,color-mix(in srgb,var(--accent) 10%,#fff) 72%);
-  box-shadow:0 1px 0 rgba(255,255,255,.95) inset,0 -4px 0 color-mix(in srgb,var(--accent) 24%,transparent) inset,0 4px 0 color-mix(in srgb,var(--accent) 26%,#fff),0 7px 14px color-mix(in srgb,var(--accent) 24%,transparent);
-  transition:transform .12s ease,box-shadow .12s ease,filter .15s}
-.mp-playbtn:hover{filter:brightness(1.05);transform:translateY(-1px);box-shadow:0 1px 0 rgba(255,255,255,.95) inset,0 -4px 0 color-mix(in srgb,var(--accent) 24%,transparent) inset,0 5px 0 color-mix(in srgb,var(--accent) 28%,#fff),0 11px 20px color-mix(in srgb,var(--accent) 28%,transparent)}
-.mp-playbtn:active{transform:translateY(2px);box-shadow:0 3px 6px color-mix(in srgb,var(--accent) 30%,transparent) inset}
+/* R81：播放键去掉外圈圆底，只留中间那颗绿色 ▶（悬停微放大、播放时呼吸） */
+.mp-playbtn{position:relative;width:auto;height:auto;min-width:32px;min-height:32px;padding:0;border:0;border-radius:0;
+  background:none;box-shadow:none;cursor:pointer;font-family:inherit;
+  display:flex;align-items:center;justify-content:center;font-size:29px;line-height:1;color:var(--accent-deep);text-indent:0;
+  text-shadow:0 2px 0 color-mix(in srgb,var(--accent) 18%,transparent);
+  transition:transform .14s ease,filter .16s ease,color .16s ease}
+.mp-playbtn:hover{filter:brightness(1.08);transform:scale(1.12)}
+.mp-playbtn:active{transform:scale(.9)}
 .mp-playbtn.playing{animation:mpPulse 1.9s ease-in-out infinite}
-@keyframes mpPulse{0%,100%{box-shadow:0 1px 0 rgba(255,255,255,.95) inset,0 -4px 0 color-mix(in srgb,var(--accent) 24%,transparent) inset,0 4px 0 color-mix(in srgb,var(--accent) 26%,#fff),0 7px 14px color-mix(in srgb,var(--accent) 24%,transparent)}
-  50%{box-shadow:0 1px 0 rgba(255,255,255,.95) inset,0 -4px 0 color-mix(in srgb,var(--accent) 24%,transparent) inset,0 4px 0 color-mix(in srgb,var(--accent) 26%,#fff),0 7px 22px color-mix(in srgb,var(--accent) 42%,transparent)}}
+@keyframes mpPulse{0%,100%{transform:scale(1);filter:brightness(1)}
+  50%{transform:scale(1.12);filter:brightness(1.1)}}
 .mp-playtip{font-size:9px;line-height:1.05;color:var(--muted);white-space:nowrap;max-width:112px;overflow:hidden;text-overflow:ellipsis;text-align:center}
 /* C 区：四列网格，歌名字号小一号 */
 .mp-grid{grid-template-columns:repeat(4,1fr);gap:4px 6px}
@@ -2012,7 +2027,7 @@
         <div id="shopping-body" data-page-node-id="BubJXjwm5ya3Ps7wQaOf0l"></div>
       </section>
       <section class="module" id="mod-media" data-sp-bindable="database" data-sp-database-id="XwBGD3AthDZziupFstknF4" data-page-node-id="wmE0Ozv4VPOxb1QNG9Gq81">
-        <div class="mod-head" data-page-node-id="ww8NZJbJ993jpKKtV5WKns"><h2 data-page-node-id="12stfYH9V0UA46lU8o3M7i">书影音</h2><span class="desc" data-page-node-id="LH5Tx5hHfiLB9V60VgZUjH">收藏、评分与年度统计，记录看过的好东西</span><span class="build-ver" title="页面版本">R80</span></div>
+        <div class="mod-head" data-page-node-id="ww8NZJbJ993jpKKtV5WKns"><h2 data-page-node-id="12stfYH9V0UA46lU8o3M7i">书影音</h2><span class="desc" data-page-node-id="LH5Tx5hHfiLB9V60VgZUjH">收藏、评分与年度统计，记录看过的好东西</span><span class="build-ver" title="页面版本">R81</span></div>
         <div id="media-body" data-page-node-id="MvHLGITKcoHEoc4n5mYw56"></div>
       </section>
       <section class="module" id="mod-report" data-sp-bindable="database" data-sp-database-id="VDJ7npH13yRDIkMBUcnQO4" data-page-node-id="zEMiJyVPF1imOLfhLXwOHu">
@@ -5852,12 +5867,24 @@ function renderMedia(rows){
   var wantCnt=books.filter(function(r){return (r["状态"]||'想看')==='想看'&&mediaYearMatch(r,'want');}).length;
   var doingCnt=books.filter(function(r){return r["状态"]==='在读'&&mediaYearMatch(r,'doing');}).length;
 
+  /* R81：按用户图重排 —— 第一行「打开微信读书 / 批量导入 / 同步 / ＋添加 …… 看板·封面墙·列表」，
+     第二行只放三格统计。原来的「类型」「来源」两个「全部」下拉删掉（用户：这两个条不需要了） */
+  var vtg='<div class="viewtoggle">'+
+      '<button class="'+(mediaView==='board'?'on':'')+'" onclick="mediaSetView(\'board\')">看板</button>'+
+      '<button class="'+(mediaView==='wall'?'on':'')+'" onclick="mediaSetView(\'wall\')">封面墙</button>'+
+      '<button class="'+(mediaView==='list'?'on':'')+'" onclick="mediaSetView(\'list\')">列表</button></div>';
+  var fStatus='';
+  if(mediaView!=='board'){
+    fStatus='<select onchange="mediaStatusF=this.value;renderMedia(window.__media)"><option'+(mediaStatusF==='全部'?' selected':'')+'>全部</option>'+OPT.mediaStatus.map(function(c){return '<option'+(c===mediaStatusF?' selected':'')+'>'+c+'</option>';}).join('')+'</select>';
+  }
+
   var actbar='<div class="m-actbar">'+
       '<button class="btn sm primary" onclick="openWeRead()">打开微信读书 ↗</button>'+
       '<button class="btn sm" onclick="openMediaImport()">批量导入</button>'+
       '<button class="btn sm" onclick="openWeReadSync()">📥 微信读书同步</button>'+
       '<button class="btn sm" onclick="openMediaAdd()">＋ 添加</button>'+
       '<span class="spacer"></span>'+
+      vtg + fStatus +
       '<span class="m-hint">点「微信读书同步」选同步文件，一次把书架搬进来（已记过的自动跳过）</span>'+
     '</div>';
 
@@ -5867,20 +5894,7 @@ function renderMedia(rows){
     statYear('在读', doingCnt+'','accent','doing')+
     statYear('已看', seenCnt+'','','seen')+
   '</div>';
-
-  var vtg='<div class="viewtoggle">'+
-      '<button class="'+(mediaView==='board'?'on':'')+'" onclick="mediaSetView(\'board\')">看板</button>'+
-      '<button class="'+(mediaView==='wall'?'on':'')+'" onclick="mediaSetView(\'wall\')">封面墙</button>'+
-      '<button class="'+(mediaView==='list'?'on':'')+'" onclick="mediaSetView(\'list\')">列表</button></div>';
-  var fType='<select onchange="mediaTypeF=this.value;renderMedia(window.__media)"><option'+(mediaTypeF==='全部'?' selected':'')+'>全部</option>'+OPT.mediaType.filter(function(c){return c!=='电影'&&c!=='音乐';}).map(function(c){return '<option'+(c===mediaTypeF?' selected':'')+'>'+c+'</option>';}).join('')+'</select>';
-  var fSrc='<select onchange="mediaSrcF=this.value;renderMedia(window.__media)"><option'+(mediaSrcF==='全部'?' selected':'')+'>全部</option>'+OPT.mediaSrc.map(function(c){return '<option'+(c===mediaSrcF?' selected':'')+'>'+c+'</option>';}).join('')+'</select>';
-  var fStatus='';
-  if(mediaView!=='board'){
-    fStatus='<select onchange="mediaStatusF=this.value;renderMedia(window.__media)"><option'+(mediaStatusF==='全部'?' selected':'')+'>全部</option>'+OPT.mediaStatus.map(function(c){return '<option'+(c===mediaStatusF?' selected':'')+'>'+c+'</option>';}).join('')+'</select>';
-  }
-  /* R65：视图切换 + 筛选上移，与三张竖条统计同一行（各占半行） */
-  var vrow='<div class="m-vrow">'+vtg+fType+fSrc+fStatus+'</div>';
-  var statsRow='<div class="m-statsrow">'+stats3+vrow+'</div>';
+  var statsRow='<div class="m-statsrow">'+stats3+'</div>';
 
   var shown=rows.filter(function(r){
     var t=r["类型"]||''; if(t==='电影'||t==='音乐') return false;    var st=r["状态"]||'想看';
@@ -8364,11 +8378,13 @@ function mpLoad() {
     }
   });
   if (!MP.lib[MP.curSrc]) MP.curSrc = MP_LOCAL_SRC;
-  /* R54：QQ / 网易云改成外链入口，不再作为工作台内来源。旧数据仍留在本地存储里（不删），只是不再显示 */
-  var mpCanSrc = MP_SRC.filter(function (x) { return !x.ext && !x.sub; }).map(function (x) { return x.k; });
+  /* R54：QQ / 网易云改成外链入口，不再作为工作台内来源。旧数据仍留在本地存储里（不删），只是不再显示
+     R81：网页歌单（sub）现在是正经来源，刷新后要记住它——只把「外链入口」排除掉 */
+  var mpCanSrc = MP_SRC.filter(function (x) { return !x.ext; }).map(function (x) { return x.k; });
   if (mpCanSrc.indexOf(MP.curSrc) < 0) MP.curSrc = MP_LOCAL_SRC;
   if (!MP.curPl) MP.curPl = {};
-  if (!MP.curPl[MP.curSrc] || !mpPlById(MP.curPl[MP.curSrc])) MP.curPl[MP.curSrc] = MP.lib[MP.curSrc][0].id;
+  /* R81：MP.curPl['网页歌单'] 存的是「最后播过的网页歌单 id」，不是本地歌单 id，别拿 lib 校它 */
+  if (MP.curSrc !== '网页歌单' && (!MP.curPl[MP.curSrc] || !mpPlById(MP.curPl[MP.curSrc]))) MP.curPl[MP.curSrc] = MP.lib[MP.curSrc][0].id;
   // blob: 链接刷新后失效，清掉以便回落到 IndexedDB 里的原始文件
   Object.keys(MP.lib).forEach(function (k) {
     (MP.lib[k] || []).forEach(function (p) {
@@ -8878,16 +8894,28 @@ function mpSrcOptsHtml() {
   return '<div class="mp-src-pill">' + inner + '</div>';
 }
 /* R79：来源入口 —— 平时只有一个圆钮（显示当前来源），鼠标悬停才横排弹出四个来源。
-   进出场动画与原竖排时一模一样（opacity + translateY(-8px)→0，.2s ease） */
-function mpSrcBoxHtml() {
+   进出场动画与原竖排时一模一样（opacity + translateY(-8px)→0，.2s ease）
+   R81：pickMenu=true（网页歌单）时，点圆钮 = 打开「选择歌单」下拉列表；悬停仍然只弹来源切换 */
+function mpSrcBoxHtml(pickMenu) {
   var cur = MP_SRC.filter(function (x) { return x.k === MP.curSrc; })[0] || MP_SRC[0];
   var playing = MP.idx >= 0;
+  var act = pickMenu ? 'mpSrcOpenMenu(event)' : 'mpToggleSrc(event)';
+  var tip = pickMenu
+    ? '当前来源：' + (cur ? cur.label : '本地') + ' · 点一下打开歌单列表，悬停可换来源'
+    : '当前来源：' + (cur ? cur.label : '本地') + ' · 悬停可切换来源';
   return '<div class="mp-src" id="mp-src" onmouseleave="mpSrcLeave()">'
-    + '<div class="mp-src-cur' + (playing ? ' playing' : '') + '" onclick="mpToggleSrc(event)"'
-    + ' title="当前来源：' + esc(cur ? cur.label : '本地') + ' · 悬停可切换来源">'
+    + '<div class="mp-src-cur' + (playing ? ' playing' : '') + '" onclick="' + act + '"'
+    + ' title="' + esc(tip) + '">'
     + (MP_ICON[MP.curSrc] || MP_ICON['本地']) + '</div>'
     + '<div class="mp-src-list">' + mpSrcOptsHtml() + '</div>'
     + '</div>';
+}
+/* R81：网页歌单的来源圆钮点击 = 展开卡内歌单列表（顺便收起「换来源」弹层，免得两层叠在一起） */
+function mpSrcOpenMenu(e) {
+  if (e) e.stopPropagation();
+  var s = document.getElementById('mp-src');
+  if (s) { s.classList.remove('open'); s.classList.add('hidepop'); }
+  mpTogglePlMenu(e);
 }
 
 /* ---------------- 来源 / 歌单切换 ---------------- */
@@ -8965,14 +8993,44 @@ function mpTogglePlMenu(e) {
     var on = !m.classList.contains('open');
     m.classList.toggle('open', on);
     if (b) b.classList.toggle('on', on);
-    if (on) requestAnimationFrame(mpPlMenuFit); else mpPlMenuFit();
+    var s = document.getElementById('mp-src');
+    if (s) s.classList.toggle('hidepop', on);   /* R81：菜单开着时不再冒来源弹层 */
+    if (on) { mpMenuHoverBind(); requestAnimationFrame(mpPlMenuFit); }
+    else mpPlMenuFit();
   }
+}
+/* R81：歌单列表不再只靠「点外面」收起——鼠标离开这块区域也自动收回（延时 520ms 防手抖，
+   收起走 .mp-pl-menu 的 .4s 渐隐过渡，慢慢退场）。
+   用 document 上的 mousemove 判定，而不是 mouseleave：入口圆钮在 .mp-drop 外面，
+   光靠 mouseleave 会出现「点圆钮打开后指针从没进过 drop，永远不触发」。 */
+var mpMenuT = null, mpMenuHoverBound = false;
+function mpMenuHoverBind() {
+  if (mpMenuHoverBound) return;
+  mpMenuHoverBound = true;
+  document.addEventListener('mousemove', mpMenuHoverMove);
+}
+function mpMenuHoverMove(e) {
+  var m = document.getElementById('mp-pl-menu');
+  if (!m || !m.classList.contains('open')) {
+    if (mpMenuT) { clearTimeout(mpMenuT); mpMenuT = null; }
+    return;
+  }
+  var d = m.parentNode, s = document.getElementById('mp-src'), t = e.target;
+  var inside = (d && d.contains(t)) || (s && s.contains(t));
+  if (inside) { if (mpMenuT) { clearTimeout(mpMenuT); mpMenuT = null; } return; }
+  if (mpMenuT) return;                     /* 已经计着时，不再重排（离开后 520ms 一定收） */
+  mpMenuT = setTimeout(function () {
+    mpMenuT = null;
+    var mm = document.getElementById('mp-pl-menu');
+    if (mm && mm.classList.contains('open')) mpClosePlMenu();
+  }, 520);
 }
 function mpClosePlMenu(cb, delay) {
   var m = document.getElementById('mp-pl-menu');
   var b = m && m.parentNode ? m.parentNode.querySelector('.mp-pl-btn') : null;
   if (m) { m.classList.remove('open'); m.style.left = ''; m.style.right = ''; m.style.width = ''; }
   if (b) b.classList.remove('on');
+  var s = document.getElementById('mp-src'); if (s) s.classList.remove('hidepop');
   if (cb) setTimeout(cb, delay == null ? 180 : delay);
 }
 function mpPickPl(id) {
@@ -9401,7 +9459,9 @@ function mpWebSyncStage() {
 /* ---------- 卡内「网页歌单」列表（结构与本地歌单一致） ---------- */
 function mpInnerWeb() {
   var list = mpWebPlList();
-  var cur = MPW.cur ? mpWebPlById(MPW.cur) : null;
+  /* R81：歌单框默认显示「最后一次播过的歌单」——和本地歌单同一套逻辑，取 MP.curPl['网页歌单']（持久化） */
+  var curId = MPW.cur || MP.curPl['网页歌单'] || '';
+  var cur = curId ? mpWebPlById(curId) : null;
   var nSel = 0;
   var rows = list.length ? list.map(function (p) {
     var isCur = cur && cur.id === p.id;
@@ -9418,25 +9478,38 @@ function mpInnerWeb() {
       + '</div>';
   }).join('') : '<div class="mpw-none2">还没有网页歌单<br>点下面「＋ 添加歌单网址」把地址存进来</div>';
 
+  /* R81：底部操作区按用户图——「▶ 连播选中」一行，下面「＋添加歌单网址 / 🗑删除选中」并排 */
   var foot = '<div class="mp-pl-foot col">'
     + '<div class="mp-pl-row">'
     + '<button class="mp-pl-act" id="mpw-playsel" onclick="event.stopPropagation();mpWebPlPlaySel()"' + (nSel ? '' : ' disabled') + '>▶ 连播选中' + (nSel ? ' (' + nSel + ')' : '') + '</button>'
+    + '</div>'
+    + '<div class="row2">'
+    + '<button class="mp-pl-act imp" onclick="event.stopPropagation();mpWebPlAdd()" title="存一个新歌单网址进来">＋ 添加歌单网址</button>'
+    + '<button class="mp-pl-act del" id="mpw-delsel" onclick="event.stopPropagation();mpWebPlDelSel()" title="删除上面勾选的歌单"' + (nSel ? '' : ' disabled') + '>🗑 删除选中' + (nSel ? ' (' + nSel + ')' : '') + '</button>'
     + '</div></div>';
 
+  var tip = MPW.cur && cur ? cur.name : '点击播放此歌单';
   return ''
     + '<div class="mp-row1">'
-    + '  ' + mpSrcBoxHtml()
+    + '  ' + mpSrcBoxHtml(true)
     + '  <div class="mp-drop">'
     + '    <button class="mp-pl-btn" onclick="mpTogglePlMenu(event)"><span class="mp-pl-label">' + esc(cur ? cur.name : '选择网页歌单') + '</span><span class="mp-caret">▾</span></button>'
     + '    <div class="mp-pl-menu" id="mp-pl-menu" onclick="event.stopPropagation()">'
     + '      <div class="mp-pl-scroll">' + rows + '</div>' + foot + '</div>'
     + '  </div>'
-    + '  <div class="mp-web-acts">'
-    + '    <button class="btn sm" onclick="mpWebPlAdd()">＋ 添加歌单网址</button>'
-    + '    <button class="btn sm" id="mpw-delsel" onclick="mpWebPlDelSel()"' + (nSel ? '' : ' disabled') + '>删除选中' + (nSel ? ' (' + nSel + ')' : '') + '</button>'
+    + '  <div class="mp-playwrap">'
+    + '    <button class="mp-playbtn' + (MPW.nowOpen && MPW.cur ? ' playing' : '') + '" onclick="mpWebPlayBtn()" title="播放当前歌单">▶</button>'
+    + '    <span class="mp-playtip" title="' + esc(tip) + '">' + esc(tip) + '</span>'
     + '  </div>'
     + '</div>'
     + mpwNowCardHtml();
+}
+/* R81：网页歌单的 ▶ = 播当前歌单（没播过就看最后一次播的，再没有就打开列表） */
+function mpWebPlayBtn() {
+  var id = MPW.cur || MP.curPl['网页歌单'] || '';
+  var p = id ? mpWebPlById(id) : null;
+  if (!p) { toast('先选一个网页歌单', true); mpSrcOpenMenu(); return; }
+  mpWebPlPlayOne(p.id);
 }
 
 /* ---------- 勾选 ---------- */
@@ -9456,7 +9529,7 @@ function mpWebPlSyncBtns() {
   var n = mpWebPlSelIds().length;
   var a = document.getElementById('mpw-playsel'), d = document.getElementById('mpw-delsel');
   if (a) { a.textContent = n ? '▶ 连播选中 (' + n + ')' : '▶ 连播选中'; a.disabled = !n; }
-  if (d) { d.textContent = n ? '删除选中 (' + n + ')' : '删除选中'; d.disabled = !n; }
+  if (d) { d.textContent = n ? '🗑 删除选中 (' + n + ')' : '🗑 删除选中'; d.disabled = !n; }
 }
 
 /* ---------- 播放 / 连播 ---------- */

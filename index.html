@@ -599,7 +599,7 @@ button.mpw-nc-ico{padding:0;font-family:inherit;color:#bcb5a3}
    （原「＋添加歌单网址 / 删除选中」两个按钮已挪进歌单下拉菜单底部） */
 .mp.mp-web .mp-row1{padding-right:0;flex-wrap:nowrap;gap:9px;align-items:center}
 .mp.cat-zone.mp-web .mp-row1{padding-right:88px}   /* R81：网页歌单也做猫让位（▶ 在行右端） */
-.mp.mp-web .mp-pl-btn{border-radius:12px;padding:11px 13px;font-size:14.5px;
+.mp.mp-web .mp-pl-btn{border-radius:12px;padding:12px 15px;font-size:15.5px;
   box-shadow:0 1px 0 #fff inset,0 2px 4px rgba(70,58,40,.06)}
 .mp.mp-web .mp-pl-menu{min-width:300px}
 /* R60：本地歌单栏缩窄 + 四个操作按钮并入第一行（参考网页歌单）
@@ -788,18 +788,19 @@ button.mpw-nc-ico{padding:0;font-family:inherit;color:#bcb5a3}
 .mp-imp svg{width:19px;height:19px}
 .mp-imp:hover{filter:brightness(1.03);transform:translateY(-1px);box-shadow:0 1px 0 #fff inset,0 -3px 0 color-mix(in srgb,var(--accent) 13%,transparent) inset,0 4px 0 color-mix(in srgb,var(--accent) 22%,#fff),0 8px 16px rgba(70,58,40,.16)}
 .mp-imp:active{transform:translateY(2px);box-shadow:0 2px 5px rgba(70,58,40,.2) inset}
-.mp:not(.mp-web) .mp-pl-btn{border-radius:12px;padding:11px 13px;font-size:14.5px;
+.mp:not(.mp-web) .mp-pl-btn{border-radius:12px;padding:12px 15px;font-size:15.5px;
   box-shadow:0 1px 0 #fff inset,0 2px 4px rgba(70,58,40,.06)}
-.mp-playwrap{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:1px}
+/* R84：播放键 + 说明文字改成横排（键在左、字在右），行高由歌单框决定 */
+.mp-playwrap{flex:0 0 auto;display:flex;flex-direction:row;align-items:center;gap:8px}
 /* R82：播放键 —— 细圆环 + 圆润饱满的三角（SVG，圆角靠 stroke-linejoin:round）
    停止态三角颜色略浅；悬停/按下变深；正式播放时切成 ⏸（点它就是关掉正在播的歌单） */
-.mp-playbtn{position:relative;width:32px;height:32px;min-width:32px;padding:0;border-radius:50%;
+.mp-playbtn{position:relative;width:36px;height:36px;min-width:36px;padding:0;border-radius:50%;
   border:1px solid color-mix(in srgb,var(--accent) 30%,#fff);
   background:transparent;box-shadow:none;cursor:pointer;font-family:inherit;
   display:flex;align-items:center;justify-content:center;
   color:color-mix(in srgb,var(--accent-deep) 58%,#fff);
   transition:transform .14s ease,border-color .16s ease,color .16s ease,background .16s ease}
-.mp-pb-ic{width:32px;height:32px;display:block;fill:currentColor}
+.mp-pb-ic{width:36px;height:36px;display:block;fill:currentColor}
 .mp-pb-play path{stroke:currentColor;stroke-width:2.4;stroke-linejoin:round;stroke-linecap:round}
 .mp-pb-pause{display:none}
 .mp-playbtn.playing .mp-pb-play{display:none}
@@ -812,7 +813,9 @@ button.mpw-nc-ico{padding:0;font-family:inherit;color:#bcb5a3}
   background:color-mix(in srgb,var(--accent) 9%,transparent);animation:mpPulse 1.9s ease-in-out infinite}
 @keyframes mpPulse{0%,100%{transform:scale(1);filter:brightness(1)}
   50%{transform:scale(1.06);filter:brightness(1.06)}}
-.mp-playtip{font-size:9px;line-height:1.05;color:var(--muted);white-space:nowrap;max-width:112px;overflow:hidden;text-overflow:ellipsis;text-align:center}
+.mp-playtip{font-size:11px;line-height:1.2;color:var(--muted);white-space:nowrap;max-width:104px;overflow:hidden;text-overflow:ellipsis;text-align:left}
+/* R84：一旦真的播起来，这行提示就不再出现（播放键右侧让给「正在播」的小胶囊） */
+.mp-playbtn.playing + .mp-playtip{display:none}
 /* C 区：四列网格，歌名字号小一号 */
 .mp-grid{grid-template-columns:repeat(4,1fr);gap:4px 6px}
 .mp-song{padding:5px 24px 5px 8px;border-radius:9px}
@@ -2056,7 +2059,7 @@ button.mpw-nc-ico{padding:0;font-family:inherit;color:#bcb5a3}
         <div id="shopping-body" data-page-node-id="BubJXjwm5ya3Ps7wQaOf0l"></div>
       </section>
       <section class="module" id="mod-media" data-sp-bindable="database" data-sp-database-id="XwBGD3AthDZziupFstknF4" data-page-node-id="wmE0Ozv4VPOxb1QNG9Gq81">
-        <div class="mod-head" data-page-node-id="ww8NZJbJ993jpKKtV5WKns"><h2 data-page-node-id="12stfYH9V0UA46lU8o3M7i">书影音</h2><span class="desc" data-page-node-id="LH5Tx5hHfiLB9V60VgZUjH">收藏、评分与年度统计，记录看过的好东西</span><span class="build-ver" title="页面版本">R83</span></div>
+        <div class="mod-head" data-page-node-id="ww8NZJbJ993jpKKtV5WKns"><h2 data-page-node-id="12stfYH9V0UA46lU8o3M7i">书影音</h2><span class="desc" data-page-node-id="LH5Tx5hHfiLB9V60VgZUjH">收藏、评分与年度统计，记录看过的好东西</span><span class="build-ver" title="页面版本">R84</span></div>
         <div id="media-body" data-page-node-id="MvHLGITKcoHEoc4n5mYw56"></div>
       </section>
       <section class="module" id="mod-report" data-sp-bindable="database" data-sp-database-id="VDJ7npH13yRDIkMBUcnQO4" data-page-node-id="zEMiJyVPF1imOLfhLXwOHu">

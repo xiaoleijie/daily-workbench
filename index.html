@@ -325,7 +325,11 @@
   .mediatable td{padding:10px;border-bottom:1px solid var(--line);vertical-align:top}
   .mediatable tr:hover td{background:#fcfaf7}
   /* media · 三栏看板（R35 新增） */
-  .m-actbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+  /* R82：三栏（按钮组）布局 —— 左：操作按钮 / 中：看板·封面墙·列表（真正居中）/ 右：提示文字 */
+  .m-actbar{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:10px;margin-bottom:12px}
+  .m-actbar .m-ab-left{display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-width:0;max-width:none;flex:none;position:static}
+  .m-actbar .m-ab-mid{display:flex;align-items:center;gap:8px;justify-self:center}
+  .m-actbar .m-ab-right{display:flex;align-items:center;justify-content:flex-end;gap:8px;min-width:0;flex:none;position:static;max-width:none}
   .m-actbar .spacer{flex:1}
   .m-actbar .m-hint{font-size:11.5px;color:var(--muted)}
   /* R81：视图切换搬进这一行（与「打开微信读书」同排），提示文字留在最右 */
@@ -333,6 +337,15 @@
   .m-actbar select{width:auto;min-width:104px;max-width:172px;padding:6px 9px;font-size:12.5px}
   .m-actbar .m-hint{margin-left:14px}
   @media (max-width:1000px){.m-actbar .m-hint{display:none}}
+  /* 窄屏：一行放不下就退回「按钮在左、切换靠右」的老排法，避免三栏挤成一团 */
+  @media (max-width:1180px){
+    .m-actbar{display:flex;flex-wrap:wrap}
+    .m-actbar .m-ab-mid{margin-left:auto}
+  }
+  /* R82：看板视图的三格统计跟三列对齐（各自的书单正上方） */
+  .mboard-stats{margin-bottom:12px}
+  .mboard-stats .m-stats3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;width:100%}
+  .mboard-stats .m-stats3 .stat{width:auto;flex:1 1 0;min-height:58px}
   .mboard{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;align-items:start}
   .mcol{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:10px}
   .mcol-head{display:flex;align-items:center;gap:7px;margin-bottom:9px;padding:0 2px}
@@ -558,6 +571,12 @@
 .mpw-nc-ico{flex:0 0 auto;width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;
   background:#fff;border:1px solid #e6e0d2;font-size:17px;color:#bcb5a3;position:relative;z-index:1}
 .mpw-nowcard.live .mpw-nc-ico{background:#fdf2ef;border-color:#f0d9d2}
+/* R82：没开播时那颗 ♪ 是按钮——点它直接弹歌单列表（选歌单 / 编辑歌单） */
+button.mpw-nc-ico{padding:0;font-family:inherit;color:#bcb5a3}
+.mpw-nc-ico.act{cursor:pointer;transition:transform .16s ease,border-color .16s ease,background .16s ease,color .16s ease,box-shadow .16s ease}
+.mpw-nc-ico.act:hover{border-color:#a8c093;background:#f5f8f0;color:#7E9A6B;transform:scale(1.07);box-shadow:0 0 0 4px rgba(126,154,107,.13)}
+.mpw-nc-ico.act:active{transform:scale(.96);box-shadow:0 0 0 2px rgba(126,154,107,.16)}
+.mpw-nc-ico.act:focus-visible{outline:2px solid #7E9A6B;outline-offset:2px}
 .mpw-eq{display:inline-flex;align-items:flex-end;gap:2.5px;height:15px}
 .mpw-eq i{width:3px;background:#c0564a;border-radius:2px;transform-origin:50% 100%;animation:mpwEq .95s ease-in-out infinite}
 .mpw-eq i:nth-child(1){height:7px;animation-delay:0s}
@@ -772,17 +791,27 @@
 .mp:not(.mp-web) .mp-pl-btn{border-radius:12px;padding:11px 13px;font-size:14.5px;
   box-shadow:0 1px 0 #fff inset,0 2px 4px rgba(70,58,40,.06)}
 .mp-playwrap{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:1px}
-/* R81：播放键去掉外圈圆底，只留中间那颗绿色 ▶（悬停微放大、播放时呼吸） */
-.mp-playbtn{position:relative;width:auto;height:auto;min-width:32px;min-height:32px;padding:0;border:0;border-radius:0;
-  background:none;box-shadow:none;cursor:pointer;font-family:inherit;
-  display:flex;align-items:center;justify-content:center;font-size:29px;line-height:1;color:var(--accent-deep);text-indent:0;
-  text-shadow:0 2px 0 color-mix(in srgb,var(--accent) 18%,transparent);
-  transition:transform .14s ease,filter .16s ease,color .16s ease}
-.mp-playbtn:hover{filter:brightness(1.08);transform:scale(1.12)}
-.mp-playbtn:active{transform:scale(.9)}
-.mp-playbtn.playing{animation:mpPulse 1.9s ease-in-out infinite}
+/* R82：播放键 —— 细圆环 + 圆润饱满的三角（SVG，圆角靠 stroke-linejoin:round）
+   停止态三角颜色略浅；悬停/按下变深；正式播放时切成 ⏸（点它就是关掉正在播的歌单） */
+.mp-playbtn{position:relative;width:40px;height:40px;min-width:40px;padding:0;border-radius:50%;
+  border:1px solid color-mix(in srgb,var(--accent) 30%,#fff);
+  background:transparent;box-shadow:none;cursor:pointer;font-family:inherit;
+  display:flex;align-items:center;justify-content:center;
+  color:color-mix(in srgb,var(--accent-deep) 58%,#fff);
+  transition:transform .14s ease,border-color .16s ease,color .16s ease,background .16s ease}
+.mp-pb-ic{width:40px;height:40px;display:block;fill:currentColor}
+.mp-pb-play path{stroke:currentColor;stroke-width:2.4;stroke-linejoin:round;stroke-linecap:round}
+.mp-pb-pause{display:none}
+.mp-playbtn.playing .mp-pb-play{display:none}
+.mp-playbtn.playing .mp-pb-pause{display:block}
+.mp-playbtn:hover{color:var(--accent-deep);border-color:color-mix(in srgb,var(--accent) 68%,#fff);
+  background:color-mix(in srgb,var(--accent) 7%,transparent);transform:scale(1.06)}
+.mp-playbtn:active{transform:scale(.94);color:var(--accent-deep);
+  border-color:color-mix(in srgb,var(--accent) 78%,#fff);background:color-mix(in srgb,var(--accent) 13%,transparent)}
+.mp-playbtn.playing{color:var(--accent-deep);border-color:color-mix(in srgb,var(--accent) 62%,#fff);
+  background:color-mix(in srgb,var(--accent) 9%,transparent);animation:mpPulse 1.9s ease-in-out infinite}
 @keyframes mpPulse{0%,100%{transform:scale(1);filter:brightness(1)}
-  50%{transform:scale(1.12);filter:brightness(1.1)}}
+  50%{transform:scale(1.06);filter:brightness(1.06)}}
 .mp-playtip{font-size:9px;line-height:1.05;color:var(--muted);white-space:nowrap;max-width:112px;overflow:hidden;text-overflow:ellipsis;text-align:center}
 /* C 区：四列网格，歌名字号小一号 */
 .mp-grid{grid-template-columns:repeat(4,1fr);gap:4px 6px}
@@ -2027,7 +2056,7 @@
         <div id="shopping-body" data-page-node-id="BubJXjwm5ya3Ps7wQaOf0l"></div>
       </section>
       <section class="module" id="mod-media" data-sp-bindable="database" data-sp-database-id="XwBGD3AthDZziupFstknF4" data-page-node-id="wmE0Ozv4VPOxb1QNG9Gq81">
-        <div class="mod-head" data-page-node-id="ww8NZJbJ993jpKKtV5WKns"><h2 data-page-node-id="12stfYH9V0UA46lU8o3M7i">书影音</h2><span class="desc" data-page-node-id="LH5Tx5hHfiLB9V60VgZUjH">收藏、评分与年度统计，记录看过的好东西</span><span class="build-ver" title="页面版本">R81</span></div>
+        <div class="mod-head" data-page-node-id="ww8NZJbJ993jpKKtV5WKns"><h2 data-page-node-id="12stfYH9V0UA46lU8o3M7i">书影音</h2><span class="desc" data-page-node-id="LH5Tx5hHfiLB9V60VgZUjH">收藏、评分与年度统计，记录看过的好东西</span><span class="build-ver" title="页面版本">R82</span></div>
         <div id="media-body" data-page-node-id="MvHLGITKcoHEoc4n5mYw56"></div>
       </section>
       <section class="module" id="mod-report" data-sp-bindable="database" data-sp-database-id="VDJ7npH13yRDIkMBUcnQO4" data-page-node-id="zEMiJyVPF1imOLfhLXwOHu">
@@ -5879,13 +5908,14 @@ function renderMedia(rows){
   }
 
   var actbar='<div class="m-actbar">'+
+      '<div class="m-ab-left">'+
       '<button class="btn sm primary" onclick="openWeRead()">打开微信读书 ↗</button>'+
       '<button class="btn sm" onclick="openMediaImport()">批量导入</button>'+
       '<button class="btn sm" onclick="openWeReadSync()">📥 微信读书同步</button>'+
       '<button class="btn sm" onclick="openMediaAdd()">＋ 添加</button>'+
-      '<span class="spacer"></span>'+
-      vtg + fStatus +
-      '<span class="m-hint">点「微信读书同步」选同步文件，一次把书架搬进来（已记过的自动跳过）</span>'+
+      '</div>'+
+      '<div class="m-ab-mid">'+vtg+'</div>'+
+      '<div class="m-ab-right">'+fStatus+'<span class="m-hint">点「微信读书同步」选同步文件，一次把书架搬进来（已记过的自动跳过）</span></div>'+
     '</div>';
 
   /* R68：顺序改为 想看 / 在读 / 已看（互换原 Box1/Box2 的数据与标签），三格收窄至 2/3 宽、降低高度，年份下拉透明、标签左上角、数字居中 */
@@ -5894,14 +5924,17 @@ function renderMedia(rows){
     statYear('在读', doingCnt+'','accent','doing')+
     statYear('已看', seenCnt+'','','seen')+
   '</div>';
-  var statsRow='<div class="m-statsrow">'+stats3+'</div>';
-
   var shown=rows.filter(function(r){
     var t=r["类型"]||''; if(t==='电影'||t==='音乐') return false;    var st=r["状态"]||'想看';
     return (mediaTypeF==='全部'||r["类型"]===mediaTypeF)
         && (mediaSrcF==='全部'||(r["来源"]||'')===mediaSrcF)
         && (mediaView==='board' || mediaStatusF==='全部' || st===mediaStatusF);
   });
+
+  /* R82：看板视图下三格统计不再单独占一行，而是跟着三列走（各列书单正上方）；
+     空书架/筛选后没内容时看板渲染不出来，三格就照旧单独占一行，别把统计弄丢 */
+  var showBoardStats = (mediaView==='board' && !!shown.length);
+  var statsRow = showBoardStats ? '' : '<div class="m-statsrow">'+stats3+'</div>';
 
   var content='';
   if(!rows.length){
@@ -5912,7 +5945,8 @@ function renderMedia(rows){
   } else if(!shown.length){
     content='<div class="empty">没有符合筛选条件的收藏</div>';
   } else if(mediaView==='board'){
-    content='<div class="mboard">'+
+    content='<div class="mboard-stats">'+stats3+'</div>'
+      +'<div class="mboard">'+
       mediaCol('想看','#D9A441','想读的都堆在这，一本本啃',shown)+
       mediaCol('在读','#B5654A','挑一本开始读吧',shown)+
       mediaCol('看过','#7E9A6B','读过的都在这了',shown)+
@@ -8560,6 +8594,16 @@ function mpRender() {
   } else if (box.style.minHeight) { box.style.minHeight = ''; }
 }
 
+/* R82：统一的播放键 —— 细圆环 + 圆润三角；播放中切成 ⏸（点它＝关掉正在播的歌单） */
+function mpPlayBtnHtml(isPlaying, onclick, title) {
+  return '<button class="mp-playbtn' + (isPlaying ? ' playing' : '') + '" onclick="' + onclick + '" title="' + esc(title || '') + '">'
+    + '<svg class="mp-pb-ic mp-pb-play" viewBox="0 0 40 40" aria-hidden="true">'
+    + '<path d="M11.4 8.9 L28.2 20 L11.4 31.1 Z"/></svg>'
+    + '<svg class="mp-pb-ic mp-pb-pause" viewBox="0 0 40 40" aria-hidden="true">'
+    + '<rect x="12.4" y="9.4" width="5.6" height="21.2" rx="2.8"/><rect x="22" y="9.4" width="5.6" height="21.2" rx="2.8"/></svg>'
+    + '</button>';
+}
+
 function mpInner(pl) {
   /* R57：网页歌单是「来源」，界面跟本地歌单同一套，只是中间换成网页播放框 */
   if (MP.curSrc === '网页歌单') return mpInnerWeb();
@@ -8666,7 +8710,7 @@ function mpInner(pl) {
     + '      <div class="mp-pl-scroll">' + items + '</div>' + plFoot + '</div>'
     + '  </div>'
     + '  <div class="mp-playwrap">'
-    + '    <button class="mp-playbtn' + (playing ? ' playing' : '') + '" onclick="mpPlayAll()" title="播放整张歌单（共 ' + total + ' 首）">▶</button>'
+    + '    ' + mpPlayBtnHtml(playing, 'mpPlayAction()', playing ? '停止播放（关掉正在播的歌单）' : '播放整张歌单（共 ' + total + ' 首）')
     + '    <span class="mp-playtip" title="' + esc(nowTip) + '">' + esc(nowTip) + '</span>'
     + '  </div>'
     + '  <div class="mp-acts">' + chip
@@ -9390,11 +9434,11 @@ function mpwNowCardHtml() {
   var pl = MPW.cur ? mpWebPlById(MPW.cur) : null;
   if (!pl) {
     return '<div class="mpw-nowcard idle">'
-      + '<div class="mpw-nc-ico">♪</div>'
+      + '<button class="mpw-nc-ico act" onclick="event.stopPropagation();mpSrcOpenMenu(event)" title="点这里打开歌单列表：选歌单 / 编辑歌单">♪</button>'
       + '<div class="mpw-nc-main">'
       + '<div class="mpw-nc-t1">还没开始播</div>'
       + '<div class="mpw-nc-t2">挑一个歌单，接着往下听</div>'
-      + '<div class="mpw-nc-tip">点上面的歌单名打开它；勾一个或多个再点「▶ 连播选中」，会一个接一个播下去。</div>'
+      + '<div class="mpw-nc-tip">点左边那颗 ♪ 或者上面的歌单名，都能打开歌单列表（选、改名、删除都在这）；勾一个或多个再点「▶ 连播选中」，会一个接一个播下去。</div>'
       + '</div></div>';
   }
   var n = MPW.queue.length || 1;
@@ -9488,7 +9532,9 @@ function mpInnerWeb() {
     + '<button class="mp-pl-act del" id="mpw-delsel" onclick="event.stopPropagation();mpWebPlDelSel()" title="删除上面勾选的歌单"' + (nSel ? '' : ' disabled') + '>🗑 删除选中' + (nSel ? ' (' + nSel + ')' : '') + '</button>'
     + '</div></div>';
 
-  var tip = MPW.cur && cur ? cur.name : '点击播放此歌单';
+  /* R82：只要这张歌单还「挂着」（MPW.cur 有值）就算在播——从播放页退回歌单页时按钮仍是 ⏸ */
+  var wPlaying = !!MPW.cur;
+  var tip = wPlaying ? ((cur && cur.name) || '播放中') : (MPW.cur && cur ? cur.name : '点击播放此歌单');
   return ''
     + '<div class="mp-row1">'
     + '  ' + mpSrcBoxHtml(true)
@@ -9498,14 +9544,16 @@ function mpInnerWeb() {
     + '      <div class="mp-pl-scroll">' + rows + '</div>' + foot + '</div>'
     + '  </div>'
     + '  <div class="mp-playwrap">'
-    + '    <button class="mp-playbtn' + (MPW.nowOpen && MPW.cur ? ' playing' : '') + '" onclick="mpWebPlayBtn()" title="播放当前歌单">▶</button>'
+    + '    ' + mpPlayBtnHtml(wPlaying, 'mpWebPlayBtn()', wPlaying ? '停止播放（关掉正在播的歌单）' : '播放当前歌单')
     + '    <span class="mp-playtip" title="' + esc(tip) + '">' + esc(tip) + '</span>'
     + '  </div>'
     + '</div>'
     + mpwNowCardHtml();
 }
-/* R81：网页歌单的 ▶ = 播当前歌单（没播过就看最后一次播的，再没有就打开列表） */
+/* R81：网页歌单的 ▶ = 播当前歌单（没播过就看最后一次播的，再没有就打开列表）
+   R82：正在播时按钮是 ⏸，点它＝关掉正在播的歌单 */
 function mpWebPlayBtn() {
+  if (MPW.cur) { mpWebPlStop(); toast('已停止播放'); return; }
   var id = MPW.cur || MP.curPl['网页歌单'] || '';
   var p = id ? mpWebPlById(id) : null;
   if (!p) { toast('先选一个网页歌单', true); mpSrcOpenMenu(); return; }
@@ -9770,6 +9818,21 @@ function mpPlay(i) {
 }
 
 /* 播放整张歌单：没在放歌就从第 1 首开始；已在放歌就打开播放面板 */
+/* R82：卡片上的播放键 —— 没在播时就播整张歌单；正在播时点它＝把正在播的歌单关掉 */
+function mpPlayAction() {
+  var now = mpNowSong();
+  if (MP.idx >= 0 && now) { mpStopPlay(); return; }
+  mpPlayAll();
+}
+function mpStopPlay() {
+  var a = null;
+  try { a = mpAudioEl(); } catch (e) { a = document.getElementById('mp-audio'); }
+  if (a) { try { a.pause(); a.removeAttribute('src'); a.load(); } catch (e) { } }
+  MP.idx = -1; MP.playPl = ''; MP.nowOpen = false;
+  mpSave(); mpRender();
+  toast('已停止播放');
+}
+
 function mpPlayAll() {
   var now = mpNowSong();
   if (MP.idx >= 0 && now) { mpSetNow(true); return; }

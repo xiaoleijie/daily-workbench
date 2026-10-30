@@ -2636,7 +2636,7 @@ setTimeout(()=>{
   T('R78-14 3D 按钮：浮出条按钮仍带 inset 高光 + 落影（播放键 R82 已改成细圆环）',()=> html.indexOf('.sb-btn{')>=0 && html.indexOf('inset,0 -2px 0 rgba(0,0,0,.10) inset')>=0 && /animation:mpPulse 1\.9s ease-in-out infinite/.test(html));
 
   /* ============ R81：播放键去圆底 / 网页歌单第一行 / 歌单列表悬停收 / 卡片拉高 / 阅读区重排 ============ */
-  T('R81-1→R82 播放键不再是纯字形：40px 细圆环 + 无重 3D 高光',()=>{ const m=html.match(/\.mp-playbtn\{[^}]*\}/); if(!m) return false; const s=m[0]; return s.indexOf('width:40px')>=0 && s.indexOf('border-radius:50%')>=0 && s.indexOf('border:1px solid color-mix(in srgb,var(--accent) 30%,#fff)')>=0 && s.indexOf('box-shadow:none')>=0 && s.indexOf('radial-gradient')<0; });
+  T('R81-1→R82 播放键不再是纯字形：32px 细圆环 + 无重 3D 高光',()=>{ const m=html.match(/\.mp-playbtn\{[^}]*\}/); if(!m) return false; const s=m[0]; return s.indexOf('width:32px')>=0 && s.indexOf('border-radius:50%')>=0 && s.indexOf('border:1px solid color-mix(in srgb,var(--accent) 30%,#fff)')>=0 && s.indexOf('box-shadow:none')>=0 && s.indexOf('radial-gradient')<0; });
   T('R81-2→R82 播放键悬停放大 scale(1.06) + 播放时呼吸（都走 transform）',()=> /\.mp-playbtn:hover\{[^}]*transform:scale\(1\.06\)/.test(html) && /@keyframes mpPulse\{0%,100%\{transform:scale\(1\)/.test(html));
   T('R81-3 网页歌单第一行＝ 来源圆钮|歌单框|▶（顶行两个按钮只在列表底部）',()=>{ const h=w.mpInnerWeb(); const seg=h.slice(h.indexOf('class="mp-row1"'), h.indexOf('class="mpw-nowcard')); return h.indexOf('mp-web-acts')<0 && seg.indexOf('mp-src')>=0 && seg.indexOf('mp-drop')>=0 && seg.indexOf('mp-playwrap')>=0 && seg.indexOf('mp-playbtn')>=0 && h.indexOf('id="mpw-delsel"')>h.indexOf('mp-pl-foot'); });
   T('R81-4→R82 网页歌单也有播放键（mpWebPlayBtn，走统一 mpPlayBtnHtml）',()=> typeof w.mpWebPlayBtn==='function' && /mpPlayBtnHtml\(wPlaying, 'mpWebPlayBtn\(\)'/.test(html));
@@ -2651,8 +2651,8 @@ setTimeout(()=>{
   T('R81-13 网页歌单框默认＝最后一次播过的歌单（持久化 MP.curPl）',()=> /var curId = MPW\.cur \|\| MP\.curPl\['网页歌单'\] \|\| '';/.test(html) && /MP\.curPl\['网页歌单'\] = pl\.id;/.test(html) && /if \(MP\.curSrc !== '网页歌单' && \(!MP\.curPl\[MP\.curSrc\]/.test(html));
 
   /* ============ R82：三格跟列对齐 / 视图切换居中 / ♪ 按钮弹歌单列表 / 播放键细圆环+⏸ ============ */
-  T('R82-1 播放键＝40px 细圆环（1px 描边，无重 3D 底）',()=>{ const m=html.match(/\.mp-playbtn\{[^}]*\}/); if(!m) return false; const s=m[0]; return s.indexOf('width:40px')>=0 && s.indexOf('height:40px')>=0 && s.indexOf('border:1px solid color-mix(in srgb,var(--accent) 30%,#fff)')>=0; });
-  T('R82-2 三角是 SVG，圆角靠 stroke-linejoin:round（角更圆润饱满）',()=> html.indexOf('.mp-pb-play path{stroke:currentColor;stroke-width:2.4;stroke-linejoin:round')>=0 && /\.mp-pb-ic\{width:40px;height:40px/.test(html));
+  T('R82-1 播放键＝32px 细圆环（1px 描边，无重 3D 底）',()=>{ const m=html.match(/\.mp-playbtn\{[^}]*\}/); if(!m) return false; const s=m[0]; return s.indexOf('width:32px')>=0 && s.indexOf('height:32px')>=0 && s.indexOf('border:1px solid color-mix(in srgb,var(--accent) 30%,#fff)')>=0; });
+  T('R82-2 三角是 SVG，圆角靠 stroke-linejoin:round（角更圆润饱满）',()=> html.indexOf('.mp-pb-play path{stroke:currentColor;stroke-width:2.4;stroke-linejoin:round')>=0 && /\.mp-pb-ic\{width:32px;height:32px/.test(html));
   T('R82-3 暂停图标＝两条圆角竖条（rect rx）',()=> html.indexOf('class="mp-pb-ic mp-pb-pause"')>=0 && /<rect x="12\.4"[^>]*rx="2\.8"\/><rect x="22"[^>]*rx="2\.8"\/>/.test(html));
   T('R82-4 停止态三角颜色略浅（accent-deep 58% 兑白）',()=> /color:color-mix\(in srgb,var\(--accent-deep\) 58%,#fff\)/.test(html));
   T('R82-5 悬停/按下变深 + 描边加深 + 微放大',()=> /\.mp-playbtn:hover\{color:var\(--accent-deep\);border-color:color-mix\(in srgb,var\(--accent\) 68%,#fff\)/.test(html) && /\.mp-playbtn:active\{transform:scale\(\.94\);color:var\(--accent-deep\)/.test(html));

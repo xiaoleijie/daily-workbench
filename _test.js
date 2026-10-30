@@ -2604,6 +2604,23 @@ setTimeout(()=>{
   T('R77-播放页: 按钮加宽到 57px（1.5x）+ 主题渐变',()=> html.indexOf('.mp-now-btns button{width:57px')>=0 && html.indexOf('linear-gradient(180deg,color-mix(in srgb,var(--accent) 26%,#fff)')>=0);
   T('R77-播放页: 去掉「本地音乐」小字',()=> html.indexOf("mp-now-src\">")<0);
 
+  // ===== R78：歌单区重构（来源横排 / 圆形导入·播放 / 四列网格 / 勾选浮出条 / 目录勾选拖拽） =====
+  const mpDemoPl = ()=>({ id:'P1', name:'测试歌单', songs:[{id:'sg1',title:'一路上有你',artist:'张学友',dur:263},{id:'sg2',title:'一千个伤心的理由',artist:'张学友',dur:276}] });
+  T('R78-1 来源改横向平铺（.mp-srcbar + 列表静态化 + pill 横排）',()=>{ const h=w.mpInner(mpDemoPl()); return h.indexOf('class="mp-srcbar"')>=0 && html.indexOf('.mp-src-list{position:static')>=0 && html.indexOf('.mp-src-pill{flex-direction:row')>=0; });
+  T('R78-2 来源按钮带文字标签（mp-src-lb）',()=>{ const h=w.mpInner(mpDemoPl()); return h.indexOf('class="mp-src-lb"')>=0 && h.indexOf('>本地<')>=0 && html.indexOf('var MP_SRC_SHORT')>=0; });
+  T('R78-3 圆形导入 + 歌单目录 + 圆形播放 + 小字提示',()=>{ const h=w.mpInner(mpDemoPl()); return h.indexOf('class="mp-imp"')>=0 && h.indexOf('class="mp-playbtn')>=0 && h.indexOf('class="mp-playtip"')>=0 && h.indexOf('点击播放此歌单')>=0; });
+  T('R78-4 网格改四列 + 歌名字号缩到 13px',()=> html.indexOf('.mp-grid{grid-template-columns:repeat(4,1fr)')>=0 && html.indexOf('.mp-song-name{font-size:13px')>=0);
+  T('R78-5 添加/清空/删除选中 已移出主界面',()=>{ const h=w.mpInner(mpDemoPl()); return h.indexOf('mpAddSongs()">＋ 添加')<0 && h.indexOf('onclick="mpClear()"')<0 && h.indexOf('>清空<')<0 && h.indexOf('btn sm" onclick="mpDeleteSel()')<0 && h.indexOf('btn sm" onclick="mpAddSongs()')<0; });
+  T('R78-6 勾选浮出条：三按钮齐全',()=>{ const h=w.mpInner(mpDemoPl()); return h.indexOf('id="mp-selbar"')>=0 && h.indexOf('播放选中')>=0 && h.indexOf('删除选中')>=0 && h.indexOf('清空勾选')>=0; });
+  T('R78-7 浮出条：无勾选不带 on / 有勾选带 on',()=>{ w.mpSel={}; const a=w.mpInner(mpDemoPl()); w.mpSel={sg1:true}; const b=w.mpInner(mpDemoPl()); w.mpSel={}; return a.indexOf('class="mp-selbar"')>=0 && a.indexOf('mp-selbar on')<0 && b.indexOf('class="mp-selbar on"')>=0; });
+  T('R78-8 浮出条动画：max-height 0→64 + 上往下位移',()=> html.indexOf('.mp-selbar{')>=0 && html.indexOf('transform:translateY(-12px)')>=0 && html.indexOf('.mp-selbar.on{max-height:64px')>=0);
+  T('R78-9 歌单目录：勾选框 + 垃圾桶 + 拖拽属性',()=>{ const h=w.mpInner(mpDemoPl()); return h.indexOf('class="mp-pl-ck"')>=0 && h.indexOf('mpPlCheck(this')>=0 && h.indexOf('mpDelPl(')>=0 && h.indexOf('mpPlDragStart(event')>=0 && h.indexOf('mpPlDrop(event')>=0; });
+  T('R78-10 歌单目录底部：新建歌单 + 删除选中歌单',()=>{ const h=w.mpInner(mpDemoPl()); return h.indexOf('＋ 新建歌单')>=0 && h.indexOf('删除选中歌单')>=0; });
+  T('R78-11 新增函数齐全（勾选/拖拽/仅播选中）',()=> ['mpSelCount','mpSelBarSync','mpPlaySel','mpOnlyStep','mpPlSelCount','mpPlCheck','mpDelPl','mpDelSelPls','mpPlDragStart','mpPlDragOver','mpPlDrop','mpPlDragEnd','mpClearSel'].every(f=> typeof w[f]==='function'));
+  T('R78-12 勾选/取消：mpTogglePick 只切类名不整块重建',()=>{ w.mpSel={}; w.mpTogglePick('sg1'); const a=!!w.mpSel.sg1; w.mpTogglePick('sg1'); const b=!w.mpSel.sg1; w.mpSel={}; return a && b && /function mpTogglePick\(id\) \{\s*if \(mpSel\[id\]\) delete mpSel\[id\]; else mpSel\[id\] = true;\s*var el = document\.querySelector/.test(html); });
+  T('R78-13 仅播选中：MP.only 队列 + 上/下一首走队列',()=> Array.isArray(w.MP.only) && /MP\.only = picks\.map/.test(html) && /var st = mpOnlyStep\(1\)/.test(html) && /var st = mpOnlyStep\(-1\)/.test(html));
+  T('R78-14 3D 按钮：圆形导入/播放/浮出条都有 inset 高光 + 落影',()=> html.indexOf('.mp-imp{')>=0 && html.indexOf('.mp-playbtn{')>=0 && html.indexOf('.sb-btn{')>=0 && html.indexOf('.mp-playbtn.playing{animation:mpPulse')>=0);
+
 
 
   T('R21-默认象限提示: q-default 胶囊文案已删除, 改由 q-sub2（不选默认为1象限）',()=> html.indexOf('如不选，默认第一象限「重要且紧急」')<0 && html.indexOf('q-sub2')>=0 && html.indexOf('（不选默认为1象限）')>=0 && html.indexOf('q-sub2{')>=0);

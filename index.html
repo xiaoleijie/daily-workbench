@@ -424,7 +424,7 @@
 /* ===== R49 音乐区：三级歌单 + 播放浮层 ===== */
 .mt-music-sec{margin-bottom:12px}
 .mp{position:relative;border:1px solid #eae5d7;border-radius:14px;background:#fbfaf6;padding:10px 12px;overflow:visible;min-height:232px;transition:min-height .3s cubic-bezier(.22,.61,.36,1)}
-.mp-row1{display:flex;align-items:flex-start;gap:10px;padding-right:88px}
+.mp-row1{display:flex;align-items:flex-start;gap:10px;padding-right:88px;margin-bottom:8px}   /* R85：行下留 8px，第一首歌不贴着歌单框底 */
 .mp-drop{position:relative;flex:1;min-width:0}
 .mp-pl-btn{width:100%;display:flex;align-items:center;justify-content:space-between;gap:8px;background:#fff;border:1px solid #e3ded0;border-radius:10px;padding:9px 12px;font-size:14px;font-weight:600;color:#3a3a3a;cursor:pointer;text-align:left}
 .mp-pl-btn:hover{background:#f7f5ee}
@@ -599,7 +599,7 @@ button.mpw-nc-ico{padding:0;font-family:inherit;color:#bcb5a3}
    （原「＋添加歌单网址 / 删除选中」两个按钮已挪进歌单下拉菜单底部） */
 .mp.mp-web .mp-row1{padding-right:0;flex-wrap:nowrap;gap:9px;align-items:center}
 .mp.cat-zone.mp-web .mp-row1{padding-right:88px}   /* R81：网页歌单也做猫让位（▶ 在行右端） */
-.mp.mp-web .mp-pl-btn{border-radius:12px;padding:12px 15px;font-size:15.5px;
+.mp.mp-web .mp-pl-btn{border-radius:12px;padding:8px 15px;font-size:15.5px;   /* R85：纵向 12→8，压低一档、宽度不变 */
   box-shadow:0 1px 0 #fff inset,0 2px 4px rgba(70,58,40,.06)}
 .mp.mp-web .mp-pl-menu{min-width:300px}
 /* R60：本地歌单栏缩窄 + 四个操作按钮并入第一行（参考网页歌单）
@@ -788,7 +788,7 @@ button.mpw-nc-ico{padding:0;font-family:inherit;color:#bcb5a3}
 .mp-imp svg{width:19px;height:19px}
 .mp-imp:hover{filter:brightness(1.03);transform:translateY(-1px);box-shadow:0 1px 0 #fff inset,0 -3px 0 color-mix(in srgb,var(--accent) 13%,transparent) inset,0 4px 0 color-mix(in srgb,var(--accent) 22%,#fff),0 8px 16px rgba(70,58,40,.16)}
 .mp-imp:active{transform:translateY(2px);box-shadow:0 2px 5px rgba(70,58,40,.2) inset}
-.mp:not(.mp-web) .mp-pl-btn{border-radius:12px;padding:12px 15px;font-size:15.5px;
+.mp:not(.mp-web) .mp-pl-btn{border-radius:12px;padding:8px 15px;font-size:15.5px;   /* R85：纵向 12→8，压低一档、宽度不变 */
   box-shadow:0 1px 0 #fff inset,0 2px 4px rgba(70,58,40,.06)}
 /* R84：播放键 + 说明文字改成横排（键在左、字在右），行高由歌单框决定 */
 .mp-playwrap{flex:0 0 auto;display:flex;flex-direction:row;align-items:center;gap:8px}
@@ -2059,7 +2059,7 @@ button.mpw-nc-ico{padding:0;font-family:inherit;color:#bcb5a3}
         <div id="shopping-body" data-page-node-id="BubJXjwm5ya3Ps7wQaOf0l"></div>
       </section>
       <section class="module" id="mod-media" data-sp-bindable="database" data-sp-database-id="XwBGD3AthDZziupFstknF4" data-page-node-id="wmE0Ozv4VPOxb1QNG9Gq81">
-        <div class="mod-head" data-page-node-id="ww8NZJbJ993jpKKtV5WKns"><h2 data-page-node-id="12stfYH9V0UA46lU8o3M7i">书影音</h2><span class="desc" data-page-node-id="LH5Tx5hHfiLB9V60VgZUjH">收藏、评分与年度统计，记录看过的好东西</span><span class="build-ver" title="页面版本">R84</span></div>
+        <div class="mod-head" data-page-node-id="ww8NZJbJ993jpKKtV5WKns"><h2 data-page-node-id="12stfYH9V0UA46lU8o3M7i">书影音</h2><span class="desc" data-page-node-id="LH5Tx5hHfiLB9V60VgZUjH">收藏、评分与年度统计，记录看过的好东西</span><span class="build-ver" title="页面版本">R85</span></div>
         <div id="media-body" data-page-node-id="MvHLGITKcoHEoc4n5mYw56"></div>
       </section>
       <section class="module" id="mod-report" data-sp-bindable="database" data-sp-database-id="VDJ7npH13yRDIkMBUcnQO4" data-page-node-id="zEMiJyVPF1imOLfhLXwOHu">

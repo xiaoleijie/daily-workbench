@@ -2675,7 +2675,11 @@ setTimeout(()=>{
   T('R84-1 播放键与提示文字横排（playwrap 为 row、8px 间距、垂直居中）',()=> /\.mp-playwrap\{[^}]*flex-direction:row[^}]*align-items:center[^}]*gap:8px/.test(html));
   T('R84-2 提示文字 11px / 左对齐 / 最宽 104px',()=> /\.mp-playtip\{font-size:11px[^}]*max-width:104px[^}]*text-align:left/.test(html));
   T('R84-3 开始播放后这行提示不再显示（.playing 相邻兄弟 display:none）',()=> html.indexOf('.mp-playbtn.playing + .mp-playtip{display:none}')>=0);
-  T('R84-4 歌单框放大到 padding 12px 15px / 15.5px（本地与网页两处）',()=> html.split('.mp-pl-btn{border-radius:12px;padding:12px 15px;font-size:15.5px;').length-1 >= 2);
+  T('R84-4→R85 歌单框：纵向 padding 8px（R84 的 12px 再压一档）、字号 15.5px 不变（本地与网页两处）',()=> html.split('.mp-pl-btn{border-radius:12px;padding:8px 15px;font-size:15.5px;').length-1 >= 2);
+  /* ============ R85：歌单框压低一档 + 行下留呼吸位 ============ */
+  T('R85-1 横向 padding 仍是 15px（宽度不变，只减高度）',()=> (html.match(/\.mp-pl-btn\{border-radius:12px;padding:8px 15px;/g)||[]).length >= 2 && html.indexOf('padding:12px 15px')<0);
+  T('R85-2 第一行下留 8px，第一首歌不贴着歌单框底（.mp-row1 margin-bottom）',()=> /\.mp-row1\{[^}]*margin-bottom:8px/.test(html));
+  T('R85-3 歌单框圆角/字号不跟着变（12px / 15.5px，扁一点但别改气质）',()=> (html.match(/border-radius:12px;padding:8px 15px;font-size:15\.5px;/g)||[]).length >= 2);
 
 
 

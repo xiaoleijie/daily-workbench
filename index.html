@@ -403,6 +403,31 @@
   /* 播放态保留 R65 的 204px（整张歌单在内滚动），容器跟着长高，不裁切 */
   .media-top .mt-col>.mp.show-now:not(.mp-web){height:204px;min-height:204px}
 }
+/* ===== R86 ①：顶部两卡（豆瓣电影 / 歌单）右下角加「只能向下拉高」的手柄 =====
+   诉求：和「备注 / 黄色便利贴」右下角拉长一个手感 —— 只能往下拉高，宽度一律锁死。
+   做法：两卡 align-items:flex-start 各自独立高度；手柄只读 clientY 改 inline height，
+   内部 .mp / .movie-cols 由 flex 撑满（歌单网格自动多显示几行），高度存 lw_mt_h_*。 */
+@media (min-width:900px){
+  .media-top{align-items:flex-start}
+  .media-top .mt-col{position:relative}
+  /* 只有用户拖过（.mt-h-set）才让内部撑满；没拖过照旧 220px 固定、网格内部滚动 */
+  .media-top .mt-col.mt-h-set>.mp{flex:1 1 auto;height:auto;min-height:220px}
+  .media-top .mt-col.mt-h-set>.mp.show-now:not(.mp-web){flex:1 1 auto;height:auto;min-height:204px}
+}
+.mt-grip{position:absolute;right:3px;bottom:2px;width:18px;height:16px;display:flex;align-items:flex-end;justify-content:flex-end;
+  padding:0 2px 1px 0;color:#c3bcae;cursor:ns-resize;touch-action:none;user-select:none;border-radius:4px;z-index:3;
+  transition:color .15s,background .15s}
+.mt-grip:hover{color:var(--accent);background:color-mix(in srgb,var(--accent) 9%,transparent)}
+.mt-grip:active{color:var(--accent-deep);background:color-mix(in srgb,var(--accent) 16%,transparent)}
+.mt-grip svg{width:12px;height:12px;display:block;pointer-events:none}
+body.mt-h-dragging{cursor:ns-resize!important;user-select:none}
+body.mt-h-dragging .mt-grip{color:var(--accent-deep)}
+/* ===== R86 ②：阅读区底部三格统计拉宽到整行（与上面「微信读书/看板·封面墙·列表」那行同宽） ===== */
+@media (min-width:760px){
+  .m-statsrow{display:block}
+  .m-statsrow .m-stats3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;width:100%;flex:1 1 auto}
+  .m-statsrow .m-stats3 .stat{width:auto;min-width:0;flex:1 1 0;min-height:60px}
+}
 .mt-head{display:flex;align-items:center;gap:10px;margin-bottom:10px}
 .mt-head h4{margin:0;font-size:15px}
 .mt-add{font-size:12px}
@@ -2059,7 +2084,7 @@ button.mpw-nc-ico{padding:0;font-family:inherit;color:#bcb5a3}
         <div id="shopping-body" data-page-node-id="BubJXjwm5ya3Ps7wQaOf0l"></div>
       </section>
       <section class="module" id="mod-media" data-sp-bindable="database" data-sp-database-id="XwBGD3AthDZziupFstknF4" data-page-node-id="wmE0Ozv4VPOxb1QNG9Gq81">
-        <div class="mod-head" data-page-node-id="ww8NZJbJ993jpKKtV5WKns"><h2 data-page-node-id="12stfYH9V0UA46lU8o3M7i">书影音</h2><span class="desc" data-page-node-id="LH5Tx5hHfiLB9V60VgZUjH">收藏、评分与年度统计，记录看过的好东西</span><span class="build-ver" title="页面版本">R85</span></div>
+        <div class="mod-head" data-page-node-id="ww8NZJbJ993jpKKtV5WKns"><h2 data-page-node-id="12stfYH9V0UA46lU8o3M7i">书影音</h2><span class="desc" data-page-node-id="LH5Tx5hHfiLB9V60VgZUjH">收藏、评分与年度统计，记录看过的好东西</span><span class="build-ver" title="页面版本">R86</span></div>
         <div id="media-body" data-page-node-id="MvHLGITKcoHEoc4n5mYw56"></div>
       </section>
       <section class="module" id="mod-report" data-sp-bindable="database" data-sp-database-id="VDJ7npH13yRDIkMBUcnQO4" data-page-node-id="zEMiJyVPF1imOLfhLXwOHu">
@@ -5817,6 +5842,54 @@ function mediaExtLink(r){
   if(c.text&&/^https?:/i.test(c.text)) return c.text;
   return '';
 }
+/* ---- R86：顶部两卡「只能向下拉高」的手柄（宽度锁死，只改高度） ---- */
+var MT_H_MIN=250, MT_H_MAX=1400;
+function mtHGet(which){
+  var n=0; try{ n=parseInt(localStorage.getItem('lw_mt_h_'+which)||'0',10); }catch(e){}
+  if(!(n>=MT_H_MIN&&n<=MT_H_MAX)) n=0;
+  return n;
+}
+function mtHSet(which,h){
+  if(!isFinite(h)) return;
+  h=Math.max(MT_H_MIN,Math.min(MT_H_MAX,Math.round(h)));
+  try{ localStorage.setItem('lw_mt_h_'+which,String(h)); }catch(e){}
+}
+function mtHStyle(which){
+  var h=mtHGet(which);
+  return h? (' style="height:'+h+'px"') : '';
+}
+/* 拖过（有存高）才让内部 .mp 撑满，否则保持 220px 固定、歌单网格内部滚动 */
+function mtHCls(which){ return mtHGet(which)? ' mt-h-set' : ''; }
+function mtGripHtml(which){
+  return '<div class="mt-grip" data-mt="'+which+'" title="按住往下拖，可以拉高这块（宽度不变）" '+
+    'onpointerdown="mtGripDown(event,\''+which+'\')">'+
+    '<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M11 1.6 L1.7 10.9 M11 6.5 L6.5 11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>'+
+    '</div>';
+}
+function mtGripDown(e,which){
+  if(e){ if(e.preventDefault) e.preventDefault(); if(e.stopPropagation) e.stopPropagation(); }
+  var card=e&&e.currentTarget? e.currentTarget.closest('.mt-col') : null;
+  if(!card) card=document.querySelector('.media-top .mt-col[data-mt="'+which+'"]');
+  if(!card) return;
+  card.classList.add('mt-h-set');
+  var startY=e.clientY, startH=card.getBoundingClientRect().height, moved=false;
+  document.body.classList.add('mt-h-dragging');
+  function mv(ev){
+    var h=Math.max(MT_H_MIN,Math.min(MT_H_MAX,startH+(ev.clientY-startY)));
+    card.style.height=h+'px'; moved=true;
+  }
+  function up(){
+    document.removeEventListener('pointermove',mv);
+    document.removeEventListener('pointerup',up);
+    document.removeEventListener('pointercancel',up);
+    document.body.classList.remove('mt-h-dragging');
+    if(moved) mtHSet(which, card.getBoundingClientRect().height);
+  }
+  document.addEventListener('pointermove',mv);
+  document.addEventListener('pointerup',up);
+  document.addEventListener('pointercancel',up);
+}
+
 function renderMediaTop(rows){
   rows=rows||[];
   var movies=rows.filter(function(r){return r["类型"]==='电影';});
@@ -5832,12 +5905,12 @@ function renderMediaTop(rows){
     if(ext){ acts+='<a class="btn sm" href="'+esc(ext)+'" target="_blank" rel="noopener" onclick="event.stopPropagation()">豆瓣 ↗</a>'; }
     return '<div class="movie-card" onclick="openMediaEdit(\''+id+'\')">'+'<div class="mc-top">'+pc+'<div class="mc-title">'+esc(r["标题"]||'')+'</div>'+(r["评分"]?'<span class="mc-sub">'+esc(r["评分"])+'</span>':'')+'</div>'+(acts?'<div class="mc-actions">'+acts+'</div>':'')+'</div>';
   }
-  var left='<div class="mt-col"><div class="mt-head"><button class="btn sm primary mt-add" onclick="openMovieAdd()">＋ 添加作品</button><a class="btn sm" href="https://movie.douban.com/" target="_blank" rel="noopener">豆瓣电影 ↗</a></div>'+
+  var left='<div class="mt-col'+mtHCls('movie')+'" data-mt="movie"'+mtHStyle('movie')+'><div class="mt-head"><button class="btn sm primary mt-add" onclick="openMovieAdd()">＋ 添加作品</button><a class="btn sm" href="https://movie.douban.com/" target="_blank" rel="noopener">豆瓣电影 ↗</a></div>'+
     '<div class="movie-cols">'+
       '<div class="mcol"><div class="mcol-head"><span class="mcol-dot" style="background:#7E9A6B"></span>已看 · '+seen.length+'</div>'+(seen.length?seen.map(movieCard).join(''):'<div class="mcol-hint">还没有标记看过的作品</div>')+'</div>'+
       '<div class="mcol"><div class="mcol-head"><span class="mcol-dot" style="background:#D9A441"></span>想看 · '+want.length+'</div>'+(want.length?want.map(movieCard).join(''):'<div class="mcol-hint">片单空空，加几部吧</div>')+'</div>'+
-    '</div></div>';
-  var right='<div class="mt-col">'+mpShell(rows)+'</div>';
+    '</div>'+mtGripHtml('movie')+'</div>';
+  var right='<div class="mt-col'+mtHCls('music')+'" data-mt="music"'+mtHStyle('music')+'>'+mpShell(rows)+mtGripHtml('music')+'</div>';
   return '<div class="media-top">'+left+right+'</div>';
 }
 function movieMarkSeen(id){
@@ -9588,8 +9661,10 @@ function mpWebPlSyncBtns() {
 function mpWebNow(open) {
   MPW.nowOpen = !!open;
   var box = document.getElementById('mp-box');
-  if (box) box.classList.toggle('show-webnow', !!open && !!MPW.cur);
-  mpWebFitLater();
+  if (box) {
+    box.classList.toggle('show-webnow', !!open && !!MPW.cur);
+    mpWebFitLater();
+  }
 }
 function mpWebPlPick(id) {
   /* 点正在播的那个歌单 = 回到播放页，不重新加载网页 */

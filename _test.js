@@ -2680,6 +2680,33 @@ setTimeout(()=>{
   T('R85-1 横向 padding 仍是 15px（宽度不变，只减高度）',()=> (html.match(/\.mp-pl-btn\{border-radius:12px;padding:8px 15px;/g)||[]).length >= 2 && html.indexOf('padding:12px 15px')<0);
   T('R85-2 第一行下留 8px，第一首歌不贴着歌单框底（.mp-row1 margin-bottom）',()=> /\.mp-row1\{[^}]*margin-bottom:8px/.test(html));
   T('R85-3 歌单框圆角/字号不跟着变（12px / 15.5px，扁一点但别改气质）',()=> (html.match(/border-radius:12px;padding:8px 15px;font-size:15\.5px;/g)||[]).length >= 2);
+  /* ============ R86：两张顶卡右下拉高手柄 + 三格统计拉宽整行 ============ */
+  T('R86-1 两张顶卡都带手柄（renderMediaTop 输出 movie/music 两个 mt-grip）',()=>{
+    const h=w.renderMediaTop([]);
+    return h.indexOf('data-mt="movie"')>=0 && h.indexOf('data-mt="music"')>=0
+      && (h.match(/class="mt-grip" data-mt="/g)||[]).length===2;
+  });
+  T('R86-2 手柄只能竖拖：绝对定位贴右下 + cursor:ns-resize + touch-action:none',()=>{
+    const m=html.match(/\.mt-grip\{[^}]*\}/); if(!m) return false; const s=m[0];
+    return s.indexOf('position:absolute')>=0 && s.indexOf('right:3px')>=0 && s.indexOf('bottom:2px')>=0
+      && s.indexOf('cursor:ns-resize')>=0 && s.indexOf('touch-action:none')>=0;
+  });
+  T('R86-3 手柄高度区间 250~1400，只改高度不改宽度（mtHGet/mtHSet 存在）',()=>{
+    return html.indexOf('var MT_H_MIN=250, MT_H_MAX=1400')>=0
+      && html.indexOf('startH+(ev.clientY-startY)')>=0
+      && /function mtGripDown\(e,which\)\{/.test(html)
+      && html.indexOf('card.style.width')<0;
+  });
+  T('R86-4 拖过（.mt-h-set）内部才撑满，没拖过保持 220px 固定、网格内部滚动',()=>{
+    return /\.media-top \.mt-col\.mt-h-set>\.mp\{flex:1 1 auto;height:auto;min-height:220px\}/.test(html)
+      && /\.media-top \.mt-col>\.mp\{flex:0 0 auto;height:220px/.test(html)
+      && html.indexOf('function mtHCls(which){ return mtHGet(which)')>=0;
+  });
+  T('R86-5 三格统计拉宽到整行（grid 三等分 + 三段选择器压过 .m-stats3 .stat 的 196px）',()=>{
+    return /\.m-statsrow \.m-stats3\{display:grid;grid-template-columns:repeat\(3,minmax\(0,1fr\)\);gap:12px;width:100%/.test(html)
+      && /\.m-statsrow \.m-stats3 \.stat\{width:auto;min-width:0;flex:1 1 0;min-height:60px\}/.test(html);
+  });
+
 
 
 
@@ -3565,16 +3592,19 @@ console.log('--- 回归 ---');
     var has=(d.getElementById('schedule-body')||{innerHTML:''}).innerHTML.indexOf('id="s-total"')>=0;
     w.__sched=[];
     return (has && /共\s*2\s*项/.test(txt)) ? txt : false; });
-  T('R42-4: 幸福历按月文案(2026-10 内置解读)',()=>{
-    var a=w.currentHappyTexts();
-    return (a && a.length>=31 && a[0].indexOf('值得期待')>=0) ? 'ok' : false; });
+  T('R42-4: 幸福历按月文案(内置 2026-10 解读 + 缺月回退 ACTION_ACTIONS)',()=>{
+    // R86 顺手修：原来直接断言「当月文案首句含值得期待」，一进 11 月就必然失败（内置库只到 2026-10）
+    var b=w.ACTION_MONTHLY_BUILTIN||{}, oct=b['2026-10'], a=w.currentHappyTexts();
+    return (oct && oct.length>=31 && oct[0].indexOf('值得期待')>=0 && a && a.length>=1) ? 'ok' : false; });
   T('R42-5: 幸福历月度文案可覆盖/可恢复默认',()=>{
     var k=w.happyMonthKey();
     w.saveHappyMonth(['测试第一天','测试第二天']);
     var raw=''; try{ raw=w.localStorage.getItem(k)||''; }catch(e){}
     var a=w.currentHappyTexts(); var ok1=(a && a[0]==='测试第一天');
     try{ w.localStorage.removeItem(k); }catch(e){}
-    var b=w.currentHappyTexts(); var ok2=(b && b[0].indexOf('值得期待')>=0);
+    var b=w.currentHappyTexts();
+    // 恢复默认＝不再是测试文案、且有内容（内置库缺当月时回退 ACTION_ACTIONS）
+    var ok2=!!b && b.length>=1 && b[0]!=='测试第一天';
     if(!(ok1&&ok2)) console.log('   [dbg] k='+k+' raw='+raw+' a0='+(a?a[0]:'null')+' b0='+(b?b[0]:'null'));
     return (ok1 && ok2) ? 'ok' : false; });
   T('R42-6: 贴图板 存储键/容量上限助手',()=>{

@@ -2707,6 +2707,58 @@ setTimeout(()=>{
       && /\.m-statsrow \.m-stats3 \.stat\{width:auto;min-width:0;flex:1 1 0;min-height:60px\}/.test(html);
   });
 
+  /* ===== R87：微信读书同步「已有记录缺封面只补空位」 ===== */
+  T('R87-1 wrSyncStat 三方分流（add / fill / skip），按标题 trim 去重',()=>{
+    return html.indexOf('function wrSyncStat(items)')>=0
+      && html.indexOf('var seen={}, add=[], fill=[], skip=[]')>=0
+      && html.indexOf('if(k && !have[k]) have[k]=r')>=0
+      && html.indexOf('return { add:add, fill:fill, skip:skip }')>=0;
+  });
+  T('R87-2 只在「封面/阅读链接为空」时才补，且用 mediaCoverLink/mediaReadLink 兼容两种字段形态',()=>{
+    return html.indexOf('var needCover=!mediaCoverLink(r) && !!cv')>=0
+      && html.indexOf('var needLink =!mediaReadLink(r)  && !!lk')>=0;
+  });
+  T('R87-3 fill 只 patch 两个空位（不带标题/状态/评分/短评），走 updRec 不新建记录',()=>{
+    return /if\(f\.cover\) p\["封面链接"\]=\{url:\{text:'封面',link:f\.cover\}\}/.test(html)
+      && /if\(f\.link\)  p\["阅读链接"\]=\{url:\{text:'打开阅读',link:f\.link\}\}/.test(html)
+      && html.indexOf('if(f.id) ops.push(updRec(DB.media, f.id, p))')>=0
+      && html.indexOf('function doWeReadImport')>=0
+      && /st\.fill\.forEach\(function\(f\)\{[\s\S]{0,400}?\}\);/.test(html);
+  });
+  T('R87-4 预览弹窗显示新增/补齐/已齐全数量，并给待补书加 [补封面] 标记',()=>{
+    return html.indexOf("'<b>'+st.fill.length+'</b> 本可补齐封面/阅读链接")>=0
+      && html.indexOf("[补'+(f.cover&&f.link?'封面+链接'")>=0
+      && html.indexOf('var mark={}; st.fill.forEach')>=0;
+  });
+  T('R87-5 全部齐全时不再误报「都已记过」，成功提示含补齐数量',()=>{
+    return html.indexOf("toast(fillOnly?'没有需要补齐的书':'这些书都已经记过，封面和阅读链接也是齐的',true)")>=0
+      && html.indexOf("'补齐 '+st.fill.length+' 本封面/链接'")>=0
+      && html.indexOf("toast('这些书你都已经记过了'")<0;
+  });
+  T('R87-7 安全默认：预览带「只补齐不新增」复选框且默认勾选，勾选时 adds 为空',()=>{
+    return html.indexOf('id="wr-sync-fillonly" checked')>=0
+      && html.indexOf('var fillOnly=!!(fo&&fo.checked)')>=0
+      && html.indexOf('var adds=fillOnly?[]:st.add')>=0
+      && /adds\.forEach\(function\(it\)\{/.test(html);
+  });
+  T('R87-6 行为验证：缺封面→fill 且只补封面；封面齐全→skip；新书→add',()=>{
+    var old=w.__media;
+    try{
+      w.__media=[{_id:'r1',"标题":'已有书',"封面链接":'',"阅读链接":''},
+                 {_id:'r2',"标题":'齐全书',"封面链接":{url:{text:'封面',link:'https://x/a.jpg'}},"阅读链接":{url:{text:'打开阅读',link:'https://x/b'}}}];
+      var st=w.wrSyncStat([
+        {title:'已有书',cover:'https://cdn/c1.jpg',link:'https://weread/r1'},
+        {title:'齐全书',cover:'https://cdn/c2.jpg',link:'https://weread/r2'},
+        {title:'全新书',cover:'https://cdn/c3.jpg',link:''},
+        {title:'  全新书  ',cover:'https://cdn/c3.jpg'}
+      ]);
+      return st.add.length===1 && st.add[0].title==='全新书'
+        && st.fill.length===1 && st.fill[0].id==='r1' && st.fill[0].cover==='https://cdn/c1.jpg' && st.fill[0].link==='https://weread/r1'
+        && st.skip.length===1 && st.skip[0].title==='齐全书';
+    }catch(e){ console.log('   [dbg] R87-6 '+e.message); return false; }
+    finally{ w.__media=old; }
+  });
+
 
 
 

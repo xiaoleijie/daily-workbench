@@ -2084,7 +2084,7 @@ button.mpw-nc-ico{padding:0;font-family:inherit;color:#bcb5a3}
         <div id="shopping-body" data-page-node-id="BubJXjwm5ya3Ps7wQaOf0l"></div>
       </section>
       <section class="module" id="mod-media" data-sp-bindable="database" data-sp-database-id="XwBGD3AthDZziupFstknF4" data-page-node-id="wmE0Ozv4VPOxb1QNG9Gq81">
-        <div class="mod-head" data-page-node-id="ww8NZJbJ993jpKKtV5WKns"><h2 data-page-node-id="12stfYH9V0UA46lU8o3M7i">书影音</h2><span class="desc" data-page-node-id="LH5Tx5hHfiLB9V60VgZUjH">收藏、评分与年度统计，记录看过的好东西</span><span class="build-ver" title="页面版本">R86</span></div>
+        <div class="mod-head" data-page-node-id="ww8NZJbJ993jpKKtV5WKns"><h2 data-page-node-id="12stfYH9V0UA46lU8o3M7i">书影音</h2><span class="desc" data-page-node-id="LH5Tx5hHfiLB9V60VgZUjH">收藏、评分与年度统计，记录看过的好东西</span><span class="build-ver" title="页面版本">R87</span></div>
         <div id="media-body" data-page-node-id="MvHLGITKcoHEoc4n5mYw56"></div>
       </section>
       <section class="module" id="mod-report" data-sp-bindable="database" data-sp-database-id="VDJ7npH13yRDIkMBUcnQO4" data-page-node-id="zEMiJyVPF1imOLfhLXwOHu">
@@ -6161,6 +6161,25 @@ function openWeReadSync(){
     document.body.appendChild(inp); }
   try{ inp.click(); }catch(e){ toast('无法打开文件选择，请重试',true); }
 }
+/* R87：把书架文件与现有记录做三方比对 —— 新增 / 只补空字段 / 已齐全。
+   只补「封面链接」「阅读链接」两个空位，绝不覆盖用户手填的封面、评分、短评、状态。 */
+function wrSyncStat(items){
+  var have={}; (window.__media||[]).forEach(function(r){
+    var k=String(r["标题"]||'').trim(); if(k && !have[k]) have[k]=r;
+  });
+  var seen={}, add=[], fill=[], skip=[];
+  (items||[]).forEach(function(it){
+    var k=String((it&&it.title)||'').trim(); if(!k || seen[k]) return; seen[k]=1;
+    var r=have[k];
+    if(!r){ add.push(it); return; }
+    var cv=String(it.cover||'').trim(), lk=String(it.link||'').trim();
+    var needCover=!mediaCoverLink(r) && !!cv;
+    var needLink =!mediaReadLink(r)  && !!lk;
+    if(needCover||needLink) fill.push({ it:it, id:rid(r), cover:needCover?cv:'', link:needLink?lk:'' });
+    else skip.push(it);
+  });
+  return { add:add, fill:fill, skip:skip };
+}
 function wrSyncReadFile(f){
   var fr=new FileReader();
   fr.onload=function(){
@@ -6169,17 +6188,25 @@ function wrSyncReadFile(f){
     var items=(d&&d.items)||[];
     if(!items.length){ toast('文件里没有书',true); return; }
     WR_SYNC_PENDING=items;
-    var have={}; (window.__media||[]).forEach(function(r){ have[String(r["标题"]||'').trim()]=1; });
-    var dup=items.filter(function(it){ return have[String(it.title||'').trim()]; }).length;
+    var st=wrSyncStat(items);
+    var total=st.add.length+st.fill.length+st.skip.length;
+    var mark={}; st.fill.forEach(function(x){ mark[String(x.it.title||'').trim()]=x; });
     var m=document.getElementById('wr-sync-modal');
     if(!m){ m=document.createElement('div'); m.id='wr-sync-modal'; m.className='imp-modal-mask'; document.body.appendChild(m); }
     m.innerHTML='<div class="imp-modal-card" style="width:520px" onclick="event.stopPropagation()">'+
       '<h3>微信读书同步</h3>'+
-      '<div class="imp-sub">文件里有 <b>'+items.length+'</b> 本'+(dup?('，其中 <b>'+dup+'</b> 本你已经记过，会自动跳过'):'')+'。确认导入：</div>'+
+      '<div class="imp-sub">文件里有 <b>'+items.length+'</b> 条，合并同名后 <b>'+total+'</b> 本：<b>'+st.add.length+'</b> 本新增、'+
+        '<b>'+st.fill.length+'</b> 本可补齐封面/阅读链接、'+st.skip.length+' 本已是最新。确认导入：</div>'+
       '<div style="max-height:250px;overflow:auto;margin:8px 0;font-size:12.5px;line-height:1.9">'+
-        items.slice(0,60).map(function(it){ return '<div>· '+esc(it.title)+(it.author?(' <span style="color:var(--muted)">'+esc(it.author)+'</span>'):'')+(it.status?(' <span style="color:var(--muted)">['+esc(it.status)+']</span>'):'')+(it.progress?(' <span style="color:var(--muted)">'+it.progress+'%</span>'):'')+'</div>'; }).join('')+
+        items.slice(0,60).map(function(it){
+          var f=mark[String(it.title||'').trim()];
+          var tag=f?(' <span style="color:var(--accent)">[补'+(f.cover&&f.link?'封面+链接':(f.cover?'封面':'链接'))+']</span>'):'';
+          return '<div>· '+esc(it.title)+(it.author?(' <span style="color:var(--muted)">'+esc(it.author)+'</span>'):'')+tag+
+            (it.status?(' <span style="color:var(--muted)">['+esc(it.status)+']</span>'):'')+(it.progress?(' <span style="color:var(--muted)">'+it.progress+'%</span>'):'')+'</div>';
+        }).join('')+
         (items.length>60?('<div style="color:var(--muted)">… 还有 '+(items.length-60)+' 本</div>'):'')+
       '</div>'+
+      '<label style="display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--muted);margin:6px 0 2px;cursor:pointer"><input type="checkbox" id="wr-sync-fillonly" checked> 只补齐已有记录的封面/阅读链接，不新增书（想加新书再取消勾选）</label>'+
       '<div class="imp-foot" style="justify-content:space-between"><span class="mi-count">来源：微信读书</span>'+
         '<span style="display:flex;gap:8px"><button class="btn" onclick="closeWeReadSync()">取消</button>'+
         '<button class="btn primary" onclick="doWeReadImport()">确认导入</button></span></div>'+
@@ -6192,17 +6219,31 @@ function wrSyncReadFile(f){
 function closeWeReadSync(){ var m=document.getElementById('wr-sync-modal'); if(m) m.style.display='none'; WR_SYNC_PENDING=null; }
 function doWeReadImport(){
   var items=WR_SYNC_PENDING||[]; if(!items.length){ toast('没有可导入的书',true); return; }
-  var have={}; (window.__media||[]).forEach(function(r){ have[String(r["标题"]||'').trim()]=1; });
-  var add=items.filter(function(it){ return !have[String(it.title||'').trim()]; });
-  if(!add.length){ toast('这些书你都已经记过了',true); closeWeReadSync(); return; }
-  var ops=add.map(function(it){
-    return addRec(DB.media, { "类型":{select:it.type||'书籍'}, "标题":{text:it.title}, "来源":{select:'微信读书'},
+  var st=wrSyncStat(items);
+  var modal=document.getElementById('wr-sync-modal');
+  var fo=(modal&&modal.style.display!=='none')?document.getElementById('wr-sync-fillonly'):null;
+  var fillOnly=!!(fo&&fo.checked);
+  var adds=fillOnly?[]:st.add;
+  if(!adds.length && !st.fill.length){
+    toast(fillOnly?'没有需要补齐的书':'这些书都已经记过，封面和阅读链接也是齐的',true); closeWeReadSync(); return;
+  }
+  var ops=[];
+  adds.forEach(function(it){
+    ops.push(addRec(DB.media, { "类型":{select:it.type||'书籍'}, "标题":{text:it.title}, "来源":{select:'微信读书'},
       "状态":{select:it.status||'想看'}, "作者":{text:it.author||''}, "进度":{number:(it.progress==null?null:it.progress)},
       "封面链接":{url:{text:'封面',link:it.cover||''}}, "阅读链接":{url:{text:'打开阅读',link:it.link||''}},
-      "记录日期":{date:today()} });
+      "记录日期":{date:today()} }));
   });
-  Promise.all(ops).then(function(){ closeWeReadSync(); LOADERS.media(); toast('已导入 '+add.length+' 本 ✅'); })
-    .catch(function(e){ LOADERS.media(); toast('部分导入失败：'+((e&&e.message)||'错误'),true); });
+  st.fill.forEach(function(f){
+    var p={};
+    if(f.cover) p["封面链接"]={url:{text:'封面',link:f.cover}};
+    if(f.link)  p["阅读链接"]={url:{text:'打开阅读',link:f.link}};
+    if(f.id) ops.push(updRec(DB.media, f.id, p));
+  });
+  Promise.all(ops).then(function(){
+    closeWeReadSync(); LOADERS.media();
+    toast((adds.length?('新增 '+adds.length+' 本'):'')+(st.fill.length?((adds.length?'、':'')+'补齐 '+st.fill.length+' 本封面/链接'):'')+' ✅');
+  }).catch(function(e){ LOADERS.media(); toast('部分导入失败：'+((e&&e.message)||'错误'),true); });
 }
 
 /* ============ 通用 ============ */

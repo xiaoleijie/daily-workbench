@@ -6206,7 +6206,7 @@ function wrSyncReadFile(f){
         }).join('')+
         (items.length>60?('<div style="color:var(--muted)">… 还有 '+(items.length-60)+' 本</div>'):'')+
       '</div>'+
-      '<label style="display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--muted);margin:6px 0 2px;cursor:pointer"><input type="checkbox" id="wr-sync-fillonly" checked> 只补齐已有记录的封面/阅读链接，不新增书（想加新书再取消勾选）</label>'+
+      '<label style="display:flex;flex-direction:row;align-items:center;justify-content:flex-start;gap:8px;flex-wrap:nowrap;width:100%;font-size:12.5px;color:var(--muted);margin:8px 0 2px;cursor:pointer"><input type="checkbox" id="wr-sync-fillonly" checked style="flex:0 0 16px;width:16px;height:16px;margin:0;accent-color:var(--accent)"><span style="flex:1 1 auto;line-height:1.5">只补齐已有记录的封面/阅读链接；上面标为「新增」的书本次一律不导入（想加新书再取消勾选）</span></label>'+
       '<div class="imp-foot" style="justify-content:space-between"><span class="mi-count">来源：微信读书</span>'+
         '<span style="display:flex;gap:8px"><button class="btn" onclick="closeWeReadSync()">取消</button>'+
         '<button class="btn primary" onclick="doWeReadImport()">确认导入</button></span></div>'+

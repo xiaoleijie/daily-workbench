@@ -2763,6 +2763,47 @@ setTimeout(()=>{
 
 
 
+  /* ===== R88：云听＝第 5 个来源，纯外链一键打开电台直播页 ===== */
+  T('R88-1 MP_SRC 新增「云听」外链，直指电台直播页（不是首页）',()=>{
+    var srcs=w.MP_SRC || [];
+    var yt=srcs.filter(function(x){ return x.k==='云听'; })[0];
+    return srcs.length===5 && !!yt && yt.ext==='https://www.radio.cn/pc-portal/erji/radioStation.html'
+      && !yt.sub && yt.ext.indexOf('radioStation.html')>=0;
+  });
+  T('R88-2 云听排在末尾且被 mpCanSrc 自动排除（外链不参与本地/网页歌单切换）',()=>{
+    var order=w.mpSrcOrder(null);
+    var can=(w.MP_SRC||[]).filter(function(x){ return !x.ext; }).map(function(x){ return x.k; });
+    return order.length===5 && order[4]==='云听' && can.indexOf('云听')<0 && can.length===2 && can.indexOf('网页歌单')>=0;
+  });
+  T('R88-3 图标＝内嵌红色云听 logo，方形圆角 6px（不套别家的 50% 圆形遮罩）',()=>{
+    var ic=(w.MP_ICON||{})['云听']||'';
+    return /<img class="mp-ico-yt" alt="云听" src="data:image\/png;base64,/.test(ic)
+      && html.indexOf("var MP_YT_ICON = 'data:image/png;base64,")>=0
+      && /\.mp-ico-yt\{display:block;width:22px;height:22px;border-radius:6px/.test(html)
+      && html.indexOf('.mp-src-cur .mp-ico-yt{width:26px;height:26px}')>=0;
+  });
+  T('R88-4 来源列表短名为「云听」，悬停提示与成功提示都写明「电台直播页」',()=>{
+    return (w.MP_SRC_SHORT||{})['云听']==='云听'
+      && html.indexOf("extTitle: '云听 · 一键打开电台直播页'")>=0
+      && html.indexOf("openMsg: '已打开「云听」电台直播页'")>=0;
+  });
+  T('R88-5 外链入口支持可选 extTitle/openMsg，QQ/网易云老文案保持不变',()=>{
+    return html.indexOf("esc(s.extTitle || (s.label + ' · 打开我的歌单网页'))")>=0
+      && html.indexOf("s.openMsg || ('已打开「' + s.label + '」我的歌单网页')")>=0
+      && html.indexOf("'QQ导入': '<img class=\"mp-ico-qqm\"")>=0;
+  });
+  T('R88-6 运行时点云听：只 window.open 一次、不改 curSrc、不建 iframe/audio',()=>{
+    var oldOpen=w.open, oldToast=w.toast, opened=[], toasts=[], oldSrc=w.MP.curSrc;
+    try{
+      w.open=function(u){ opened.push(String(u)); return {opener:null}; };
+      w.toast=function(t){ toasts.push(String(t)); };
+      w.mpOpenSrc('云听');
+      return opened.length===1 && opened[0]==='https://www.radio.cn/pc-portal/erji/radioStation.html'
+        && toasts.length===1 && toasts[0].indexOf('电台直播页')>=0 && w.MP.curSrc===oldSrc;
+    }catch(e){ console.log('   [dbg] R88-6 '+e.message); return false; }
+    finally{ w.open=oldOpen; w.toast=oldToast; }
+  });
+
   T('R21-默认象限提示: q-default 胶囊文案已删除, 改由 q-sub2（不选默认为1象限）',()=> html.indexOf('如不选，默认第一象限「重要且紧急」')<0 && html.indexOf('q-sub2')>=0 && html.indexOf('（不选默认为1象限）')>=0 && html.indexOf('q-sub2{')>=0);
 
 

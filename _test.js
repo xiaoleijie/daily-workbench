@@ -2804,6 +2804,54 @@ setTimeout(()=>{
     finally{ w.open=oldOpen; w.toast=oldToast; }
   });
 
+  /* ===== R89：封面支持直接上传本地图片（截图 / Ctrl+V / 拖入），不依赖图片地址 ===== */
+  T('R89-1 修改作品弹窗新增上传控件：按钮 + file input(image/*) + 预览 + 状态 + 移除',()=>{
+    return html.indexOf('onclick="mePickCover()"')>=0
+      && html.indexOf('id="me-cover-file" accept="image/*"')>=0
+      && html.indexOf('onchange="meCoverFile(this.files)"')>=0
+      && html.indexOf('id="me-cover-prevwrap"')>=0 && html.indexOf('id="me-cover-prev"')>=0
+      && html.indexOf('id="me-cover-state"')>=0 && html.indexOf('onclick="meClearCover()"')>=0;
+  });
+  T('R89-2 上传提示写明微信读书截图 / Ctrl+V / 拖入三种方式',()=>{
+    return html.indexOf('微信读书截图直接传')>=0 && html.indexOf('Ctrl+V')>=0 && html.indexOf('把图片拖进来')>=0
+      && html.indexOf('封面链接（选填，也可直接传图）')>=0;
+  });
+  T('R89-3 coverCompressImg：420px 等比缩放 + 质量递降 + WebP 不支持时回退 JPEG + 超 90KB 再缩 280',()=>{
+    return /function coverCompressImg\(file,cb\)/.test(html)
+      && html.indexOf('var out=make(420,0.72), qs=[0.6,0.5,0.42]')>=0
+      && html.indexOf("if(o.indexOf('data:image/webp')!==0) o=c.toDataURL('image/jpeg',q)")>=0
+      && html.indexOf('out=make(280,0.55)')>=0
+      && html.indexOf('if(durl.length>160000)')>=0;
+  });
+  T('R89-4 打开弹窗时本地图走预览、不塞进链接框；保存优先用 ME_COVER_DATA',()=>{
+    return html.indexOf("ME_COVER_DATA=meCoverIsData(cover)?cover:''")>=0
+      && html.indexOf("var coverInput=ME_COVER_DATA?'':cover")>=0
+      && html.indexOf("var link=ME_COVER_DATA||val('me-cover')")>=0
+      && html.indexOf('oninput="meCoverLinkTyped()"')>=0
+      && html.indexOf('meCoverBind(m); meCoverPaint();')>=0;
+  });
+  T('R89-5 粘贴 / 拖入共用 meCoverFile；容量超限给出可读提示',()=>{
+    return html.indexOf('m.onpaste=function(e)')>=0 && html.indexOf('m.ondrop=function(e)')>=0
+      && html.indexOf('meCoverFile([f])')>=0 && html.indexOf('meCoverFile(e.dataTransfer.files)')>=0
+      && (html.match(/quota\|storage\|exceed\|容量/g)||[]).length>=2
+      && html.indexOf('本机存储空间不足')>=0;
+  });
+  T('R89-6 运行时：mediaCoverLink 兼容 dataURL（字符串 / url 对象），meCoverIsData 只认图片 dataURL',()=>{
+    try{
+      var d='data:image/webp;base64,AAAA';
+      return w.mediaCoverLink({'封面链接':d})===d
+        && w.mediaCoverLink({'封面链接':{url:{text:'封面',link:d}}})===d
+        && w.meCoverIsData(d)===true
+        && w.meCoverIsData('https://cdn/a.jpg')===false
+        && w.meCoverIsData('')===false;
+    }catch(e){ console.log('   [dbg] R89-6 '+e.message); return false; }
+  });
+  T('R89-7 上传区不撑破弹窗：卡片可滚动 + 上传区紧凑 + 按钮文字不折行',()=>{
+    return html.indexOf('width:560px;overflow:auto')>=0
+      && html.indexOf('#media-edit-modal .me-cover-fld{margin-bottom:8px}')>=0
+      && html.indexOf('#media-edit-modal .me-cover-fld .btn.sm{white-space:nowrap}')>=0;
+  });
+
   T('R21-默认象限提示: q-default 胶囊文案已删除, 改由 q-sub2（不选默认为1象限）',()=> html.indexOf('如不选，默认第一象限「重要且紧急」')<0 && html.indexOf('q-sub2')>=0 && html.indexOf('（不选默认为1象限）')>=0 && html.indexOf('q-sub2{')>=0);
 
 

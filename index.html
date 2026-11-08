@@ -506,6 +506,9 @@ body.mt-h-dragging .mt-grip{color:var(--accent-deep)}
 /* R88：云听是红色圆角方块 logo，别套别家的圆形遮罩，按原比例显示 */
 .mp-ico-yt{display:block;width:22px;height:22px;border-radius:6px;object-fit:contain}
 .mp-src-cur .mp-ico-yt{width:26px;height:26px}
+/* R89：修改作品弹窗的封面上传区（选图 / Ctrl+V / 拖入），紧凑不撑高卡片 */
+#media-edit-modal .me-cover-fld{margin-bottom:8px}
+#media-edit-modal .me-cover-fld .btn.sm{white-space:nowrap}
 /* R54：外链入口角标（提示点了会跳出去） */
 .mp-src-opt.ext{position:relative}
 .mp-src-opt.ext::after{content:'↗';position:absolute;right:-2px;top:-4px;font-size:9px;line-height:1;color:#b0a894;font-weight:700}
@@ -2087,7 +2090,7 @@ button.mpw-nc-ico{padding:0;font-family:inherit;color:#bcb5a3}
         <div id="shopping-body" data-page-node-id="BubJXjwm5ya3Ps7wQaOf0l"></div>
       </section>
       <section class="module" id="mod-media" data-sp-bindable="database" data-sp-database-id="XwBGD3AthDZziupFstknF4" data-page-node-id="wmE0Ozv4VPOxb1QNG9Gq81">
-        <div class="mod-head" data-page-node-id="ww8NZJbJ993jpKKtV5WKns"><h2 data-page-node-id="12stfYH9V0UA46lU8o3M7i">书影音</h2><span class="desc" data-page-node-id="LH5Tx5hHfiLB9V60VgZUjH">收藏、评分与年度统计，记录看过的好东西</span><span class="build-ver" title="页面版本">R88</span></div>
+        <div class="mod-head" data-page-node-id="ww8NZJbJ993jpKKtV5WKns"><h2 data-page-node-id="12stfYH9V0UA46lU8o3M7i">书影音</h2><span class="desc" data-page-node-id="LH5Tx5hHfiLB9V60VgZUjH">收藏、评分与年度统计，记录看过的好东西</span><span class="build-ver" title="页面版本">R89</span></div>
         <div id="media-body" data-page-node-id="MvHLGITKcoHEoc4n5mYw56"></div>
       </section>
       <section class="module" id="mod-report" data-sp-bindable="database" data-sp-database-id="VDJ7npH13yRDIkMBUcnQO4" data-page-node-id="zEMiJyVPF1imOLfhLXwOHu">
@@ -6049,7 +6052,84 @@ function renderMedia(rows){
   if(typeof renderLocalPlayer==='function'){ renderLocalPlayer(); }
 }
 /* ---- 添加 / 修改 收藏 ---- */
+/* R89：封面除了填链接，还能直接上传本地图片（微信读书截图最方便）。
+   图片压成小尺寸 WebP dataURL 存在作品自己的「封面链接」字段里，跟着备份走，
+   不需要图床、不需要外链、不需要找图片地址；不联网、不带任何 Key。 */
 var MEDIA_EDIT_ID=null;
+var ME_COVER_DATA='';   /* 本次编辑选中的图片 dataURL，优先于链接输入框 */
+function meCoverIsData(s){ return /^data:image\//i.test(String(s||'')); }
+function coverCompressImg(file,cb){
+  try{
+    var rd=new FileReader();
+    rd.onerror=function(){ cb(null); };
+    rd.onload=function(){
+      var im=new Image();
+      im.onerror=function(){ cb(null); };
+      im.onload=function(){
+        try{
+          var w=im.naturalWidth||im.width||1, h=im.naturalHeight||im.height||1;
+          function make(side,q){
+            var sc=Math.min(1,side/Math.max(w,h));
+            var c=document.createElement('canvas');
+            c.width=Math.max(1,Math.round(w*sc)); c.height=Math.max(1,Math.round(h*sc));
+            var x=c.getContext('2d'); x.fillStyle='#fff'; x.fillRect(0,0,c.width,c.height);
+            x.drawImage(im,0,0,c.width,c.height);
+            var o=c.toDataURL('image/webp',q);
+            if(o.indexOf('data:image/webp')!==0) o=c.toDataURL('image/jpeg',q);
+            return o;
+          }
+          var out=make(420,0.72), qs=[0.6,0.5,0.42];
+          for(var i=0;i<qs.length&&out.length>90000;i++) out=make(420,qs[i]);
+          if(out.length>90000) out=make(280,0.55);
+          cb(out);
+        }catch(e){ cb(null); }
+      };
+      im.src=rd.result;
+    };
+    rd.readAsDataURL(file);
+  }catch(e){ cb(null); }
+}
+function meCoverPaint(){
+  var wrap=document.getElementById('me-cover-prevwrap'), img=document.getElementById('me-cover-prev'), st=document.getElementById('me-cover-state');
+  var d=ME_COVER_DATA;
+  if(wrap) wrap.style.display=d?'flex':'none';
+  if(img){ if(d) img.src=d; else img.removeAttribute('src'); }
+  if(st) st.textContent=d?('封面已选好 · 约 '+Math.round(d.length/1024)+' KB'):'';
+}
+function mePickCover(){ var f=document.getElementById('me-cover-file'); if(f) f.click(); }
+function meCoverFile(files){
+  var f=null;
+  try{ var a=Array.prototype.slice.call(files||[]); for(var i=0;i<a.length;i++){ if(a[i]&&/^image\//.test(a[i].type||'')){ f=a[i]; break; } } }catch(e){ f=null; }
+  if(!f){ toast('没识别到图片文件',true); return; }
+  coverCompressImg(f,function(durl){
+    if(!durl){ toast('这张图读不出来，换一张试试',true); return; }
+    if(durl.length>160000){ toast('这张图压缩后仍偏大，裁小一点再传',true); return; }
+    ME_COVER_DATA=durl;
+    var inp=document.getElementById('me-cover'); if(inp) inp.value='';
+    meCoverPaint();
+    toast('封面已选好，保存后就会显示 ✅');
+  });
+}
+function meCoverLinkTyped(){ if(ME_COVER_DATA){ ME_COVER_DATA=''; meCoverPaint(); } }
+function meClearCover(){
+  ME_COVER_DATA=''; meCoverPaint();
+  var f=document.getElementById('me-cover-file'); if(f){ try{ f.value=''; }catch(e){} }
+}
+function meCoverBind(m){
+  m.onpaste=function(e){
+    try{
+      var cd=e.clipboardData||window.clipboardData, it=cd&&cd.items;
+      if(!it) return;
+      for(var i=0;i<it.length;i++){ if(it[i]&&/^image\//.test(it[i].type||'')){ var f=it[i].getAsFile&&it[i].getAsFile(); if(f){ e.preventDefault(); meCoverFile([f]); return; } } }
+    }catch(err){}
+  };
+  m.ondragover=function(e){
+    try{ var t=e.dataTransfer&&e.dataTransfer.types; if(t&&[].slice.call(t).indexOf('Files')>=0) e.preventDefault(); }catch(err){}
+  };
+  m.ondrop=function(e){
+    try{ if(e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files.length){ e.preventDefault(); meCoverFile(e.dataTransfer.files); } }catch(err){}
+  };
+}
 function openMediaAdd(){ mediaFormModal(null); }
 function openMediaEdit(id){ mediaFormModal(id); }
 function mediaFormModal(id, presetType){
@@ -6059,11 +6139,13 @@ function mediaFormModal(id, presetType){
   var m=document.getElementById('media-edit-modal');
   if(!m){ m=document.createElement('div'); m.id='media-edit-modal'; m.className='imp-modal-mask'; document.body.appendChild(m); }
   var cover=r?mediaCoverLink(r):'';
+  ME_COVER_DATA=meCoverIsData(cover)?cover:'';   /* 已是上传的本地图 → 交给预览，不塞进链接输入框 */
+  var coverInput=ME_COVER_DATA?'':cover;
   var prog=(r&&r["进度"]!=null&&r["进度"]!=='')?String(r["进度"]):'';
     var typeField = presetType
     ? '<input type="hidden" id="me-type" value="'+esc(presetType)+'">'
     : '<div class="es-row es-row-2"><div class="fld"><label>类型</label><select id="me-type">'+optHTML(OPT.mediaType,(r&&r["类型"])||'书籍')+'</select></div></div>';
-  m.innerHTML='<div class="imp-modal-card" style="width:560px" onclick="event.stopPropagation()">'
+  m.innerHTML='<div class="imp-modal-card" style="width:560px;overflow:auto" onclick="event.stopPropagation()">'
     +'<h3>'+(id?'修改作品':'添加作品')+'</h3>'
     +'<div class="imp-sub">添加影视 / 书籍作品。要批量搬微信读书书架，用上面的「批量导入」。</div>'
     + typeField
@@ -6073,8 +6155,21 @@ function mediaFormModal(id, presetType){
       +'<div class="fld"><label>状态</label><select id="me-status">'+optHTML(OPT.mediaStatus,(r&&r["状态"])||'想看')+'</select></div></div>'
     +'<div class="es-row es-row-2"><div class="fld"><label>评分</label><select id="me-rating"><option>未评</option>'+optHTML(OPT.mediaRating,(r&&r["评分"])||'')+'</select></div>'
       +'<div class="fld"><label>进度%（在读时填）</label><input id="me-prog" type="number" min="0" max="100" placeholder="0-100" value="'+esc(prog)+'"></div></div>'
-    +'<div class="es-row es-row-2"><div class="fld"><label>封面链接（选填）</label><input id="me-cover" placeholder="https://..." value="'+esc(cover)+'"></div>'
+    +'<div class="es-row es-row-2"><div class="fld"><label>封面链接（选填，也可直接传图）</label><input id="me-cover" placeholder="https://... 或点下面上传" value="'+esc(coverInput)+'" oninput="meCoverLinkTyped()"></div>'
       +'<div class="fld"><label>阅读链接（选填）</label><input id="me-link" placeholder="阅读/豆瓣链接，卡片可一键打开" value="'+esc(mediaReadLink(r))+'"></div></div>'
+    +'<div class="fld me-cover-fld">'
+      +'<input type="file" id="me-cover-file" accept="image/*" style="display:none" onchange="meCoverFile(this.files)">'
+      +'<div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap">'
+        +'<button class="btn sm" type="button" onclick="mePickCover()">＋ 上传封面图片</button>'
+        +'<span style="font-size:11px;color:var(--muted);line-height:1.4">微信读书截图直接传：点按钮选图，或在这里按 <b>Ctrl+V</b> / 把图片拖进来</span>'
+      +'</div>'
+      +'<div id="me-cover-prevwrap" style="display:none;align-items:center;gap:10px;margin-top:9px">'
+        +'<img id="me-cover-prev" alt="封面预览" style="width:52px;height:74px;object-fit:cover;border-radius:6px;border:1px solid rgba(0,0,0,.12);background:#f4f4f4">'
+        +'<div style="font-size:12px;line-height:1.7"><span id="me-cover-state" style="color:var(--accent,#7E9A6B);font-weight:600"></span>'
+          +'<div style="color:var(--muted);font-size:11px">自动压缩后存在本机，刷新不丢</div>'
+          +'<button class="btn sm" type="button" onclick="meClearCover()">✕ 移除图片，改回填链接</button></div>'
+      +'</div>'
+    +'</div>'
     +'<div class="fld"><label>短评 / 笔记（选填）</label><input id="me-note" placeholder="写点什么…" value="'+esc((r&&r["短评"])||'')+'"></div>'
     +'<div class="imp-foot" style="justify-content:space-between">'
       +(id?'<button class="btn danger" onclick="delMedia()">删除</button>':'<span></span>')+
@@ -6083,6 +6178,7 @@ function mediaFormModal(id, presetType){
     +'</div></div>';
   m.onclick=function(e){ if(e.target===m) closeMediaModal(); };
   m.style.display='flex';
+  meCoverBind(m); meCoverPaint();
   if(!id && presetType){ try{ var _mt=document.getElementById('me-type'); if(_mt)_mt.value=presetType; }catch(e){} if(presetType==='音乐'){ try{ var _ms=document.getElementById('me-src'); if(_ms)_ms.value='QQ音乐'; }catch(e){} } if(presetType==='电影'){ try{ var _mst=document.getElementById('me-status'); if(_mst)_mst.value='想看'; }catch(e){} } }  try{ document.getElementById('me-title').focus(); }catch(e){}
 }
 function closeMediaModal(){ var m=document.getElementById('media-edit-modal'); if(m) m.style.display='none'; MEDIA_EDIT_ID=null; }
@@ -6090,17 +6186,17 @@ function saveMedia(){
   var ti=val('me-title'); if(!ti){ toast('请填写标题',true); return; }
   var rating=val('me-rating'); if(rating==='未评') rating='';
   var prog=val('me-prog'); prog=(prog==='')?null:Math.max(0,Math.min(100,Math.round(Number(prog)||0)));
-  var link=val('me-cover');
+  var link=ME_COVER_DATA||val('me-cover');
   var p={ "类型":{select:val('me-type')}, "标题":{text:ti}, "来源":{select:val('me-src')}, "状态":{select:val('me-status')},
           "评分":{select:rating}, "进度":{number:prog}, "短评":{text:val('me-note')}, "封面链接":{url:{text:'封面',link:link}},
           "作者":{text:val('me-author')}, "阅读链接":{url:{text:'打开阅读',link:val('me-link')}} };
   var ext=val('me-url'); if(ext){ p["链接"]={url:{text:'外链',link:ext}}; }  if(MEDIA_EDIT_ID){
     updRec(DB.media, MEDIA_EDIT_ID, p).then(function(){ closeMediaModal(); LOADERS.media(); toast('已保存修改'); })
-      .catch(function(e){ toast('保存失败：'+((e&&e.message)||'错误'),true); });
+      .catch(function(e){ var _m=String((e&&e.message)||'错误'); toast('保存失败：'+_m+(/quota|storage|exceed|容量/i.test(_m)?'（本机存储空间不足，删掉几张上传的封面图再试）':''),true); });
   } else {
     p["记录日期"]={date:today()};
     addRec(DB.media, p).then(function(){ closeMediaModal(); LOADERS.media(); toast('已收藏'); })
-      .catch(function(e){ toast('保存失败：'+((e&&e.message)||'错误')+'，可重试',true); });
+      .catch(function(e){ var _m=String((e&&e.message)||'错误'); toast('保存失败：'+_m+(/quota|storage|exceed|容量/i.test(_m)?'（本机存储空间不足，删掉几张上传的封面图再试）':'，可重试'),true); });
   }
 }
 function delMedia(){

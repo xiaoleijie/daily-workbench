@@ -2782,25 +2782,28 @@ setTimeout(()=>{
       && /\.mp-ico-yt\{display:block;width:22px;height:22px;border-radius:6px/.test(html)
       && html.indexOf('.mp-src-cur .mp-ico-yt{width:26px;height:26px}')>=0;
   });
-  T('R88-4 来源列表短名为「云听」，悬停提示写明「电台直播」'+(typeof R91!=='undefined'?'（R91 改内嵌小窗文案）':''),()=>{
+  T('R88-4 来源列表短名为「云听」，悬停提示写明「电台直播」'+(typeof R92!=='undefined'?'（R92 改卡内嵌文案）':''),()=>{
     return (w.MP_SRC_SHORT||{})['云听']==='云听'
-      && /extTitle: '云听 · (一键打开电台直播页|在工作台小窗里听电台)'/.test(html);
+      && /extTitle: '云听 · (一键打开电台直播页|在工作台小窗里听电台|在歌单卡里直接听电台)'/.test(html);
   });
   T('R88-5 外链入口支持可选 extTitle/openMsg，QQ/网易云老文案保持不变',()=>{
     return html.indexOf("esc(s.extTitle || (s.label + ' · 打开我的歌单网页'))")>=0
       && html.indexOf("s.openMsg || ('已打开「' + s.label + '」我的歌单网页')")>=0
       && html.indexOf("'QQ导入': '<img class=\"mp-ico-qqm\"")>=0;
   });
-  T('R88-6 运行时点云听（R91：开工作台内嵌小窗，不新窗口、不改来源）',()=>{
+  T('R88-6 运行时点云听（R92：在歌单卡内嵌电台，不新窗口、不改来源）',()=>{
     var oldOpen=w.open, oldToast=w.toast, opened=[], toasts=[], oldSrc=w.MP.curSrc;
-    var dock=w.document.getElementById('radio-dock'); if(dock) dock.remove();
     try{
       w.open=function(u){ opened.push(String(u)); return {opener:null}; };
       w.toast=function(t){ toasts.push(String(t)); };
+      /* 测试环境没有渲染书影音模块：临时造一个 #mp-box 装舞台（jsdom 下 mpShell 依赖较多） */
+      var box=w.document.getElementById('mp-box');
+      if(!box){ box=w.document.createElement('div'); box.id='mp-box'; box.innerHTML=w.mpRadioInlineHtml(); w.document.body.appendChild(box); }
       w.mpOpenSrc('云听');
-      var d2=w.document.getElementById('radio-dock');
-      var fr=d2?d2.querySelector('iframe'):null;
-      return opened.length===0 && !!d2 && !!fr && /radio\.cn/.test(fr.getAttribute('src')||'')
+      box=w.document.getElementById('mp-box');
+      var fr=w.document.getElementById('mpr-frame');
+      return opened.length===0 && !!box && box.classList.contains('show-radio')
+        && !!fr && /radio\.cn/.test(fr.getAttribute('src')||'')
         && toasts.length===1 && w.MP.curSrc===oldSrc;
     }catch(e){ console.log('   [dbg] R88-6 '+e.message); return false; }
     finally{ w.open=oldOpen; w.toast=oldToast; }
@@ -2854,44 +2857,88 @@ setTimeout(()=>{
       && html.indexOf('#media-edit-modal .me-cover-fld .btn.sm{white-space:nowrap}')>=0;
   });
 
-  /* ===== R91：云听电台小窗（内嵌直播页，可拖动/最小化/关闭，位置记本机） ===== */
-  T('R91-1 云听来源带 dockUrl，其余外链来源不带',()=>{
+  /* ===== R91（R92 已改为卡内嵌，保留历史事实断言）===== */
+  T('R91-1 云听来源带 inlineUrl，其余外链来源不带（R92 从 dockUrl 改名）',()=>{
     var yt=w.MP_SRC.filter(function(x){return x.k==='云听';})[0];
     var qq=w.MP_SRC.filter(function(x){return x.k==='QQ导入';})[0];
-    return !!(yt&&/radio\.cn/.test(yt.dockUrl||'')&&yt.ext) && !(qq&&qq.dockUrl);
+    return !!(yt&&/radio\.cn/.test(yt.inlineUrl||'')&&yt.ext) && !(qq&&qq.inlineUrl);
   });
-  T('R91-2 openRadioDock 生成小窗：标题栏 + iframe + 新窗口兜底链接',()=>{
-    var d=w.document.getElementById('radio-dock'); if(d) d.remove();
-    w.openRadioDock('https://www.radio.cn/pc-portal/erji/radioStation.html','https://fallback/');
-    d=w.document.getElementById('radio-dock');
-    return !!d && !!d.querySelector('.rd-head') && !!d.querySelector('iframe#rd-frame')
-      && !!d.querySelector('#rd-min') && !!d.querySelector('#rd-close')
-      && /radio\.cn/.test((d.querySelector('iframe').getAttribute('src')||''))
-      && /fallback/.test((d.querySelector('#rd-open').getAttribute('href')||''));
+  T('R91-2 卡内嵌舞台 mpRadioInlineHtml：标题 + iframe + 新窗口兜底 + 收起',()=>{
+    var s=w.mpRadioInlineHtml();
+    return s.indexOf('id="mpr-wrap"')>=0 && s.indexOf('云听 · 电台直播')>=0
+      && s.indexOf('id="mpr-frame"')>=0 && /radio\.cn/.test(s)
+      && s.indexOf('mpRadioInlineClose()')>=0 && s.indexOf('新窗口打开')>=0;
   });
-  T('R91-3 重复调用 openRadioDock 不重复建窗，只重新显示',()=>{
-    var n=w.document.querySelectorAll('#radio-dock').length;
-    w.openRadioDock('https://www.radio.cn/x','https://x/');
-    return w.document.querySelectorAll('#radio-dock').length===n && n===1;
+  T('R91-3 打开电台不重复建 DOM（舞台常驻 #mp-box），重复调用只刷新 src',()=>{
+    if(!w.document.getElementById('mpr-wrap')){ var b=w.document.createElement('div'); b.id='mp-box'; b.innerHTML=w.mpRadioInlineHtml(); w.document.body.appendChild(b); }
+    var n=w.document.querySelectorAll('#mpr-wrap').length;
+    w.mpRadioInlineOpen('https://www.radio.cn/x','https://x/');
+    w.mpRadioInlineOpen('https://www.radio.cn/x','https://x/');
+    return w.document.querySelectorAll('#mpr-wrap').length===n && n===1;
   });
-  T('R91-4 最小化按钮切换 .min 类、图标变化',()=>{
-    var d=w.document.getElementById('radio-dock'), b=w.document.getElementById('rd-min');
-    if(!d||!b) return false;
-    b.click(); var a=d.classList.contains('min')&&b.textContent==='＋';
-    b.click(); var c=!d.classList.contains('min')&&b.textContent==='－';
-    return a&&c;
+  T('R91-4 收起按钮调 mpRadioInlineClose：去 show-radio 且 iframe 置 about:blank（停播）',()=>{
+    if(!w.document.getElementById('mpr-wrap')){ var b=w.document.createElement('div'); b.id='mp-box'; b.innerHTML=w.mpRadioInlineHtml(); w.document.body.appendChild(b); }
+    w.mpRadioInlineOpen('https://www.radio.cn/x','https://x/');
+    var box=w.document.getElementById('mp-box');
+    var btn=w.document.querySelector('.mpr-btn');
+    if(!box||!btn) return false;
+    btn.click();
+    return !box.classList.contains('show-radio') && (w.document.getElementById('mpr-frame').getAttribute('src')||'')==='about:blank';
   });
-  T('R91-5 关闭按钮隐藏小窗并把 iframe 置 about:blank（停播）',()=>{
-    var d=w.document.getElementById('radio-dock'), b=w.document.getElementById('rd-close');
-    if(!d||!b) return false;
-    b.click();
-    return d.classList.contains('hide') && (d.querySelector('iframe').getAttribute('src')||'')==='about:blank';
+  T('R91-5 不再存在独立小窗 DOM / 函数（已彻底改为卡内嵌）',()=>{
+    return typeof w.openRadioDock==='undefined'
+      && html.indexOf('id="radio-dock"')<0 && html.indexOf('function openRadioDock')<0;
   });
-  T('R91-6 CSS 齐备：小窗定位/隐藏/最小化 + 顶栏可拖 + 窄屏适配',()=>{
-    return html.indexOf('.rd-dock{position:fixed')>=0
-      && html.indexOf('.rd-dock.hide{')>=0 && html.indexOf('.rd-dock.min{')>=0
-      && html.indexOf('.rd-head{')>=0 && html.indexOf('cursor:move')>=0
-      && html.indexOf('@media(max-width:760px){.rd-dock')>=0;
+  T('R91-6 CSS 齐备：卡内嵌舞台 + 电台栏 + 窄屏适配',()=>{
+    return html.indexOf('.mpr-wrap{position:absolute')>=0
+      && html.indexOf('.mp.show-radio .mpr-wrap{')>=0
+      && html.indexOf('.mpr-bar{')>=0 && html.indexOf('.mpr-frame iframe{')>=0
+      && html.indexOf('@media(max-width:760px){ .mp.show-radio')>=0;
+  });
+
+  /* ===== R92：图片日程 + 天气图标动画 + 金句字号/高度手柄 ===== */
+  T('R92-1 日程图片存储与渲染函数齐备（独立 key，不写进日程记录）',()=>{
+    return html.indexOf("var SCHED_IMG_KEY='lw_schedimgs'")>=0
+      && html.indexOf('function siLoad()')>=0 && html.indexOf('function siSave(a)')>=0
+      && html.indexOf('function siAdd(files)')>=0 && html.indexOf('function siRender()')>=0
+      && html.indexOf('function siPickFromImport()')>=0;
+  });
+  T('R92-2 日程图片：上限 12 张 + 本机压缩 + 点开放大/删除 + 粘贴拖入',()=>{
+    return html.indexOf('if(arr.length>=12)')>=0 && html.indexOf('compressImg(f, function(durl)')>=0
+      && html.indexOf('function siView(i)')>=0 && html.indexOf('function siDel(i)')>=0
+      && /siBind\(host\)/.test(html) && html.indexOf("host.addEventListener('paste'")>=0
+      && html.indexOf("host.addEventListener('drop'")>=0;
+  });
+  T('R92-3 导入弹窗有「上传日程图片」入口 + 月历面板挂了图片条',()=>{
+    return html.indexOf('🖼 上传日程图片')>=0 && html.indexOf('siPickFromImport()')>=0
+      && html.indexOf('<div class="sched-imgbar" id="sched-imgbar"></div>')>=0
+      && html.indexOf('try{ siRender(); }catch(e){ console.error(\'日程图片渲染失败\',e); }')>=0;
+  });
+  T('R92-4 天气图标映射：晴/多云/雨/雪/雾/雷 各自 emoji + 动画 class',()=>{
+    if(typeof w.wxIconHTML!=='function') return false;
+    var sun=w.wxIconHTML(0), rain=w.wxIconHTML(61), cloud=w.wxIconHTML(3), snow=w.wxIconHTML(75), fog=w.wxIconHTML(45), storm=w.wxIconHTML(95), unknown=w.wxIconHTML(-1);
+    return /wx-sun/.test(sun) && /☀/.test(sun)
+      && /wx-rain/.test(rain) && /🌧/.test(rain)
+      && /wx-cloud/.test(cloud) && /wx-snow/.test(snow)
+      && /wx-fog/.test(fog) && /wx-storm/.test(storm)
+      && /wx-cloud/.test(unknown);
+  });
+  T('R92-5 天气渲染把图标插进 .m-city-cd + CSS 动画齐备且尊重减少动态',()=>{
+    return html.indexOf("m-city-cd\">'+wxIconHTML(code)")>=0
+      && html.indexOf('.wx-sun{animation:wxSpin')>=0 && html.indexOf('@keyframes wxFloat')>=0
+      && html.indexOf('@keyframes wxRain')>=0 && html.indexOf('@keyframes wxSnow')>=0
+      && html.indexOf('@media(prefers-reduced-motion:reduce){ .wx-ico{animation:none!important} }')>=0;
+  });
+  T('R92-6 金句框高度手柄：函数齐备 + 高度存本机 + 挂进金句卡',()=>{
+    return html.indexOf('function qHGet()')>=0 && html.indexOf('function qHSet(h)')>=0
+      && html.indexOf("localStorage.getItem('lw_qcard_h')")>=0
+      && html.indexOf('function qGripDown(e)')>=0 && html.indexOf("'<div class=\"m-card m-qcard\" id=\"m-qcard\"'+(qHGet()?")>=0
+      && html.indexOf("+qGripHtml()+'</div>'")>=0;
+  });
+  T('R92-7 金句手柄只改高度：ns-resize + width 不动 + 上下限钳制',()=>{
+    return html.indexOf('.qcard-grip{position:absolute;right:4px;bottom:3px')>=0
+      && html.indexOf('cursor:ns-resize')>=0 && html.indexOf('var Q_H_MIN=80, Q_H_MAX=700')>=0
+      && html.indexOf("card.style.height=h+'px'")>=0 && html.indexOf('width')>=0;
   });
 
   T('R21-默认象限提示: q-default 胶囊文案已删除, 改由 q-sub2（不选默认为1象限）',()=> html.indexOf('如不选，默认第一象限「重要且紧急」')<0 && html.indexOf('q-sub2')>=0 && html.indexOf('（不选默认为1象限）')>=0 && html.indexOf('q-sub2{')>=0);
@@ -3006,7 +3053,7 @@ setTimeout(()=>{
 
 
 
-  T('R17-金句: 字号20px 系统无衬线(与今日日程同字体) + 署名14px + 已去除楷体',()=> html.indexOf('.m-quote{font-size:20px;line-height:1.6;color:#3a342c')>=0 && html.indexOf('font-family:-apple-system,BlinkMacSystemFont,"PingFang SC"')>=0 && html.indexOf('.m-quote .m-by{display:block;font-size:14px;color:#7a6f63;margin-top:5px')>=0 && html.indexOf('font-family:"楷体"')<0);
+  T('R17-金句: 字号17px（R92 小两号）系统无衬线 + 署名14px + 已去除楷体',()=> html.indexOf('.m-quote{font-size:17px;line-height:1.6;color:#3a342c')>=0 && html.indexOf('font-family:-apple-system,BlinkMacSystemFont,"PingFang SC"')>=0 && html.indexOf('.m-quote .m-by{display:block;font-size:14px;color:#7a6f63;margin-top:5px')>=0 && html.indexOf('font-family:"楷体"')<0);
 
 
 

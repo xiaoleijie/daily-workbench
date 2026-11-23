@@ -3085,7 +3085,7 @@ setTimeout(()=>{
 
 
 
-  T('R15-排序: renderSchedule 对 shown 按 日期+开始时间 升序',()=> html.indexOf("shown.sort(function(a,b){ var da=dateSub(a[\"日期\"])||''")>=0);
+  T('R15-排序: renderSchedule 未完成在前/已完成沉底，组内按 日期+开始时间 升序',()=> html.indexOf("var ad=schedStatus(a)==='done'?1:0,bd=schedStatus(b)==='done'?1:0; if(ad!==bd) return ad-bd")>=0);
 
 
 
@@ -3961,7 +3961,7 @@ console.log('--- 回归 ---');
   });
   T('R93-2 四象限实心色圈：qdot 用 background 填充、border:0、带内阴影',()=>{
     return html.indexOf('.s-act-btn.quad .qdot{width:14px;height:14px')>=0
-      && /\.s-act-btn\.quad \.qdot\{[^}]*border:0;[\s\S]{0,10}box-shadow:inset 0 -1px 2px/.test(html)
+      && /\.s-act-btn\.quad \.qdot\{[^}]*border:0;[\s\S]{0,10}box-shadow:0 0 0 2px #fff,inset 0 -1px 2px/.test(html)
       && html.indexOf('.s-act-btn.quad.q1 .qdot{background:#E0483E}')>=0
       && html.indexOf('.s-act-btn.quad.q2 .qdot{background:#E8B93C}')>=0
       && html.indexOf('.s-act-btn.quad.q3 .qdot{background:#EE8A34}')>=0
@@ -3980,7 +3980,7 @@ console.log('--- 回归 ---');
       && (h.match(/border-color:/g)||[]).length>=4;
   });
   T('R93-5 环形悬停光圈四色齐备（色圈 hover 外发光不串味）',()=>{
-    return ['224,72,62','232,185,60','238,138,52','95,168,95'].every(s=>html.indexOf('0 0 0 4px rgba('+s)>=0);
+    return ['224,72,62','232,185,60','238,138,52','95,168,95'].every(s=>html.indexOf('0 0 0 5px rgba('+s)>=0);
   });
   T('R93-6(功能): renderSchedule 后待办按象限带 sqN，已完成不带 sq',()=>{
     try{
@@ -4027,6 +4027,46 @@ console.log('--- 回归 ---');
       var a2=w.schedActiveFilters();
       return (a1.length===1&&a1[0].k==='日期'&&a2.length===0)?'ok':('a1='+JSON.stringify(a1)+' a2='+JSON.stringify(a2));
     }catch(e){ return 'ERR:'+e.message; }
+  });
+  /* ===== R95：修复500条查询截断 + 色圈白环 + 已完成浅灰沉底 + 完成音效 ===== */
+  T('R95-1 查询上限提升：Q_PAGE_SIZE=100000 且 q() 不再硬编码 pageSize:500',()=>{
+    return html.indexOf('var Q_PAGE_SIZE=100000;')>=0
+      && html.indexOf('var p={pageSize:Q_PAGE_SIZE}')>=0
+      && html.indexOf('var p={pageSize:500}')<0;
+  });
+  T('R95-2 LocalDB 切片同步升到 100000（默认不再截断前500条）',()=>{
+    return html.indexOf('a.slice(0,(p.pageSize||100000))')>=0
+      && html.indexOf('a.slice(0,(p.pageSize||500))')<0;
+  });
+  T('R95-3 超量告警保留（数据未来破10万条时能察觉）',()=>{
+    return html.indexOf("console.warn('[工作台] 查询达到 '")>=0
+      && html.indexOf('rs.length>=Q_PAGE_SIZE')>=0;
+  });
+  T('R95-4 色圈白色外环：qdot 基础与四色 hover 均带 0 0 0 2px #fff',()=>{
+    return html.indexOf('box-shadow:0 0 0 2px #fff,inset 0 -1px 2px')>=0
+      && (html.match(/box-shadow:0 0 0 2px #fff,inset 0 -1px 2px[^}]*0 0 0 5px rgba\(/g)||[]).length>=4;
+  });
+  T('R95-5 已完成改浅灰（整行 + ✓徽标均去绿）',()=>{
+    return html.indexOf('.item.s-done{background:#f1f2f3}')>=0
+      && html.indexOf('.s-pill.done{background:#e8eaec;color:#848a90')>=0;
+  });
+  T('R95-6(功能) 已完成事项自动沉到未完成事项之后',()=>{
+    try{
+      var t=w.today();
+      w.schedSelDate=null; w.schedRange=null; w.schedFilter='全部'; w.schedStatusF='全部状态';
+      w.renderSchedule([
+        {_id:'r95done',标题:'R95已完成',日期:t,开始时间:'08:00',完成:'是'},
+        {_id:'r95todo',标题:'R95未完成',日期:t,开始时间:'09:00',完成:'否'}
+      ]);
+      var panel=d.querySelector('.sched-list-panel .list'); if(!panel) return 'no panel';
+      var h=panel.innerHTML, a=h.indexOf('R95已完成'), b=h.indexOf('R95未完成');
+      return (a>0&&b>0&&b<a)?'ok':('done@'+a+' todo@'+b);
+    }catch(e){ return 'ERR:'+e.message; }
+  });
+  T('R95-7 完成音效三入口复用 actionChime（单项/批量/四象限）',()=>{
+    return /function markSchedDoneQuick\(id\)\{[\s\S]{0,120}actionChime\(\)/.test(html)
+      && /function batchSchedDone\(\)\{[\s\S]{0,220}actionChime\(\)/.test(html)
+      && /function toggleSchedDoneFromTasks\(id, cur\)\{[\s\S]{0,160}actionChime\(\)/.test(html);
   });
   console.log('\n结果: '+pass+' 通过 / '+fail+' 失败');
 

@@ -146,12 +146,13 @@
   .s-act-btn.rev{background:#fff;color:var(--muted);border-color:var(--line2);padding:5px 8px}
   .s-act-btn.rev:hover{background:var(--surface)}
   .s-pill{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;padding:5px 10px;border-radius:999px;white-space:nowrap;cursor:pointer}
-  .s-pill.done{background:var(--sage-soft);color:#3f6b35;border:1px solid #cfe0c4}
+  .s-pill.done{background:#e8eaec;color:#848a90;border:1px solid #d6d9dc}
   .s-pill.exp{background:#f2f2f2;color:#8a8a8a;border:1px solid #e2e2e2}
   .item.s-expired{background:#fdf6f3}
   .item.s-expired .ttl{text-decoration:line-through;color:#b5563e}
-  .item.s-done{background:#f6fbf4}
-.item.s-done .ttl{text-decoration:line-through;color:var(--muted)}
+  /* R95③：已完成改浅灰，避免与四象限 Q4「重要不紧急」淡绿底色重合 */
+  .item.s-done{background:#f1f2f3}
+.item.s-done .ttl{text-decoration:line-through;color:#9a9fa5}
   .item.s-done .ops{opacity:.85}
   .s-note-flag{display:inline-flex;align-items:center;gap:3px;font-size:11px;color:#3f6b35;background:var(--sage-soft);border:1px solid #cfe0c4;border-radius:999px;padding:1px 7px;cursor:pointer;margin-left:4px}
   .s-done-stack{display:flex;flex-direction:column;align-items:center;gap:4px;flex:0 0 auto}
@@ -1105,17 +1106,18 @@ button.mpw-nc-ico{padding:0;font-family:inherit;color:#bcb5a3}
   /* 无色圈待办/状态项悬停也做轻微浮起（不覆盖上面四象限） */
   .sched-list-panel .item:not([class*="sq"]):hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(0,0,0,.10)}
   .s-act-btn.quad{background:transparent;border-color:transparent}
+  /* R95②：色圈外加一圈白色环——第一层 box-shadow 写白色，永远压在彩色光晕之上 */
   .s-act-btn.quad .qdot{width:14px;height:14px;border-radius:50%;display:block;box-sizing:border-box;border:0;
-    box-shadow:inset 0 -1px 2px rgba(0,0,0,.14),0 1px 2px rgba(0,0,0,.10);transition:transform .16s ease,box-shadow .16s ease}
+    box-shadow:0 0 0 2px #fff,inset 0 -1px 2px rgba(0,0,0,.14),0 1px 3px rgba(0,0,0,.16);transition:transform .16s ease,box-shadow .16s ease}
   .s-act-btn.quad.q1 .qdot{background:#E0483E}
   .s-act-btn.quad.q2 .qdot{background:#E8B93C}
   .s-act-btn.quad.q3 .qdot{background:#EE8A34}
   .s-act-btn.quad.q4 .qdot{background:#5FA85F}
   .s-act-btn.quad:hover .qdot{transform:scale(1.18)}
-  .s-act-btn.quad.q1:hover .qdot{box-shadow:inset 0 -1px 2px rgba(0,0,0,.14),0 0 0 4px rgba(224,72,62,.18)}
-  .s-act-btn.quad.q2:hover .qdot{box-shadow:inset 0 -1px 2px rgba(0,0,0,.14),0 0 0 4px rgba(232,185,60,.20)}
-  .s-act-btn.quad.q3:hover .qdot{box-shadow:inset 0 -1px 2px rgba(0,0,0,.14),0 0 0 4px rgba(238,138,52,.18)}
-  .s-act-btn.quad.q4:hover .qdot{box-shadow:inset 0 -1px 2px rgba(0,0,0,.14),0 0 0 4px rgba(95,168,95,.18)}
+  .s-act-btn.quad.q1:hover .qdot{box-shadow:0 0 0 2px #fff,inset 0 -1px 2px rgba(0,0,0,.14),0 0 0 5px rgba(224,72,62,.20)}
+  .s-act-btn.quad.q2:hover .qdot{box-shadow:0 0 0 2px #fff,inset 0 -1px 2px rgba(0,0,0,.14),0 0 0 5px rgba(232,185,60,.22)}
+  .s-act-btn.quad.q3:hover .qdot{box-shadow:0 0 0 2px #fff,inset 0 -1px 2px rgba(0,0,0,.14),0 0 0 5px rgba(238,138,52,.20)}
+  .s-act-btn.quad.q4:hover .qdot{box-shadow:0 0 0 2px #fff,inset 0 -1px 2px rgba(0,0,0,.14),0 0 0 5px rgba(95,168,95,.20)}
   .s-batchbar .s-total{font-size:12.5px;color:var(--muted);white-space:nowrap;margin-left:8px}
   .s-batchbar .s-total b{color:var(--ink);font-weight:800}
   .picboard{margin-top:14px;border:1px dashed var(--ac-line);border-radius:16px;padding:12px;background:var(--ac-card)}
@@ -2599,7 +2601,7 @@ function createProfile(name, pw){
 function migrateOwner(oldU, newU){
   var ids = Object.keys(DB).map(function(k){ return DB[k]; });
   var tasks = ids.map(function(dbId){
-    return rawQuery(dbId, { filter:{ property:{ property:'owner', text:{ equals:oldU } } }, pageSize:500 })
+    return rawQuery(dbId, { filter:{ property:{ property:'owner', text:{ equals:oldU } } }, pageSize:100000 })
       .then(function(r){ var rs=(r&&r.results)||[]; return Promise.all(rs.map(function(rec){ return rawUpd(dbId, rec.id, { owner:{ text:newU } }); })); });
   });
   return Promise.all(tasks);
@@ -2781,7 +2783,7 @@ function LocalDB(){
       var a=load(p.databaseId);
       if(p.filter) a=a.filter(function(r){return mt(r,p.filter);});
       if(p.sorts&&p.sorts.length){ var s=p.sorts[0]; a=a.slice().sort(function(x,y){ var av=x[s.property],bv=y[s.property]; if(av<bv)return s.direction==='descending'?1:-1; if(av>bv)return s.direction==='descending'?-1:1; return 0; }); }
-      return Promise.resolve({results:a.slice(0,(p.pageSize||500))});
+      return Promise.resolve({results:a.slice(0,(p.pageSize||100000))});
     },
     addRecord:function(p){ var a=load(p.databaseId); var r=flat(p.properties); r.id='r_'+Math.random().toString(36).slice(2,10); a.push(r); save(p.databaseId,a); return Promise.resolve(r); },
     updateRecord:function(p){ var a=load(p.databaseId); for(var i=0;i<a.length;i++){ if(a[i].id===p.recordId){ var f=flat(p.properties); for(var k in f)a[i][k]=f[k]; save(p.databaseId,a); return Promise.resolve(a[i]); } } return Promise.resolve(null); },
@@ -2869,7 +2871,9 @@ function rawDel(dbId, id){ var db=D();
   if(dbId==="AEzDh2YaWi7naAkgm1VP4D") return db.deleteRecord({databaseId:"AEzDh2YaWi7naAkgm1VP4D", recordId:id});
   return db.deleteRecord({databaseId:"XwBGD3AthDZziupFstknF4", recordId:id});
 }
-function q(dbId, extra){ var p={pageSize:500}; if(extra) for(var k in extra) p[k]=extra[k]; var oc=ownerCond(); if(p.filter){ p.filter={ and:[ oc, p.filter ] }; } else { p.filter=oc; } return rawQuery(dbId,p).then(function(r){ return (r&&r.results)||[]; }); }
+/* R95：原 pageSize:500 硬编码把所有查询截断在前 500 条——用户事项超 500 后新增读不到、月历徽标整片消失。lift 到 100000 并留超量告警 */
+var Q_PAGE_SIZE=100000;
+function q(dbId, extra){ var p={pageSize:Q_PAGE_SIZE}; if(extra) for(var k in extra) p[k]=extra[k]; var oc=ownerCond(); if(p.filter){ p.filter={ and:[ oc, p.filter ] }; } else { p.filter=oc; } return rawQuery(dbId,p).then(function(r){ var rs=(r&&r.results)||[]; if(rs.length>=Q_PAGE_SIZE && typeof console!=='undefined' && console.warn) console.warn('[工作台] 查询达到 '+Q_PAGE_SIZE+' 条上限，可能还有数据未加载'); return rs; }); }
 function addRec(dbId, props){ var p=props||{}; p["owner"]={ text: MY_UID }; return rawAdd(dbId, p); }
 function updRec(dbId, id, props){ return rawUpd(dbId, id, props); }
 function delRec(dbId, id){ return rawDel(dbId, id); }
@@ -3686,6 +3690,7 @@ function deleteAllItems(){
 }
 function toggleSchedDoneFromTasks(id, cur){
   var nx=cur==='是'?'否':'是';
+  if(nx==='是'){ try{ actionChime(); }catch(e){} }
   updRec(DB.schedule, id, {"完成":{select:nx}}).then(function(){ LOADERS.tasks(); LOADERS.schedule(); }).catch(function(e){ toast('更新失败',true); });
 }
 
@@ -4937,7 +4942,8 @@ function renderSchedule(rows){
   var _style=(_sh?('height:'+_sh+'px;'):'')+_fstyle;
   var sticky='<div class="sticky-note">'+stickyBar(_fs)+'<div class="sticky-rule"></div><textarea class="sticky-area" id="month-note"'+(_style?' style="'+_style+'"':'')+' onchange="saveMonthNote(this.value);stickyHSave(this)" onmouseup="stickyHSave(this)" title="右下角小斜线可向下拉长（宽度固定不可调）" placeholder="还没定下日期的安排，先记在这里…">'+esc(getMonthNote())+'</textarea></div>';
   var shown=rows.filter(function(r){ var st=schedStatus(r); return (schedFilter==='全部'||r["分类"]===schedFilter) && (schedRange===null?(!schedSelDate||dateSub(r["日期"])===schedSelDate):(schedRange==='today'?dateSub(r["日期"])===td:(schedRange==='month'?dateSub(r["日期"]).indexOf(td.substring(0,7))===0:dateSub(r["日期"]).indexOf(td.substring(0,4))===0))) && (schedStatusF==='全部状态'||(schedStatusF==='待办'&&(st==='todo'||st==='overdue'))||(schedStatusF==='已完成'&&st==='done')); });
-  shown.sort(function(a,b){ var da=dateSub(a["日期"])||'',db=dateSub(b["日期"])||''; if(da!==db) return da<db?-1:1; var ta=a["开始时间"]||'',tb=b["开始时间"]||''; return ta<tb?-1:(ta>tb?1:0); });
+  /* R95③：已完成事项自动沉到所有未完成事项之后；组内仍按日期+开始时间排 */
+  shown.sort(function(a,b){ var ad=schedStatus(a)==='done'?1:0,bd=schedStatus(b)==='done'?1:0; if(ad!==bd) return ad-bd; var da=dateSub(a["日期"])||'',db=dateSub(b["日期"])||''; if(da!==db) return da<db?-1:1; var ta=a["开始时间"]||'',tb=b["开始时间"]||''; return ta<tb?-1:(ta>tb?1:0); });
   /* R94：筛选态提示条——明确告诉用户"当前只显示了多少 / 本机共多少"，杜绝"数据不见了"的误解 */
   var _af=schedActiveFilters();
   var filterNote='';
@@ -5381,6 +5387,7 @@ function revertSched(id){
   Promise.all(_ops).then(function(){ LOADERS.tasks(); LOADERS.schedule(); toast('已恢复为待办 ↩'); }).catch(function(e){ toast('更新失败：'+((e&&e.message)||'错误'),true); });
 }
 function markSchedDoneQuick(id){
+  try{ actionChime(); }catch(e){}   /* R95③：复用「先知先觉幸福日历」格子的完成音效 */
   var _tid=mirrorTaskOfSched(id, __schedById(id));
   var _ops=[ updRec(DB.schedule, id, {"完成":{select:'是'}}) ];
   if(_tid) _ops.push(updRec(DB.tasks, _tid, {"完成":{select:'是'}}));
@@ -5460,6 +5467,7 @@ function getSchedSelIds(){
 function batchSchedDone(){
   var ids=getSchedSelIds();
   if(!ids.length){ toast('先勾选要标记完成的事项'); return; }
+  try{ actionChime(); }catch(e){}   /* R95③：批量完成也播放同一音效 */
   var _ops=[];
   ids.forEach(function(id){
     var _tid=mirrorTaskOfSched(id, __schedById(id));

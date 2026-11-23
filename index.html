@@ -1083,12 +1083,6 @@ button.mpw-nc-ico{padding:0;font-family:inherit;color:#bcb5a3}
   .actcal-imp{background:none;border:1px solid var(--ac-line);border-radius:10px;padding:7px 14px;font-size:12px;color:var(--ac-muted);cursor:pointer}
   .actcal-imp:hover{color:var(--ac-ink);border-color:var(--ac-muted)}
   /* ===== R94：筛选态醒目提示条（防"数据不见了"误解） ===== */
-  .s-filter-note{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:0 0 10px;padding:9px 12px;border:1px solid #f0d9a8;border-left:3px solid #e0a52e;border-radius:9px;background:#fff9ec;font-size:12px;color:#8a6316;line-height:1.5}
-  .s-filter-note .sfn-ico{font-size:14px;flex:0 0 auto}
-  .s-filter-note b{color:#7a4f06}
-  .s-filter-note .sfn-cnt{color:#a07a2c;font-size:11.5px}
-  .s-filter-note .sfn-clear{margin-left:auto;flex:0 0 auto;background:#e0a52e;color:#fff;border:0;border-radius:7px;padding:5px 11px;font-size:11.5px;font-weight:700;cursor:pointer;white-space:nowrap}
-  .s-filter-note .sfn-clear:hover{background:#c98f1e}
   .s-total .s-all-count{color:var(--muted);font-weight:400;font-size:11.5px;margin-left:5px}
   /* ===== R93②：事项明细四象限——实心色圈 + 整行淡底色 + 悬停立体弹起 ===== */
   .sched-list-panel .item{position:relative;border:1px solid transparent;border-radius:10px;margin-bottom:3px;
@@ -4785,21 +4779,6 @@ function dpPick(el){ schedSelDate=(el&&el.getAttribute('data-d'))||null; schedRa
 function dpClear(){ schedSelDate=null; schedRange=null; renderSchedule(window.__sched); }
 function dpRange(el){ setSchedRange(el&&el.getAttribute('data-r')); }
 function setSchedRange(v){ schedRange=(schedRange===v)?null:v; schedSelDate=null; renderSchedule(window.__sched); }
-/* R94：一键清除全部筛选（日期/范围/分类/状态）——筛选态提示条的「显示全部」按钮 */
-function schedClearAllFilters(){
-  schedSelDate=null; schedRange=null; schedFilter='全部'; schedStatusF='全部状态';
-  renderSchedule(window.__sched);
-  toast('已显示全部事项');
-}
-/* R94：返回当前生效的筛选描述数组（用于提示条），无筛选返回空数组 */
-function schedActiveFilters(){
-  var a=[];
-  if(schedRange) a.push({k:'范围',v:{today:'今天',month:'本月',year:'今年'}[schedRange]||schedRange});
-  else if(schedSelDate) a.push({k:'日期',v:dpLabel()});
-  if(schedFilter&&schedFilter!=='全部') a.push({k:'分类',v:schedFilter});
-  if(schedStatusF&&schedStatusF!=='全部状态') a.push({k:'状态',v:schedStatusF});
-  return a;
-}
 /* ===== R30 复盘：自动汇总「未完成事项」，可按年份 / 月份筛选；风格沿用「昨日复盘」 ===== */
 var REV_YEAR='全部', REV_MONTH='全部', REV_RANGE='昨日';
 function revSetRange(v){
@@ -4944,14 +4923,8 @@ function renderSchedule(rows){
   var shown=rows.filter(function(r){ var st=schedStatus(r); return (schedFilter==='全部'||r["分类"]===schedFilter) && (schedRange===null?(!schedSelDate||dateSub(r["日期"])===schedSelDate):(schedRange==='today'?dateSub(r["日期"])===td:(schedRange==='month'?dateSub(r["日期"]).indexOf(td.substring(0,7))===0:dateSub(r["日期"]).indexOf(td.substring(0,4))===0))) && (schedStatusF==='全部状态'||(schedStatusF==='待办'&&(st==='todo'||st==='overdue'))||(schedStatusF==='已完成'&&st==='done')); });
   /* R95③：已完成事项自动沉到所有未完成事项之后；组内仍按日期+开始时间排 */
   shown.sort(function(a,b){ var ad=schedStatus(a)==='done'?1:0,bd=schedStatus(b)==='done'?1:0; if(ad!==bd) return ad-bd; var da=dateSub(a["日期"])||'',db=dateSub(b["日期"])||''; if(da!==db) return da<db?-1:1; var ta=a["开始时间"]||'',tb=b["开始时间"]||''; return ta<tb?-1:(ta>tb?1:0); });
-  /* R94：筛选态提示条——明确告诉用户"当前只显示了多少 / 本机共多少"，杜绝"数据不见了"的误解 */
-  var _af=schedActiveFilters();
-  var filterNote='';
-  if(_af.length){
-    var _desc=_af.map(function(f){ return f.k+'：'+esc(f.v); }).join(' · ');
-    filterNote='<div class="s-filter-note"><span class="sfn-ico">🔍</span><span>当前只看 <b>'+_desc+'</b> <span class="sfn-cnt">（显示 '+shown.length+' / 共 '+rows.length+' 项）</span></span><button type="button" class="sfn-clear" onclick="schedClearAllFilters()">显示全部</button></div>';
-  }
-  var list='<div class="panel sched-list-panel">'+filterNote+'<div class="s-batchbar"><span class="s-total" id="s-total">共 '+shown.length+' 项<span class="s-all-count">/ 全部 '+rows.length+' 项</span></span><button class="btn sm s-add-item" onclick="openSchedAddModal()" title="添加事项，可一次选中多个日期">+事项</button><input type="checkbox" id="s-sel-all" class="s-sel-all-cb" style="margin-left:auto" onclick="toggleSelAll(this.checked)"><label class="s-selall" for="s-sel-all">全选</label><span id="s-sel-cnt"></span><span id="s-sel-ops" style="display:none"><button class="btn sm" onclick="batchSchedDone()" title="把勾选的事项标记为已完成">完成</button><button class="btn sm" onclick="batchSchedTodo()" title="把勾选的事项恢复为待办">待办</button><button class="btn sm danger" onclick="batchSchedDel()" title="删除勾选的事项">删除</button></span><button class="btn sm" onclick="schedUndoLast()" title="撤销上次批量修改" style="flex:0 0 auto">撤销</button></div><div class="list">';
+  /* R96：用户要求移除 R94 筛选黄条（提示条 + 显示全部按钮）；总数栏「共N项/全部M项」保留 */
+  var list='<div class="panel sched-list-panel"><div class="s-batchbar"><span class="s-total" id="s-total">共 '+shown.length+' 项<span class="s-all-count">/ 全部 '+rows.length+' 项</span></span><button class="btn sm s-add-item" onclick="openSchedAddModal()" title="添加事项，可一次选中多个日期">+事项</button><input type="checkbox" id="s-sel-all" class="s-sel-all-cb" style="margin-left:auto" onclick="toggleSelAll(this.checked)"><label class="s-selall" for="s-sel-all">全选</label><span id="s-sel-cnt"></span><span id="s-sel-ops" style="display:none"><button class="btn sm" onclick="batchSchedDone()" title="把勾选的事项标记为已完成">完成</button><button class="btn sm" onclick="batchSchedTodo()" title="把勾选的事项恢复为待办">待办</button><button class="btn sm danger" onclick="batchSchedDel()" title="删除勾选的事项">删除</button></span><button class="btn sm" onclick="schedUndoLast()" title="撤销上次批量修改" style="flex:0 0 auto">撤销</button></div><div class="list">';
   if(!shown.length) list+='<div class="empty">这段时间还没有安排</div>';
   shown.forEach(function(r){
     var st=schedStatus(r);

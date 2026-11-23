@@ -3996,19 +3996,30 @@ console.log('--- 回归 ---');
       return (sq1===1&&sq2===1&&doneSq===0)?'ok':('sq1='+sq1+' sq2='+sq2+' doneSq='+doneSq);
     }catch(e){ return 'ERR:'+e.message; }
   });
-  /* ===== R94：筛选态提示条 + 新增默认日期跟随 + 保存后自愈（修"数据不见了/加不进去"） ===== */
-  T('R94-1 一键清全部筛选函数 + 筛选描述函数齐备',()=>{
-    return /function schedClearAllFilters\(\)/.test(html) && /function schedActiveFilters\(\)/.test(html)
-      && html.indexOf("schedSelDate=null; schedRange=null; schedFilter='全部'; schedStatusF='全部状态'")>=0;
+  /* ===== R96：按用户要求移除 R94 筛选黄条；R94 的新增默认日期跟随/保存自愈保留 ===== */
+  T('R96-1 筛选黄条及其函数/CSS 已彻底移除',()=>{
+    return html.indexOf('.s-filter-note{')<0
+      && html.indexOf('function schedActiveFilters()')<0
+      && html.indexOf('function schedClearAllFilters()')<0
+      && html.indexOf('sfn-clear')<0;
   });
-  T('R94-2 筛选提示条 CSS 齐备（醒目边框 + 显示全部按钮）',()=>{
-    return html.indexOf('.s-filter-note{')>=0 && html.indexOf('.s-filter-note .sfn-clear{')>=0
-      && html.indexOf('.s-total .s-all-count{')>=0;
-  });
-  T('R94-3 renderSchedule 里渲染筛选条 + 显示全部按钮 + 总数',()=>{
-    return html.indexOf('var _af=schedActiveFilters();')>=0
-      && html.indexOf('onclick="schedClearAllFilters()">显示全部')>=0
+  T('R96-2 总数栏「共N项 / 全部M项」保留',()=>{
+    return html.indexOf('.s-total .s-all-count{')>=0
       && html.indexOf("/ 全部 '+rows.length+' 项")>=0;
+  });
+  T('R96-3(功能) 日期筛选生效但不再渲染黄条',()=>{
+    try{
+      var t=w.today();
+      w.schedSelDate=t; w.schedRange=null; w.schedFilter='全部'; w.schedStatusF='全部状态';
+      w.renderSchedule([
+        {_id:'r96a',标题:'R96当天',日期:t,完成:'否'},
+        {_id:'r96b',标题:'R96别天',日期:'2026-12-31',完成:'否'}
+      ]);
+      var panel=d.querySelector('.sched-list-panel');
+      if(!panel) return false;
+      var h=panel.innerHTML;
+      return h.indexOf('s-filter-note')<0 && h.indexOf('R96当天')>=0 && h.indexOf('R96别天')<0;
+    }catch(e){ return false; }
   });
   T('R94-4 新增弹窗默认日期跟随当前筛选日期（非固定 today）',()=>{
     return html.indexOf('var _def=(schedRange?null:schedSelDate)||today();')>=0
@@ -4019,14 +4030,15 @@ console.log('--- 回归 ---');
       && html.indexOf('if(_stillHidden){ schedSelDate=null; schedRange=null; schedFilter=')>=0
       && html.indexOf('已为你显示全部')>=0;
   });
-  T('R94-6(功能): 设日期筛选后 schedActiveFilters 报日期 + 清除后为空',()=>{
+  T('R96-4(功能) 点月历日期仍能筛选/再点取消（黄条删了功能不丢）',()=>{
     try{
-      w.schedSelDate=w.today();
-      var a1=w.schedActiveFilters();
-      w.schedSelDate=null; w.schedRange=null; w.schedFilter='全部'; w.schedStatusF='全部状态';
-      var a2=w.schedActiveFilters();
-      return (a1.length===1&&a1[0].k==='日期'&&a2.length===0)?'ok':('a1='+JSON.stringify(a1)+' a2='+JSON.stringify(a2));
-    }catch(e){ return 'ERR:'+e.message; }
+      var t=w.today();
+      w.schedSelDate=t; w.renderSchedule([{_id:'r96x',标题:'R96清除测试',日期:t,完成:'否'}]);
+      var n1=d.querySelectorAll('.sched-list-panel .item').length;
+      w.schedSelDate=null; w.renderSchedule([{_id:'r96x',标题:'R96清除测试',日期:t,完成:'否'}]);
+      var n2=d.querySelectorAll('.sched-list-panel .item').length;
+      return n1===1 && n2===1;
+    }catch(e){ return false; }
   });
   /* ===== R95：修复500条查询截断 + 色圈白环 + 已完成浅灰沉底 + 完成音效 ===== */
   T('R95-1 查询上限提升：Q_PAGE_SIZE=100000 且 q() 不再硬编码 pageSize:500',()=>{

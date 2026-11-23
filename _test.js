@@ -3953,6 +3953,49 @@ console.log('--- 回归 ---');
       return (hidden0 && vis && ids.length===3) ? 'ok' : ('h0='+hidden0+' vis='+vis+' n='+ids.length);
     }catch(e){ return 'ERR:'+e.message; }
   });
+  /* ===== R93：日程图片条改名移左 + 四象限实心圈/淡底色/悬停立体 ===== */
+  T('R93-1 日程图片条左侧文字已删 + 按钮「＋ 日程图片」排最左 + sib-pick 样式',()=>{
+    return html.indexOf('<span class="sib-t">')<0
+      && html.indexOf("'<button class=\"btn sm sib-pick\" onclick=\"siPick()\">＋ 日程图片</button>'+thumbs")>=0
+      && html.indexOf('.sched-imgbar .sib-pick{')>=0;
+  });
+  T('R93-2 四象限实心色圈：qdot 用 background 填充、border:0、带内阴影',()=>{
+    return html.indexOf('.s-act-btn.quad .qdot{width:14px;height:14px')>=0
+      && /\.s-act-btn\.quad \.qdot\{[^}]*border:0;[\s\S]{0,10}box-shadow:inset 0 -1px 2px/.test(html)
+      && html.indexOf('.s-act-btn.quad.q1 .qdot{background:#E0483E}')>=0
+      && html.indexOf('.s-act-btn.quad.q2 .qdot{background:#E8B93C}')>=0
+      && html.indexOf('.s-act-btn.quad.q3 .qdot{background:#EE8A34}')>=0
+      && html.indexOf('.s-act-btn.quad.q4 .qdot{background:#5FA85F}')>=0;
+  });
+  T('R93-3 四象限整行淡底色 CSS 齐备（sq1红/sq2黄/sq3橙/sq4绿）+ 只作用待办',()=>{
+    return ['sq1:not(.s-done):not(.s-expired){background:#fdf1ef}',
+            'sq2:not(.s-done):not(.s-expired){background:#fdf8e9}',
+            'sq3:not(.s-done):not(.s-expired){background:#fdf2ea}',
+            'sq4:not(.s-done):not(.s-expired){background:#eef7ef}'].every(s=>html.indexOf(s)>=0);
+  });
+  T('R93-4 悬停立体弹起：translateY(-2px) + 双层 box-shadow + 描边',()=>{
+    var h=html.slice(html.indexOf('/* ===== R93②'), html.indexOf('.s-act-btn.quad{background:transparent'));
+    return (h.match(/transform:translateY\(-2px\)/g)||[]).length>=4
+      && (h.match(/box-shadow:0 6px 16px/g)||[]).length>=4
+      && (h.match(/border-color:/g)||[]).length>=4;
+  });
+  T('R93-5 环形悬停光圈四色齐备（色圈 hover 外发光不串味）',()=>{
+    return ['224,72,62','232,185,60','238,138,52','95,168,95'].every(s=>html.indexOf('0 0 0 4px rgba('+s)>=0);
+  });
+  T('R93-6(功能): renderSchedule 后待办按象限带 sqN，已完成不带 sq',()=>{
+    try{
+      var _t=w.today();
+      w.renderSchedule([
+        {_id:'r93a',标题:'重要紧急',分类:'工作',日期:_t,象限:'Q1',完成:'否'},
+        {_id:'r93b',标题:'重要不紧急',分类:'工作',日期:_t,象限:'Q2',完成:'否'},
+        {_id:'r93c',标题:'已完成项',分类:'工作',日期:_t,象限:'Q3',完成:'是'}
+      ]);
+      var panel=d.querySelector('.sched-list-panel .list'); if(!panel) return 'no panel';
+      var sq1=panel.querySelectorAll('.item.sq1').length, sq2=panel.querySelectorAll('.item.sq2').length;
+      var doneSq=panel.querySelectorAll('.item.s-done[class*="sq"]').length;
+      return (sq1===1&&sq2===1&&doneSq===0)?'ok':('sq1='+sq1+' sq2='+sq2+' doneSq='+doneSq);
+    }catch(e){ return 'ERR:'+e.message; }
+  });
   console.log('\n结果: '+pass+' 通过 / '+fail+' 失败');
 
 

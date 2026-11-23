@@ -585,7 +585,8 @@ body.mt-h-dragging .mt-grip{color:var(--accent-deep)}
 @media(max-width:760px){ .mp.show-radio,.media-top .mt-col>.mp.show-radio{min-height:70vh} }
 /* ===== R92②：日程图片（公司发的图片日历/通知截图）——上传后存本机，缩略图可点开放大 ===== */
 .sched-imgbar{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin:9px 0 2px;padding:7px 9px;border:1px dashed var(--line2);border-radius:10px;background:var(--surface)}
-.sched-imgbar .sib-t{font-size:11.5px;font-weight:700;color:var(--accent-deep);white-space:nowrap}
+.sched-imgbar .sib-pick{flex:0 0 auto;white-space:nowrap;border-color:var(--line2);background:#fff;color:var(--accent-deep);font-weight:700}
+.sched-imgbar .sib-pick:hover{background:var(--accent-soft);border-color:var(--accent-line)}
 .sched-imgbar .sib-hint{font-size:10.5px;color:var(--muted);line-height:1.4;flex:1;min-width:120px}
 .sched-imgbar .btn.sm{white-space:nowrap}
 .sib-thumbs{display:contents}
@@ -1080,16 +1081,33 @@ button.mpw-nc-ico{padding:0;font-family:inherit;color:#bcb5a3}
   .actcal-acts{display:flex;align-items:center;gap:8px}
   .actcal-imp{background:none;border:1px solid var(--ac-line);border-radius:10px;padding:7px 14px;font-size:12px;color:var(--ac-muted);cursor:pointer}
   .actcal-imp:hover{color:var(--ac-ink);border-color:var(--ac-muted)}
-  .s-act-btn.quad{background:#fff;border-color:var(--line2)}
-  .s-act-btn.quad .qdot{width:13px;height:13px;border-radius:50%;display:block;box-sizing:border-box}
-  .s-act-btn.quad.q1 .qdot{border:2.5px solid #E0483E}
-  .s-act-btn.quad.q2 .qdot{border:2.5px solid #E8B93C}
-  .s-act-btn.quad.q3 .qdot{border:2.5px solid #EE8A34}
-  .s-act-btn.quad.q4 .qdot{border:2.5px solid #5FA85F}
-  .s-act-btn.quad.q1:hover .qdot{background:#E0483E}
-  .s-act-btn.quad.q2:hover .qdot{background:#E8B93C}
-  .s-act-btn.quad.q3:hover .qdot{background:#EE8A34}
-  .s-act-btn.quad.q4:hover .qdot{background:#5FA85F}
+  /* ===== R93②：事项明细四象限——实心色圈 + 整行淡底色 + 悬停立体弹起 ===== */
+  .sched-list-panel .item{position:relative;border:1px solid transparent;border-radius:10px;margin-bottom:3px;
+    transition:transform .18s cubic-bezier(.2,.8,.2,1),box-shadow .18s ease,background .18s ease,border-color .18s ease}
+  .sched-list-panel .item:last-child{border-bottom:1px solid transparent}
+  /* 底色只作用于待办事项；已完成(s-done)/逾期(s-expired)保留各自状态色 */
+  .sched-list-panel .item.sq1:not(.s-done):not(.s-expired){background:#fdf1ef}
+  .sched-list-panel .item.sq2:not(.s-done):not(.s-expired){background:#fdf8e9}
+  .sched-list-panel .item.sq3:not(.s-done):not(.s-expired){background:#fdf2ea}
+  .sched-list-panel .item.sq4:not(.s-done):not(.s-expired){background:#eef7ef}
+  .sched-list-panel .item.sq1:not(.s-done):not(.s-expired):hover{background:#fbe4df;transform:translateY(-2px);border-color:#f0c4bc;box-shadow:0 6px 16px rgba(224,72,62,.18),0 2px 5px rgba(224,72,62,.10)}
+  .sched-list-panel .item.sq2:not(.s-done):not(.s-expired):hover{background:#faedc9;transform:translateY(-2px);border-color:#e8d59c;box-shadow:0 6px 16px rgba(232,185,60,.20),0 2px 5px rgba(232,185,60,.10)}
+  .sched-list-panel .item.sq3:not(.s-done):not(.s-expired):hover{background:#fae3d2;transform:translateY(-2px);border-color:#f0c8a6;box-shadow:0 6px 16px rgba(238,138,52,.18),0 2px 5px rgba(238,138,52,.10)}
+  .sched-list-panel .item.sq4:not(.s-done):not(.s-expired):hover{background:#dff0e0;transform:translateY(-2px);border-color:#bcdcbd;box-shadow:0 6px 16px rgba(95,168,95,.18),0 2px 5px rgba(95,168,95,.10)}
+  /* 无色圈待办/状态项悬停也做轻微浮起（不覆盖上面四象限） */
+  .sched-list-panel .item:not([class*="sq"]):hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(0,0,0,.10)}
+  .s-act-btn.quad{background:transparent;border-color:transparent}
+  .s-act-btn.quad .qdot{width:14px;height:14px;border-radius:50%;display:block;box-sizing:border-box;border:0;
+    box-shadow:inset 0 -1px 2px rgba(0,0,0,.14),0 1px 2px rgba(0,0,0,.10);transition:transform .16s ease,box-shadow .16s ease}
+  .s-act-btn.quad.q1 .qdot{background:#E0483E}
+  .s-act-btn.quad.q2 .qdot{background:#E8B93C}
+  .s-act-btn.quad.q3 .qdot{background:#EE8A34}
+  .s-act-btn.quad.q4 .qdot{background:#5FA85F}
+  .s-act-btn.quad:hover .qdot{transform:scale(1.18)}
+  .s-act-btn.quad.q1:hover .qdot{box-shadow:inset 0 -1px 2px rgba(0,0,0,.14),0 0 0 4px rgba(224,72,62,.18)}
+  .s-act-btn.quad.q2:hover .qdot{box-shadow:inset 0 -1px 2px rgba(0,0,0,.14),0 0 0 4px rgba(232,185,60,.20)}
+  .s-act-btn.quad.q3:hover .qdot{box-shadow:inset 0 -1px 2px rgba(0,0,0,.14),0 0 0 4px rgba(238,138,52,.18)}
+  .s-act-btn.quad.q4:hover .qdot{box-shadow:inset 0 -1px 2px rgba(0,0,0,.14),0 0 0 4px rgba(95,168,95,.18)}
   .s-batchbar .s-total{font-size:12.5px;color:var(--muted);white-space:nowrap;margin-left:8px}
   .s-batchbar .s-total b{color:var(--ink);font-weight:800}
   .picboard{margin-top:14px;border:1px dashed var(--ac-line);border-radius:16px;padding:12px;background:var(--ac-card)}
@@ -4902,7 +4920,9 @@ function renderSchedule(rows){
   shown.forEach(function(r){
     var st=schedStatus(r);
     var isDone=st==='done', isExp=st==='overdue';
-    var cls='item'+(isDone?' s-done':'')+(isExp?' s-expired':'');
+    /* R93②：待办事项按象限加 sqN 类（整行淡底色）；已完成/逾期保留状态色不叠加 */
+    var qn=QUAD_ORDER[r["象限"]]||0;
+    var cls='item'+(!isDone&&!isExp&&qn?' sq'+qn:'')+(isDone?' s-done':'')+(isExp?' s-expired':'');
     var acts='<div class="s-acts">';
     if(st!=='done'){
       acts+='<button class="s-act-btn quad ico q'+(QUAD_ORDER[r["象限"]]||1)+'" title="'+(QUAD_LABELS[r["象限"]]||'重要且紧急')+' · 点击标记完成" onclick="markSchedDoneQuick(\''+rid(r)+'\')"><span class="qdot"></span></button>';
@@ -7224,9 +7244,8 @@ function siRender(){
   var arr=siLoad();
   var thumbs=arr.length?('<span class="sib-thumbs">'+arr.map(function(src,i){
     return '<span class="sib-item"><img src="'+src+'" onclick="siView('+i+')" title="点开放大" alt="日程图片 '+i+'"><button class="sib-del" onclick="event.stopPropagation();siDel('+i+')" title="删除这张">×</button></span>';
-  }).join('')+'</span>'):'<span class="sib-hint">还没有图片 —— 点「＋ 上传日程图片」，或把公司发的截图拖进来</span>';
-  host.innerHTML='<span class="sib-t">🖼 日程图片</span>'+thumbs
-    +'<button class="btn sm" onclick="siPick()">＋ 上传日程图片</button>'
+  }).join('')+'</span>'):'<span class="sib-hint">还没有图片 —— 点左边「＋ 日程图片」，或把公司发的截图拖进来</span>';
+  host.innerHTML='<button class="btn sm sib-pick" onclick="siPick()">＋ 日程图片</button>'+thumbs
     +'<input type="file" id="si-file" accept="image/*" multiple style="display:none">';
   siBind(host);
 }

@@ -1084,6 +1084,23 @@ button.mpw-nc-ico{padding:0;font-family:inherit;color:#bcb5a3}
   .actcal-imp:hover{color:var(--ac-ink);border-color:var(--ac-muted)}
   /* ===== R94：筛选态醒目提示条（防"数据不见了"误解） ===== */
   .s-total .s-all-count{color:var(--muted);font-weight:400;font-size:11.5px;margin-left:5px}
+  /* ===== R97：年度归档——年份切换条 ===== */
+  .s-yearbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:0 0 11px;padding:8px 10px;border:1px solid var(--line2);border-radius:9px;background:var(--surface)}
+  .s-yearbar .syb-l{font-size:11.5px;font-weight:700;color:var(--accent-deep);white-space:nowrap}
+  .s-yearbar .syb-sel{font-size:12px;font-weight:700;padding:4px 8px;border:1px solid var(--accent-line);border-radius:7px;background:var(--ac-card);color:var(--ac-ink);cursor:pointer}
+  .s-yearbar .syb-arc{font-size:11px;padding:4px 9px;border:1px solid #d9c9a8;border-radius:7px;background:#fffaf0;color:#8a6316;cursor:pointer;white-space:nowrap}
+  .s-yearbar .syb-arc:hover{background:#fdf0d8}
+  .s-yearbar .syb-restore{background:#eef5ff;border-color:#b9d2f0;color:#2f6296}
+  .s-yearbar .syb-restore:hover{background:#dceaff}
+  .s-yearbar .syb-tip{font-size:10.5px;color:var(--muted);margin-left:auto}
+  .s-yearbar.arc-on{border-color:#c9d9ef;background:#f3f8ff}
+  /* 归档只读态：隐藏新增/批量操作，色圈按钮点不动 */
+  body.sched-arc-view .sched-add-btn,body.sched-arc-view .s-add-item,
+  body.sched-arc-view .s-batchbar input,body.sched-arc-view .s-batchbar label,
+  body.sched-arc-view .s-batchbar #s-sel-ops,body.sched-arc-view .s-batchbar #s-sel-cnt,
+  body.sched-arc-view .sched-list-panel [onclick*="markSchedDoneQuick"],
+  body.sched-arc-view .sched-list-panel [onclick*="revertSched"],
+  body.sched-arc-view .sched-list-panel .s-act-btn.rev{display:none!important}
   /* ===== R93②：事项明细四象限——实心色圈 + 整行淡底色 + 悬停立体弹起 ===== */
   .sched-list-panel .item{position:relative;border:1px solid transparent;border-radius:10px;margin-bottom:3px;
     transition:transform .18s cubic-bezier(.2,.8,.2,1),box-shadow .18s ease,background .18s ease,border-color .18s ease}
@@ -4563,8 +4580,104 @@ function saveBodySettings(){
 var schedFilter='全部', schedSelDate=null, schedStatusF='全部状态', schedRange=null;
 /* R74：迷你月历当前展示的月份（'' = 跟随今天）；切换上下月不改动日程日期或筛选逻辑 */
 var schedCalMon='';
+/* ===== R97：年度归档——按年份把事项搬进独立存档，当前库只留活跃年份；年份下拉随时翻旧账 ===== */
+var ARCHIVE_PREFIX='lw_sched_arc_';
+var SCHED_VIEW_YEAR='';   /* '' = 当前实时库；'2025' = 该年归档（只读） */
+function arcKey(y){ return ARCHIVE_PREFIX+y; }
+/* 工作台统一确认框（不用原生 confirm：风格统一、可自动化、不阻塞） */
+function arcConfirm(msg, onYes){
+  var m=document.getElementById('arc-confirm-modal');
+  if(!m){ m=document.createElement('div'); m.id='arc-confirm-modal'; m.className='imp-modal-mask'; document.body.appendChild(m); }
+  m.innerHTML='<div class="imp-modal-card narrow" onclick="event.stopPropagation()">'+
+    '<h3>请确认</h3>'+
+    '<div style="font-size:13px;line-height:1.7;color:var(--muted);white-space:pre-line;margin:8px 0 18px">'+esc(msg)+'</div>'+
+    '<div class="imp-foot" style="display:flex;gap:8px;justify-content:flex-end">'+
+      '<button class="btn" id="arc-cf-no">取消</button>'+
+      '<button class="btn primary" id="arc-cf-yes">确定</button>'+
+    '</div></div>';
+  m.onclick=function(e){ if(e.target===m) m.style.display='none'; };
+  document.getElementById('arc-cf-no').onclick=function(){ m.style.display='none'; };
+  document.getElementById('arc-cf-yes').onclick=function(){ m.style.display='none'; if(onYes) onYes(); };
+  m.style.display='flex';
+}
+function arcLoad(y){
+  try{ var a=JSON.parse(localStorage.getItem(arcKey(y))||'[]'); return Array.isArray(a)?a:[]; }catch(e){ return []; }
+}
+function arcSave(y, arr){
+  try{ localStorage.setItem(arcKey(y), JSON.stringify(arr)); return true; }
+  catch(e){ toast('本机存储空间不足，归档失败',true); return false; }
+}
+/* 列出所有有内容的归档年份（新→旧） */
+function arcYears(){
+  var ys=[];
+  try{ for(var i=0;i<localStorage.length;i++){ var k=localStorage.key(i);
+    if(k && k.indexOf(ARCHIVE_PREFIX)===0){ var y=k.substring(ARCHIVE_PREFIX.length); if(/^\d{4}$/.test(y) && arcLoad(y).length) ys.push(y); }
+  } }catch(e){}
+  return ys.sort().reverse();
+}
+/* 实时库里各年份的条数（用于决定哪些年份可以归档） */
+function arcLiveYearCounts(rows){
+  var m={};
+  (rows||[]).forEach(function(r){ var y=dateSub(r["日期"]).substring(0,4); if(/^\d{4}$/.test(y)) m[y]=(m[y]||0)+1; });
+  return m;
+}
+/* 切换年份视图：不持久化（下次打开默认回实时库，避免忘了自己在看旧数据） */
+function arcSetYear(y){
+  SCHED_VIEW_YEAR=y||'';
+  schedSelDate=null; schedRange=null; schedFilter='全部'; schedStatusF='全部状态'; schedCalMon='';
+  LOADERS.schedule(); LOADERS.tasks();
+  toast(y ? ('正在查看 '+y+' 年归档（只读）') : '已回到当前事项');
+}
+/* 归档某年：先存存档、再删实时库（顺序不能反，避免中途失败两头空） */
+function arcArchiveYear(y){
+  if(!/^\d{4}$/.test(y)) return;
+  if(SCHED_VIEW_YEAR){ toast('请先切回「当前事项」再归档',true); return; }
+  q(DB.schedule).then(function(rows){
+    var moving=rows.filter(function(r){ return dateSub(r["日期"]).substring(0,4)===y; });
+    if(!moving.length){ toast(y+' 年没有可归档的事项',true); return; }
+    arcConfirm('把 '+y+' 年的 '+moving.length+' 条事项归档？\n\n归档后它们会从当前事项库移走（页面会轻快一些），随时能在顶部「年份」下拉里翻回来看，也能一键恢复。建议先做一次数据备份。', function(){
+      var old=arcLoad(y);
+      /* 去重：同一 id 已在存档里的跳过，避免重复归档叠加 */
+      var have={}; old.forEach(function(r){ if(rid(r)) have[rid(r)]=1; });
+      var add=moving.filter(function(r){ return !rid(r)||!have[rid(r)]; });
+      if(!add.length){ toast(y+' 年事项已全部归档过了',true); return; }
+      if(!arcSave(y, old.concat(add))){ return; }
+      var ops=add.map(function(r){ return delRec(DB.schedule, rid(r)); });
+      return Promise.all(ops).then(function(){
+        LOADERS.schedule(); LOADERS.tasks();
+        toast('已归档 '+add.length+' 条 '+y+' 年事项（可在年份下拉查看）');
+      }).catch(function(e){ toast('归档失败：'+((e&&e.message)||'错误'),true); });
+    });
+  }).catch(function(e){ toast('读取失败，归档未执行',true); });
+}
+/* 恢复某年归档回实时库（恢复后清空该年存档，但保留一条空 key 供年份下拉识别？不——空存档不显示） */
+function arcRestoreYear(y){
+  var arr=arcLoad(y);
+  if(!arr.length){ toast(y+' 年归档为空',true); return; }
+  arcConfirm('把 '+y+' 年的 '+arr.length+' 条归档恢复回当前事项库？\n\n恢复后它们会重新出现在日常列表里（事项多时页面会变慢一点）。', function(){
+    var ops=arr.map(function(r){
+      var p={};
+      ['标题','分类','日期','开始时间','结束时间','地点','备注','象限','完成','完成详情'].forEach(function(k){
+        if(r[k]!==undefined && r[k]!==null && r[k]!=='') p[k]={text:r[k]};
+      });
+      return addRec(DB.schedule, p);
+    });
+    Promise.all(ops).then(function(){
+      try{ localStorage.removeItem(arcKey(y)); }catch(e){}
+      arcSetYear('');
+      toast('已恢复 '+arr.length+' 条 '+y+' 年事项');
+    }).catch(function(e){ toast('恢复失败：'+((e&&e.message)||'错误'),true); });
+  });
+}
 LOADERS.schedule=function(){
   var body=getBody('schedule'); body.innerHTML=statusHTML(true);
+  if(SCHED_VIEW_YEAR){
+    var arr=arcLoad(SCHED_VIEW_YEAR).slice().sort(function(a,b){
+      var da=dateSub(a["日期"])||'', db=dateSub(b["日期"])||''; return da<db?-1:(da>db?1:0);
+    });
+    renderSchedule(arr);
+    return Promise.resolve();
+  }
   return q(DB.schedule,{sorts:[{property:"日期",direction:"ascending"}]}).then(function(rows){ renderSchedule(rows); })
     .catch(function(e){ body.innerHTML=statusHTML(false,(e&&e.message)||'读取失败','schedule'); });
 };
@@ -4876,7 +4989,23 @@ function renderSchedule(rows){
   var y=Number(calKey.substring(0,4)), mo=Number(calKey.substring(5,7))-1;
   var days=new Date(y,mo+1,0).getDate();
   var first=new Date(y,mo,1); var startDay=(first.getDay()+6)%7;
-  var mini='<div class="panel mini-cal-panel" style="padding:14px">'+
+
+  /* R97：年份切换 + 归档入口（挂在月历面板顶部） */
+  document.body.classList.toggle('sched-arc-view', !!SCHED_VIEW_YEAR);
+  var _years=arcYears(), _liveCounts=arcLiveYearCounts(rows);
+  var _curYear=String(new Date().getFullYear());
+  var _yopts='<option value="">当前事项（'+(_liveCounts[_curYear]||0)+' 条 '+_curYear+' 年）</option>'
+    +_years.map(function(yy){ return '<option value="'+yy+'"'+(SCHED_VIEW_YEAR===yy?' selected':'')+'>'+yy+' 年归档（'+arcLoad(yy).length+' 条）</option>'; }).join('');
+  var _arcBtns=Object.keys(_liveCounts).filter(function(yy){ return yy!==_curYear && _liveCounts[yy]>0; }).sort().reverse()
+    .map(function(yy){ return '<button type="button" class="syb-arc" onclick="arcArchiveYear(\''+yy+'\')" title="把 '+yy+' 年事项移入归档">归档 '+yy+' 年（'+_liveCounts[yy]+'）</button>'; }).join('');
+  var _restoreBtn=(SCHED_VIEW_YEAR?'<button type="button" class="syb-arc syb-restore" onclick="arcRestoreYear(\''+SCHED_VIEW_YEAR+'\')" title="把该年归档恢复回当前事项">↩ 恢复到当前</button>':'');
+  var _yearBar='<div class="s-yearbar'+(SCHED_VIEW_YEAR?' arc-on':'')+'"><span class="syb-l">🗂 数据年份</span>'
+    +'<select class="syb-sel" onchange="arcSetYear(this.value)">'+_yopts+'</select>'
+    +_arcBtns+_restoreBtn
+    +(SCHED_VIEW_YEAR?'<span class="syb-tip">📖 历史归档 · 只读</span>':(_years.length?'':'<span class="syb-tip">到年底可把旧年份归档，当前页会更快</span>'))
+    +'</div>';
+
+  var mini='<div class="panel mini-cal-panel" style="padding:14px">'+_yearBar+
     '<div class="mc-head"><button class="btn sm primary sched-add-btn" onclick="openSchedAddModal()" title="添加事项，可一次选中多个日期">＋ 本月事项</button>'+
       '<span class="mc-navs">'+
         '<button type="button" class="mc-nav" id="mc-prev" onclick="schedCalShift(-1)" title="上月事项" aria-label="上月事项">▲</button>'+
@@ -5321,6 +5450,7 @@ function applyDateFixer(){
 }
 
 function openSchedAddModal(){
+  if(SCHED_VIEW_YEAR){ toast('正在看 '+SCHED_VIEW_YEAR+' 年归档（只读），请先切回「当前事项」再加',true); return; }
   var m=document.getElementById('sched-add-modal');
   if(!m){ m=document.createElement('div'); m.id='sched-add-modal'; m.className='imp-modal-mask'; document.body.appendChild(m); }
   /* R94：默认日期跟随当前筛选日期（若有），否则今天——避免"在27号视图加事项却存到23号被筛选挡住" */

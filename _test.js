@@ -4080,6 +4080,59 @@ console.log('--- 回归 ---');
       && /function batchSchedDone\(\)\{[\s\S]{0,220}actionChime\(\)/.test(html)
       && /function toggleSchedDoneFromTasks\(id, cur\)\{[\s\S]{0,160}actionChime\(\)/.test(html);
   });
+  /* ===== R97：年度归档 + 年份切换 ===== */
+  T('R97-1 归档存储层齐备（独立key/加载/保存/年份列表/只读视图变量）',()=>{
+    return html.indexOf("var ARCHIVE_PREFIX='lw_sched_arc_'")>=0
+      && html.indexOf("var SCHED_VIEW_YEAR=''")>=0
+      && /function arcLoad\(y\)/.test(html) && /function arcSave\(y/.test(html)
+      && /function arcYears\(\)/.test(html) && /function arcSetYear\(y\)/.test(html);
+  });
+  T('R97-2 归档先存后删 + 自定义确认框（无原生confirm）',()=>{
+    var a=html.indexOf('if(!arcSave(y, old.concat(add)))');
+    var seg=html.slice(a, a+400);
+    return a>0 && seg.indexOf('delRec(DB.schedule, rid(r))')>0 && /function arcConfirm\(msg, onYes\)/.test(html);
+  });
+  T('R97-3 LOADERS.schedule 按年份分流（归档只读排序/实时库照旧）',()=>{
+    return html.indexOf('if(SCHED_VIEW_YEAR){')>=0
+      && html.indexOf('var arr=arcLoad(SCHED_VIEW_YEAR)')>=0
+      && html.indexOf('q(DB.schedule,{sorts:[{property:"日期",direction:"ascending"}]})')>=0;
+  });
+  T('R97-4 年份切换UI + 归档/恢复入口 + 只读样式',()=>{
+    return html.indexOf('class="s-yearbar')>=0
+      && html.indexOf('onchange="arcSetYear(this.value)"')>=0
+      && html.indexOf('onclick="arcArchiveYear(')>=0
+      && html.indexOf('onclick="arcRestoreYear(')>=0
+      && html.indexOf('body.sched-arc-view')>=0;
+  });
+  T('R97-5 归档视图拦截新增',()=>{
+    return /function openSchedAddModal\(\)\{[\s\S]{0,80}if\(SCHED_VIEW_YEAR\)/.test(html);
+  });
+  T('R97-6(功能) 归档→切年→恢复 全链路',()=>{
+    try{
+      var KEY='lw_localdb_'+w.DB.schedule, AK=w.ARCHIVE_PREFIX+'2025';
+      var prevRec=w.localStorage.getItem(KEY), prevArc=w.localStorage.getItem(AK);
+      var rows=[
+        {id:'r97old',owner:w.MY_UID,标题:'R97去年',日期:'2025-06-01',完成:'否'},
+        {id:'r97now',owner:w.MY_UID,标题:'R97今年',日期:w.today(),完成:'否'}
+      ];
+      w.localStorage.setItem(KEY,JSON.stringify(rows));
+      w.localStorage.removeItem(AK);
+      w.SCHED_VIEW_YEAR='';
+      var years=w.arcLiveYearCounts(rows);
+      var okCounts=years['2025']===1;
+      /* 手动模拟归档：把2025那条搬进存档 */
+      w.arcSave('2025',[rows[0]]);
+      var archived=w.arcLoad('2025').length===1 && w.arcYears().indexOf('2025')>=0;
+      /* 切到归档视图，LOADERS 会读存档 */
+      w.SCHED_VIEW_YEAR='2025';
+      var inArc=w.arcLoad('2025').some(function(r){return r['标题']==='R97去年';});
+      w.SCHED_VIEW_YEAR='';
+      /* 还原现场 */
+      if(prevRec==null) w.localStorage.removeItem(KEY); else w.localStorage.setItem(KEY,prevRec);
+      if(prevArc==null) w.localStorage.removeItem(AK); else w.localStorage.setItem(AK,prevArc);
+      return (okCounts&&archived&&inArc)?'ok':('counts='+okCounts+' arc='+archived+' inArc='+inArc);
+    }catch(e){ return 'ERR:'+e.message; }
+  });
   console.log('\n结果: '+pass+' 通过 / '+fail+' 失败');
 
 

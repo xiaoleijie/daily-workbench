@@ -858,6 +858,25 @@ button.mpw-nc-ico{padding:0;font-family:inherit;color:#bcb5a3}
   transition:max-height .3s cubic-bezier(.22,.61,.36,1),opacity .24s ease,transform .3s cubic-bezier(.22,.61,.36,1),margin-top .3s ease}
 .mp-selbar.on{max-height:64px;opacity:1;transform:translateY(0);pointer-events:auto;margin-top:8px;padding-bottom:7px}
 .mp.show-now .mp-selbar{display:none}
+/* R91：云听电台小窗（右下角可拖动浮窗，内嵌云听直播页，不跳走） */
+.rd-dock{position:fixed;z-index:80;width:420px;height:560px;right:24px;bottom:24px;display:flex;flex-direction:column;
+  background:var(--surface);border:1px solid var(--line2);border-radius:14px;overflow:hidden;box-shadow:0 16px 44px rgba(40,32,20,.28);
+  font-family:inherit;transition:opacity .18s ease,transform .18s ease}
+.rd-dock.hide{opacity:0;transform:translateY(14px) scale(.98);pointer-events:none}
+.rd-dock.min{height:auto;width:250px}
+.rd-head{flex:0 0 auto;display:flex;align-items:center;gap:8px;height:40px;padding:0 8px 0 12px;cursor:move;user-select:none;
+  background:linear-gradient(180deg,color-mix(in srgb,var(--accent) 12%,var(--surface)),var(--surface));border-bottom:1px solid var(--line2)}
+.rd-title{flex:1 1 auto;font-size:13.5px;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rd-title b{color:#d0342c}
+.rd-btn{flex:0 0 auto;width:26px;height:26px;border:1px solid var(--line2);border-radius:7px;background:var(--surface);color:var(--muted);
+  font-size:15px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;font-family:inherit}
+.rd-btn:hover{background:var(--accent-soft);color:var(--accent-deep);border-color:var(--accent)}
+.rd-body{flex:1 1 auto;min-height:0;position:relative;background:#fff}
+.rd-body iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:#fff}
+.rd-foot{flex:0 0 auto;display:flex;align-items:center;gap:8px;padding:6px 10px;border-top:1px solid var(--line2);font-size:11.5px;color:var(--muted)}
+.rd-foot .rd-open{margin-left:auto;color:var(--accent-deep);text-decoration:none;font-weight:700;border:1px solid var(--line2);border-radius:7px;padding:3px 9px;white-space:nowrap}
+.rd-foot .rd-open:hover{background:var(--accent-soft);border-color:var(--accent)}
+@media(max-width:760px){.rd-dock{right:8px!important;bottom:8px!important;width:calc(100vw - 16px)!important;height:70vh!important}.rd-dock.min{width:230px!important;height:auto!important}}
 .sb-btn{flex:1 1 0;min-width:0;height:34px;border-radius:10px;font-family:inherit;font-size:12.5px;font-weight:700;cursor:pointer;white-space:nowrap;padding:0 10px;
   color:var(--on-accent);border:1px solid color-mix(in srgb,var(--accent) 78%,#000 6%);
   background:linear-gradient(180deg,color-mix(in srgb,var(--accent) 86%,#fff),var(--accent));
@@ -2091,7 +2110,7 @@ button.mpw-nc-ico{padding:0;font-family:inherit;color:#bcb5a3}
         <div id="shopping-body" data-page-node-id="BubJXjwm5ya3Ps7wQaOf0l"></div>
       </section>
       <section class="module" id="mod-media" data-sp-bindable="database" data-sp-database-id="XwBGD3AthDZziupFstknF4" data-page-node-id="wmE0Ozv4VPOxb1QNG9Gq81">
-        <div class="mod-head" data-page-node-id="ww8NZJbJ993jpKKtV5WKns"><h2 data-page-node-id="12stfYH9V0UA46lU8o3M7i">书影音</h2><span class="desc" data-page-node-id="LH5Tx5hHfiLB9V60VgZUjH">收藏、评分与年度统计，记录看过的好东西</span><span class="build-ver" title="页面版本">R90</span></div>
+        <div class="mod-head" data-page-node-id="ww8NZJbJ993jpKKtV5WKns"><h2 data-page-node-id="12stfYH9V0UA46lU8o3M7i">书影音</h2><span class="desc" data-page-node-id="LH5Tx5hHfiLB9V60VgZUjH">收藏、评分与年度统计，记录看过的好东西</span><span class="build-ver" title="页面版本">R91</span></div>
         <div id="media-body" data-page-node-id="MvHLGITKcoHEoc4n5mYw56"></div>
       </section>
       <section class="module" id="mod-report" data-sp-bindable="database" data-sp-database-id="VDJ7npH13yRDIkMBUcnQO4" data-page-node-id="zEMiJyVPF1imOLfhLXwOHu">
@@ -8348,8 +8367,11 @@ var MP_SRC = [
   /* R55：网页歌单——悬停出二级菜单（添加网址 / 播放歌单） */
   { k: '网页歌单', label: '网页歌单', sub: true },
   /* R88：云听＝纯外链入口，直接开电台直播页（不是首页），与 QQ / 网易云同一套 mpOpenSrc 逻辑，不做任何嵌播 */
+  /* R91：云听升级为「工作台内嵌小窗」——点图标不再跳新窗口，而是在右下角开一个可拖动的电台小窗；
+     ext 保留作兜底（小窗里的「新窗口打开」按钮 + 万一内嵌失败）。dockUrl 为内嵌用的电台直播页。 */
   { k: '云听', label: '云听 · 电台直播', ext: 'https://www.radio.cn/pc-portal/erji/radioStation.html',
-    extTitle: '云听 · 一键打开电台直播页', openMsg: '已打开「云听」电台直播页' }
+    dockUrl: 'https://www.radio.cn/pc-portal/erji/radioStation.html',
+    extTitle: '云听 · 在工作台小窗里听电台', openMsg: '已打开「云听」电台直播页' }
 ];
 var MP_LOCAL_SRC = '本地';
 /* QQ 音乐图标：用户提供的黄绿圆音符图（已裁掉白边并做圆形遮罩，59x59） */
@@ -9204,6 +9226,12 @@ function mpOpenSrc(k, e) {
   if (!s || !s.ext) return;
   var box = document.getElementById('mp-src');
   if (box) box.classList.remove('open');
+  /* R91：云听走工作台内嵌小窗（不跳走）；其它来源仍是新窗口外链 */
+  if (s.dockUrl && typeof openRadioDock === 'function') {
+    openRadioDock(s.dockUrl, s.ext);
+    toast('云听小窗已打开，点电台卡片就能听 🎧');
+    return;
+  }
   var ok = false, win = null;
   try {
     /* 不用 window.open(url,'_blank','noopener')：Chrome 带 noopener 时一律返回 null，没法区分「已打开」和「被拦」 */
@@ -9212,6 +9240,75 @@ function mpOpenSrc(k, e) {
     if (win) { try { win.opener = null; } catch (e2) { } }  /* 等价于 noopener */
   } catch (err) { ok = false; }
   toast(ok ? (s.openMsg || ('已打开「' + s.label + '」我的歌单网页')) : '浏览器拦了新窗口，允许弹窗后再点一次', !ok);
+}
+
+/* ---- R91：云听电台小窗（内嵌直播页，可拖动 / 最小化 / 关闭，位置记本机） ---- */
+var RADIO_DOCK_KEY='lw_radio_dock_pos';
+function radioDockPos(){ try{ var o=JSON.parse(localStorage.getItem(RADIO_DOCK_KEY)||'null'); if(o&&typeof o.x==='number'&&typeof o.y==='number') return o; }catch(e){} return null; }
+function radioDockSave(d){
+  try{
+    var r=d.getBoundingClientRect();
+    /* 存左上角坐标；右下角定位时先换算成等价的 right/bottom，保证换窗口尺寸也合理 */
+    localStorage.setItem(RADIO_DOCK_KEY, JSON.stringify({ x:Math.round(r.left), y:Math.round(r.top) }));
+  }catch(e){}
+}
+function radioDockPlace(d){
+  var p=radioDockPos();
+  /* 窄屏交给 CSS 媒体查询定位（right/bottom:8px + height:70vh）：必须清掉拖动留下的内联 top，
+     否则 top 与 bottom 同时约束会把小窗撑出屏幕底边 */
+  if(window.innerWidth<=760){
+    d.style.top=''; d.style.bottom=''; d.style.left=''; d.style.right='';
+    return;
+  }
+  if(!p){ d.style.right='24px'; d.style.bottom='24px'; d.style.left='auto'; d.style.top='auto'; return; }
+  var w=d.offsetWidth||420, h=d.offsetHeight||560;
+  var x=Math.max(0,Math.min(window.innerWidth-w-8,p.x));
+  var y=Math.max(0,Math.min(window.innerHeight-h-8,p.y));
+  d.style.left=x+'px'; d.style.top=y+'px'; d.style.right='auto'; d.style.bottom='auto';
+}
+function openRadioDock(url, extUrl){
+  var d=document.getElementById('radio-dock');
+  if(d){ d.classList.remove('hide'); radioDockPlace(d); try{ d.querySelector('iframe').contentWindow.focus(); }catch(e){} return; }
+  d=document.createElement('div'); d.id='radio-dock'; d.className='rd-dock';
+  d.innerHTML='<div class="rd-head" id="rd-head">'+
+      '<div class="rd-title">📻 <b>云听</b> · 电台直播</div>'+
+      '<button class="rd-btn" id="rd-min" title="收起 / 展开">－</button>'+
+      '<button class="rd-btn" id="rd-close" title="关闭小窗">✕</button>'+
+    '</div>'+
+    '<div class="rd-body"><iframe id="rd-frame" src="'+esc(url||'')+'" title="云听电台" referrerpolicy="no-referrer" allow="autoplay; fullscreen"></iframe></div>'+
+    '<div class="rd-foot"><span>点电台卡片收听 · 顶栏可拖动</span>'+
+      '<a class="rd-open" id="rd-open" href="'+esc(extUrl||url||'')+'" target="_blank" rel="noopener">新窗口打开 ↗</a></div>';
+  document.body.appendChild(d);
+  radioDockPlace(d);
+  /* 顶栏拖动（不用 HTML5 draggable，pointer 事件跨 iframe 外的顶栏稳定） */
+  var head=document.getElementById('rd-head'), drag=false, sx=0, sy=0, ox=0, oy=0;
+  head.addEventListener('pointerdown', function(e){
+    if(e.target.closest('.rd-btn')) return;
+    drag=true; var r=d.getBoundingClientRect(); sx=e.clientX; sy=e.clientY; ox=r.left; oy=r.top;
+    d.classList.remove('min');
+    d.style.left=ox+'px'; d.style.top=oy+'px'; d.style.right='auto'; d.style.bottom='auto';
+    try{ head.setPointerCapture(e.pointerId); }catch(_){}
+    e.preventDefault();
+  });
+  head.addEventListener('pointermove', function(e){
+    if(!drag) return;
+    var w=d.offsetWidth, h=d.offsetHeight;
+    d.style.left=Math.max(0,Math.min(window.innerWidth-w-8, ox+(e.clientX-sx)))+'px';
+    d.style.top =Math.max(0,Math.min(window.innerHeight-40, oy+(e.clientY-sy)))+'px';
+  });
+  function endDrag(){ if(!drag) return; drag=false; radioDockSave(d); }
+  head.addEventListener('pointerup', endDrag);
+  head.addEventListener('pointercancel', endDrag);
+  /* 最小化 / 关闭 */
+  document.getElementById('rd-min').onclick=function(){
+    var min=d.classList.toggle('min');
+    this.textContent=min?'＋':'－'; this.title=min?'展开小窗':'收起小窗';
+    if(!min) radioDockPlace(d);
+  };
+  document.getElementById('rd-close').onclick=function(){
+    d.classList.add('hide');
+    try{ var f=document.getElementById('rd-frame'); if(f) f.src='about:blank'; }catch(e){}
+  };
 }
 function mpSwitchSrc(k) {
   if (!k) return;

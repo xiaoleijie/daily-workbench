@@ -2782,24 +2782,26 @@ setTimeout(()=>{
       && /\.mp-ico-yt\{display:block;width:22px;height:22px;border-radius:6px/.test(html)
       && html.indexOf('.mp-src-cur .mp-ico-yt{width:26px;height:26px}')>=0;
   });
-  T('R88-4 来源列表短名为「云听」，悬停提示与成功提示都写明「电台直播页」',()=>{
+  T('R88-4 来源列表短名为「云听」，悬停提示写明「电台直播」'+(typeof R91!=='undefined'?'（R91 改内嵌小窗文案）':''),()=>{
     return (w.MP_SRC_SHORT||{})['云听']==='云听'
-      && html.indexOf("extTitle: '云听 · 一键打开电台直播页'")>=0
-      && html.indexOf("openMsg: '已打开「云听」电台直播页'")>=0;
+      && /extTitle: '云听 · (一键打开电台直播页|在工作台小窗里听电台)'/.test(html);
   });
   T('R88-5 外链入口支持可选 extTitle/openMsg，QQ/网易云老文案保持不变',()=>{
     return html.indexOf("esc(s.extTitle || (s.label + ' · 打开我的歌单网页'))")>=0
       && html.indexOf("s.openMsg || ('已打开「' + s.label + '」我的歌单网页')")>=0
       && html.indexOf("'QQ导入': '<img class=\"mp-ico-qqm\"")>=0;
   });
-  T('R88-6 运行时点云听：只 window.open 一次、不改 curSrc、不建 iframe/audio',()=>{
+  T('R88-6 运行时点云听（R91：开工作台内嵌小窗，不新窗口、不改来源）',()=>{
     var oldOpen=w.open, oldToast=w.toast, opened=[], toasts=[], oldSrc=w.MP.curSrc;
+    var dock=w.document.getElementById('radio-dock'); if(dock) dock.remove();
     try{
       w.open=function(u){ opened.push(String(u)); return {opener:null}; };
       w.toast=function(t){ toasts.push(String(t)); };
       w.mpOpenSrc('云听');
-      return opened.length===1 && opened[0]==='https://www.radio.cn/pc-portal/erji/radioStation.html'
-        && toasts.length===1 && toasts[0].indexOf('电台直播页')>=0 && w.MP.curSrc===oldSrc;
+      var d2=w.document.getElementById('radio-dock');
+      var fr=d2?d2.querySelector('iframe'):null;
+      return opened.length===0 && !!d2 && !!fr && /radio\.cn/.test(fr.getAttribute('src')||'')
+        && toasts.length===1 && w.MP.curSrc===oldSrc;
     }catch(e){ console.log('   [dbg] R88-6 '+e.message); return false; }
     finally{ w.open=oldOpen; w.toast=oldToast; }
   });
@@ -2850,6 +2852,46 @@ setTimeout(()=>{
     return html.indexOf('width:560px;overflow:auto')>=0
       && html.indexOf('#media-edit-modal .me-cover-fld{margin-bottom:8px}')>=0
       && html.indexOf('#media-edit-modal .me-cover-fld .btn.sm{white-space:nowrap}')>=0;
+  });
+
+  /* ===== R91：云听电台小窗（内嵌直播页，可拖动/最小化/关闭，位置记本机） ===== */
+  T('R91-1 云听来源带 dockUrl，其余外链来源不带',()=>{
+    var yt=w.MP_SRC.filter(function(x){return x.k==='云听';})[0];
+    var qq=w.MP_SRC.filter(function(x){return x.k==='QQ导入';})[0];
+    return !!(yt&&/radio\.cn/.test(yt.dockUrl||'')&&yt.ext) && !(qq&&qq.dockUrl);
+  });
+  T('R91-2 openRadioDock 生成小窗：标题栏 + iframe + 新窗口兜底链接',()=>{
+    var d=w.document.getElementById('radio-dock'); if(d) d.remove();
+    w.openRadioDock('https://www.radio.cn/pc-portal/erji/radioStation.html','https://fallback/');
+    d=w.document.getElementById('radio-dock');
+    return !!d && !!d.querySelector('.rd-head') && !!d.querySelector('iframe#rd-frame')
+      && !!d.querySelector('#rd-min') && !!d.querySelector('#rd-close')
+      && /radio\.cn/.test((d.querySelector('iframe').getAttribute('src')||''))
+      && /fallback/.test((d.querySelector('#rd-open').getAttribute('href')||''));
+  });
+  T('R91-3 重复调用 openRadioDock 不重复建窗，只重新显示',()=>{
+    var n=w.document.querySelectorAll('#radio-dock').length;
+    w.openRadioDock('https://www.radio.cn/x','https://x/');
+    return w.document.querySelectorAll('#radio-dock').length===n && n===1;
+  });
+  T('R91-4 最小化按钮切换 .min 类、图标变化',()=>{
+    var d=w.document.getElementById('radio-dock'), b=w.document.getElementById('rd-min');
+    if(!d||!b) return false;
+    b.click(); var a=d.classList.contains('min')&&b.textContent==='＋';
+    b.click(); var c=!d.classList.contains('min')&&b.textContent==='－';
+    return a&&c;
+  });
+  T('R91-5 关闭按钮隐藏小窗并把 iframe 置 about:blank（停播）',()=>{
+    var d=w.document.getElementById('radio-dock'), b=w.document.getElementById('rd-close');
+    if(!d||!b) return false;
+    b.click();
+    return d.classList.contains('hide') && (d.querySelector('iframe').getAttribute('src')||'')==='about:blank';
+  });
+  T('R91-6 CSS 齐备：小窗定位/隐藏/最小化 + 顶栏可拖 + 窄屏适配',()=>{
+    return html.indexOf('.rd-dock{position:fixed')>=0
+      && html.indexOf('.rd-dock.hide{')>=0 && html.indexOf('.rd-dock.min{')>=0
+      && html.indexOf('.rd-head{')>=0 && html.indexOf('cursor:move')>=0
+      && html.indexOf('@media(max-width:760px){.rd-dock')>=0;
   });
 
   T('R21-默认象限提示: q-default 胶囊文案已删除, 改由 q-sub2（不选默认为1象限）',()=> html.indexOf('如不选，默认第一象限「重要且紧急」')<0 && html.indexOf('q-sub2')>=0 && html.indexOf('（不选默认为1象限）')>=0 && html.indexOf('q-sub2{')>=0);

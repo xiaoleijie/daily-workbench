@@ -1248,7 +1248,8 @@ button.mpw-nc-ico{padding:0;font-family:inherit;color:#bcb5a3}
   .sa-right>.fld>label{display:block;margin-bottom:5px;font-size:12px;color:var(--muted)}
   .sa-right>.sched-grid{margin-bottom:0}
   /* R74：备注改多行文本框，右下角可向下拉高（resize:vertical，宽度不可改） */
-  .sa-right .s-note-ta{height:112px;min-height:72px;max-height:60vh;line-height:1.6;font-size:13.5px;resize:vertical;box-sizing:border-box;display:block}
+  /* R90：备注框默认高度 112→210px，与左列日历+按钮底部齐平；min/max 与 resize:vertical 不变，仍可手动拉高缩短 */
+  .sa-right .s-note-ta{height:210px;min-height:72px;max-height:60vh;line-height:1.6;font-size:13.5px;resize:vertical;box-sizing:border-box;display:block}
   .sa-cal>.fld{margin-bottom:11px}
   .sa-ops-2{display:grid;grid-template-columns:1fr 1fr;gap:6px;min-width:0}
   .s-batchbar{display:flex;align-items:center;gap:10px;padding:7px 2px;font-size:12.5px;color:var(--muted);border-bottom:1px dashed var(--line);flex-wrap:wrap;row-gap:6px}
@@ -2090,7 +2091,7 @@ button.mpw-nc-ico{padding:0;font-family:inherit;color:#bcb5a3}
         <div id="shopping-body" data-page-node-id="BubJXjwm5ya3Ps7wQaOf0l"></div>
       </section>
       <section class="module" id="mod-media" data-sp-bindable="database" data-sp-database-id="XwBGD3AthDZziupFstknF4" data-page-node-id="wmE0Ozv4VPOxb1QNG9Gq81">
-        <div class="mod-head" data-page-node-id="ww8NZJbJ993jpKKtV5WKns"><h2 data-page-node-id="12stfYH9V0UA46lU8o3M7i">书影音</h2><span class="desc" data-page-node-id="LH5Tx5hHfiLB9V60VgZUjH">收藏、评分与年度统计，记录看过的好东西</span><span class="build-ver" title="页面版本">R89</span></div>
+        <div class="mod-head" data-page-node-id="ww8NZJbJ993jpKKtV5WKns"><h2 data-page-node-id="12stfYH9V0UA46lU8o3M7i">书影音</h2><span class="desc" data-page-node-id="LH5Tx5hHfiLB9V60VgZUjH">收藏、评分与年度统计，记录看过的好东西</span><span class="build-ver" title="页面版本">R90</span></div>
         <div id="media-body" data-page-node-id="MvHLGITKcoHEoc4n5mYw56"></div>
       </section>
       <section class="module" id="mod-report" data-sp-bindable="database" data-sp-database-id="VDJ7npH13yRDIkMBUcnQO4" data-page-node-id="zEMiJyVPF1imOLfhLXwOHu">

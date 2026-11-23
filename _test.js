@@ -3996,6 +3996,38 @@ console.log('--- 回归 ---');
       return (sq1===1&&sq2===1&&doneSq===0)?'ok':('sq1='+sq1+' sq2='+sq2+' doneSq='+doneSq);
     }catch(e){ return 'ERR:'+e.message; }
   });
+  /* ===== R94：筛选态提示条 + 新增默认日期跟随 + 保存后自愈（修"数据不见了/加不进去"） ===== */
+  T('R94-1 一键清全部筛选函数 + 筛选描述函数齐备',()=>{
+    return /function schedClearAllFilters\(\)/.test(html) && /function schedActiveFilters\(\)/.test(html)
+      && html.indexOf("schedSelDate=null; schedRange=null; schedFilter='全部'; schedStatusF='全部状态'")>=0;
+  });
+  T('R94-2 筛选提示条 CSS 齐备（醒目边框 + 显示全部按钮）',()=>{
+    return html.indexOf('.s-filter-note{')>=0 && html.indexOf('.s-filter-note .sfn-clear{')>=0
+      && html.indexOf('.s-total .s-all-count{')>=0;
+  });
+  T('R94-3 renderSchedule 里渲染筛选条 + 显示全部按钮 + 总数',()=>{
+    return html.indexOf('var _af=schedActiveFilters();')>=0
+      && html.indexOf('onclick="schedClearAllFilters()">显示全部')>=0
+      && html.indexOf("/ 全部 '+rows.length+' 项")>=0;
+  });
+  T('R94-4 新增弹窗默认日期跟随当前筛选日期（非固定 today）',()=>{
+    return html.indexOf('var _def=(schedRange?null:schedSelDate)||today();')>=0
+      && html.indexOf('schedPickDates=[_def];')>=0;
+  });
+  T('R94-5 保存后若被筛选挡住则自动清除全部筛选',()=>{
+    return html.indexOf('var _stillHidden=false;')>=0
+      && html.indexOf('if(_stillHidden){ schedSelDate=null; schedRange=null; schedFilter=')>=0
+      && html.indexOf('已为你显示全部')>=0;
+  });
+  T('R94-6(功能): 设日期筛选后 schedActiveFilters 报日期 + 清除后为空',()=>{
+    try{
+      w.schedSelDate=w.today();
+      var a1=w.schedActiveFilters();
+      w.schedSelDate=null; w.schedRange=null; w.schedFilter='全部'; w.schedStatusF='全部状态';
+      var a2=w.schedActiveFilters();
+      return (a1.length===1&&a1[0].k==='日期'&&a2.length===0)?'ok':('a1='+JSON.stringify(a1)+' a2='+JSON.stringify(a2));
+    }catch(e){ return 'ERR:'+e.message; }
+  });
   console.log('\n结果: '+pass+' 通过 / '+fail+' 失败');
 
 

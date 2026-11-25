@@ -4133,6 +4133,22 @@ console.log('--- 回归 ---');
       return (okCounts&&archived&&inArc)?'ok':('counts='+okCounts+' arc='+archived+' inArc='+inArc);
     }catch(e){ return 'ERR:'+e.message; }
   });
+  /* ===== R98：年份条从左侧月历面板移到顶栏按钮行 ===== */
+  T('R98-1 顶部栏有年份条容器（刷新按钮左侧）',()=>{
+    return html.indexOf('class="top-yearbar" id="topYearbar"')>=0;
+  });
+  T('R98-2 renderSchedule 把年份条渲染到顶栏、月历面板不再拼 _yearBar',()=>{
+    return html.indexOf("var topYearHost=document.getElementById('topYearbar');")>=0
+      && html.indexOf('if(topYearHost) topYearHost.innerHTML=_yearBar;')>=0
+      && html.indexOf('style="padding:14px">\'+_yearBar+')<0;
+  });
+  T('R98-3 showModule 只在日程统筹页显示年份条',()=>{
+    return html.indexOf("tyHost.style.display=(key==='schedule')?'flex':'none'")>=0;
+  });
+  T('R98-4 顶栏年份条 CSS 去面板边框 + 窄屏收起标签',()=>{
+    return html.indexOf('.top-yearbar .s-yearbar{margin:0;padding:0;border:0;background:none')>=0
+      && html.indexOf('.top-yearbar .s-yearbar .syb-l{display:none}')>=0;
+  });
   console.log('\n结果: '+pass+' 通过 / '+fail+' 失败');
 
 

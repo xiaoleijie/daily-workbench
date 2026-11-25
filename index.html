@@ -1094,6 +1094,11 @@ button.mpw-nc-ico{padding:0;font-family:inherit;color:#bcb5a3}
   .s-yearbar .syb-restore:hover{background:#dceaff}
   .s-yearbar .syb-tip{font-size:10.5px;color:var(--muted);margin-left:auto}
   .s-yearbar.arc-on{border-color:#c9d9ef;background:#f3f8ff}
+  /* ===== R98：年份条移到顶栏按钮行（不再占左侧月历面板） ===== */
+  .top-yearbar{display:flex;align-items:center;min-width:0}
+  .top-yearbar .s-yearbar{margin:0;padding:0;border:0;background:none;gap:6px;flex-wrap:nowrap;box-shadow:none}
+  .top-yearbar .s-yearbar .syb-tip{font-size:10px;margin-left:2px}
+  @media(max-width:1180px){ .top-yearbar .s-yearbar .syb-l{display:none} .top-yearbar .s-yearbar .syb-tip{display:none} }
   /* 归档只读态：隐藏新增/批量操作，色圈按钮点不动 */
   body.sched-arc-view .sched-add-btn,body.sched-arc-view .s-add-item,
   body.sched-arc-view .s-batchbar input,body.sched-arc-view .s-batchbar label,
@@ -2130,6 +2135,7 @@ button.mpw-nc-ico{padding:0;font-family:inherit;color:#bcb5a3}
         <div class="sub" id="pageSub" data-page-node-id="eTxtK5iYvgzeaIaxFW9CpW">把今天要紧的事排好，做完一件勾一件</div>
       </div>
       <div class="spacer" data-page-node-id="jA8KlMHh3kKlH7QKyJFUht"></div>
+      <div class="top-yearbar" id="topYearbar"></div>
       <button class="btn" id="refreshAll" data-page-node-id="Ev8BveRp9IDbv2DIdf7pD3">↻ 刷新全部</button>
       <button class="btn" id="backupBtn" onclick="toggleBackupMenu()" type="button" style="margin-left:8px" data-page-node-id="0pIl8jcDFcCKtTOchbkqh6">💾 数据备份</button>
       <button class="btn" id="aboutBtn" onclick="toggleAboutMenu()" type="button" style="margin-left:8px">ℹ️ 关于</button>
@@ -2995,6 +3001,8 @@ function makeNavBtn(m){
 }
 function showModule(key){
   curModule=key;
+  /* R98：年份条只在日程统筹页显示，其它模块顶栏不出现 */
+  var tyHost=document.getElementById('topYearbar'); if(tyHost) tyHost.style.display=(key==='schedule')?'flex':'none';
   if(key==='schedule' && !schedSelDate && window.__sched){ schedSelDate=today(); renderSchedule(window.__sched); }
   var m=MODULES.filter(function(x){return x.key===key;})[0];
   document.getElementById('pageTitle').textContent=m.name;
@@ -4990,7 +4998,7 @@ function renderSchedule(rows){
   var days=new Date(y,mo+1,0).getDate();
   var first=new Date(y,mo,1); var startDay=(first.getDay()+6)%7;
 
-  /* R97：年份切换 + 归档入口（挂在月历面板顶部） */
+  /* R97：年份切换 + 归档入口；R98：移到顶栏按钮行 */
   document.body.classList.toggle('sched-arc-view', !!SCHED_VIEW_YEAR);
   var _years=arcYears(), _liveCounts=arcLiveYearCounts(rows);
   var _curYear=String(new Date().getFullYear());
@@ -5004,8 +5012,11 @@ function renderSchedule(rows){
     +_arcBtns+_restoreBtn
     +(SCHED_VIEW_YEAR?'<span class="syb-tip">📖 历史归档 · 只读</span>':(_years.length?'':'<span class="syb-tip">到年底可把旧年份归档，当前页会更快</span>'))
     +'</div>';
+  /* R98：年份条渲染到顶栏（不再塞进左侧月历面板） */
+  var topYearHost=document.getElementById('topYearbar');
+  if(topYearHost) topYearHost.innerHTML=_yearBar;
 
-  var mini='<div class="panel mini-cal-panel" style="padding:14px">'+_yearBar+
+  var mini='<div class="panel mini-cal-panel" style="padding:14px">'+
     '<div class="mc-head"><button class="btn sm primary sched-add-btn" onclick="openSchedAddModal()" title="添加事项，可一次选中多个日期">＋ 本月事项</button>'+
       '<span class="mc-navs">'+
         '<button type="button" class="mc-nav" id="mc-prev" onclick="schedCalShift(-1)" title="上月事项" aria-label="上月事项">▲</button>'+

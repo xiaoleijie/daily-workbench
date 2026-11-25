@@ -569,12 +569,23 @@ body.mt-h-dragging .mt-grip{color:var(--accent-deep)}
 .mpw-back{flex:0 0 auto;height:30px;display:flex;align-items:center;justify-content:center;gap:6px;font-size:11.5px;color:#8a8574;cursor:pointer;background:#faf9f4;border-top:1px solid #f0ece0;border-radius:0 0 14px 14px;transition:background .18s,color .18s}
 .mpw-back:hover{background:#f2efe4;color:#5c6653}
 /* ===== R92①：云听直接嵌进歌单卡内（不再弹独立小窗）——复用 mpw 舞台，卡内覆盖层 ===== */
-.mpr-wrap{position:absolute;inset:0;z-index:42;overflow:hidden;border-radius:14px;pointer-events:none;display:none;flex-direction:column;background:#fdfdfb}
-.mp.show-radio .mpr-wrap{display:flex;pointer-events:auto}
-.mp.show-radio{min-height:520px}
+.mpr-wrap{position:absolute;left:0;right:0;top:0;bottom:0;z-index:42;overflow:hidden;border-radius:14px;pointer-events:none;display:none;flex-direction:column;background:#fdfdfb}
+/* R99②：云听不再盖住整卡顶部来源栏——舞台从来源栏下方开始，顶部留出一行给 mp-src 切换 */
+.mp.show-radio .mpr-wrap{display:flex;pointer-events:auto;top:var(--mpr-top,52px)}
+/* R99②：默认高度降到和普通音乐卡齐平（约240px），可用右下手柄拖动；mw=媒体卡内 */
+.mp.show-radio{min-height:var(--mpr-h,240px)}
 /* 特异性要压过 R86 的 .media-top .mt-col>.mp{height:220px;min-height:0} 与 mt-h-set 规则 */
-.media-top .mt-col>.mp.show-radio{height:auto;min-height:520px}
-.media-top .mt-col.mt-h-set>.mp.show-radio{height:auto;min-height:520px}
+.media-top .mt-col>.mp.show-radio{height:auto;min-height:var(--mpr-h,240px)}
+.media-top .mt-col.mt-h-set>.mp.show-radio{height:auto;min-height:var(--mpr-h,240px)}
+/* R99②：云听态顶部来源栏浮在舞台之上，仍可点圆钮切换其它来源（不必先"收起"） */
+.mp.show-radio .mp-row1{position:relative;z-index:44}
+/* R99②：iframe 用 scale 居中铺满（同网页歌单 fit 思路），消除横向滚动条与伸出 */
+.mpr-frame{overflow:hidden}
+.mpr-frame iframe{transform-origin:top left}
+/* R99②：右下角竖向拖高手柄 */
+.mpr-grip{position:absolute;right:4px;bottom:3px;width:18px;height:16px;display:flex;align-items:flex-end;justify-content:flex-end;color:#b6ae9c;cursor:ns-resize;border-radius:5px;z-index:45;touch-action:none}
+.mpr-grip:hover{color:var(--accent);background:color-mix(in srgb,var(--accent) 9%,transparent)}
+.mpr-grip svg{width:12px;height:12px;display:block;pointer-events:none}
 .mpr-bar{flex:0 0 auto;display:flex;align-items:center;gap:9px;padding:5px 12px;background:#fff;border-bottom:1px solid #eee9db;font-size:11.5px;color:#6b6558}
 .mpr-bar .mpr-t{color:#b23b2e;font-weight:700;white-space:nowrap}
 .mpr-bar .mpr-out{color:#4d7a3b;text-decoration:none;font-weight:600;white-space:nowrap}
@@ -583,7 +594,7 @@ body.mt-h-dragging .mt-grip{color:var(--accent-deep)}
 .mpr-bar .mpr-btn:hover{background:#f5f3ea}
 .mpr-frame{flex:1;min-height:0;position:relative;background:#fff}
 .mpr-frame iframe{position:absolute;left:0;top:0;width:100%;height:100%;border:0;background:#fff}
-@media(max-width:760px){ .mp.show-radio,.media-top .mt-col>.mp.show-radio{min-height:70vh} }
+@media(max-width:760px){ .mp.show-radio,.media-top .mt-col>.mp.show-radio{min-height:var(--mpr-h,240px)} }
 /* ===== R92②：日程图片（公司发的图片日历/通知截图）——上传后存本机，缩略图可点开放大 ===== */
 .sched-imgbar{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin:9px 0 2px;padding:7px 9px;border:1px dashed var(--line2);border-radius:10px;background:var(--surface)}
 .sched-imgbar .sib-pick{flex:0 0 auto;white-space:nowrap;border-color:var(--line2);background:#fff;color:var(--accent-deep);font-weight:700}
@@ -1396,8 +1407,13 @@ button.mpw-nc-ico{padding:0;font-family:inherit;color:#bcb5a3}
       rgba(168,148,52,.30) 29px,rgba(168,148,52,.30) 30px);
     background-attachment:local;background-position:0 0}
   /* R73：便利贴字体缩放工具条（A- / 数值 / A+），仅纵向不影响宽度 */
-  .sticky-note .sticky-bar{display:flex;align-items:center;justify-content:flex-end;margin:0 0 4px}
-  .sticky-note .sticky-fs{display:flex;align-items:center;gap:6px}
+  .sticky-note .sticky-bar{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 4px;min-height:28px}
+  /* R99①：图片栏搬进黄便利贴顶部——去虚线框、透明底、缩略图缩小以贴合这一行 */
+  .sticky-note .sticky-bar .sched-imgbar{flex:1 1 auto;min-width:0;margin:0;padding:0;border:0;border-radius:0;background:none;gap:5px}
+  .sticky-note .sticky-bar .sched-imgbar .sib-pick{font-size:11px;padding:3px 8px;border-color:#EADF8E;background:#fffdf0;color:#7a6a2a}
+  .sticky-note .sticky-bar .sched-imgbar .sib-thumbs .sib-item{width:24px;height:24px;border-color:#EADF8E;border-radius:5px}
+  .sticky-note .sticky-bar .sched-imgbar .sib-hint{display:none}
+  .sticky-note .sticky-fs{display:flex;align-items:center;gap:6px;flex:0 0 auto}
   .sticky-note .sf-btn{flex:0 0 auto;width:22px;height:22px;line-height:1;border:1px solid #EADF8E;border-radius:5px;background:#fff;color:#7a6a2a;cursor:pointer;font-size:12px;padding:0;transition:background .12s,transform .1s}
   .sticky-note .sf-btn:hover:not(:disabled){background:#fffdf0;transform:translateY(-1px)}
   .sticky-note .sf-btn:active:not(:disabled){transform:translateY(0)}
@@ -5026,7 +5042,8 @@ function renderSchedule(rows){
     '<div class="monthcal"><div class="wd">一</div><div class="wd">二</div><div class="wd">三</div><div class="wd">四</div><div class="wd">五</div><div class="wd">六</div><div class="wd">日</div>';
   for(var i=0;i<startDay;i++) mini+='<div class="d"></div>';
   for(var d=1;d<=days;d++){ var ds=y+'-'+('0'+(mo+1)).slice(-2)+'-'+('0'+d).slice(-2); var isPast=ds<td, isHave=!!haveDates[ds], isSel=schedSelDate===ds; var cls='d'+(isHave?' have':'')+(isSel?' sel':'')+(isPast?' past':''); var tint=(isPast)?ACTION_PALETTE_TINT[(d-1)%7]:''; var dc=dayCount[ds]||0; mini+='<div class="'+cls+'"'+(tint?' style="background:'+tint+'"':'')+' onclick="schedSelDate=\''+ds+'\';renderSchedule(window.__sched)">'+d+(dc?'<span class="d-cnt">'+dc+'</span>':'')+'</div>'; }
-  mini+='</div>'+'<div class="sched-imgbar" id="sched-imgbar"></div>'+'</div>';
+  /* R99①：日程图片栏移到「本月安排」黄便利贴顶部（和 A-/A+ 同一行），不再撑高月历面板 */
+  mini+='</div>'+'</div>';
 
   // 下方：筛选条 + 日程列表（直接写在月历下面空白）
   var cats=getSchedCats();
@@ -7660,7 +7677,8 @@ function stickyFSStyle(fs){
     'background-image:repeating-linear-gradient(to bottom,transparent 0,transparent '+(L-1)+'px,rgba(168,148,52,.30) '+(L-1)+'px,rgba(168,148,52,.30) '+L+'px)';
 }
 function stickyBar(fs){
-  return '<div class="sticky-bar"><span class="sticky-fs">'+
+  /* R99①：日程图片栏放进黄便利贴顶部空位（A-/A+ 左侧），缩略图容器沿用 id=sched-imgbar */
+  return '<div class="sticky-bar"><span class="sched-imgbar" id="sched-imgbar"></span><span class="sticky-fs">'+
     '<button type="button" id="sfMinus" class="sf-btn" '+(fs<=STICKY_FS_MIN?'disabled':'')+' onclick="stickyFS(-1)" title="缩小字体">A&#8722;</button>'+
     '<span class="sf-val" id="sfVal">'+fs+'</span>'+
     '<button type="button" id="sfPlus" class="sf-btn" '+(fs>=STICKY_FS_MAX?'disabled':'')+' onclick="stickyFS(1)" title="放大字体">A+</button>'+
@@ -9559,18 +9577,54 @@ function mpOpenSrc(k, e) {
 }
 
 /* ---- R92：云听直接在歌单卡内嵌（不再是独立小窗）——舞台就长在 #mp-box 里，切歌单/重渲染不拆 iframe ---- */
+/* R99②：高度可调 + iframe 缩放 fit + 顶部来源栏可用 */
 var MP_RADIO_ON=false;
+var MPR_H_MIN=200, MPR_H_MAX=760;
+function mprHGet(){ var n=0; try{ n=parseInt(localStorage.getItem('lw_mpr_h')||'0',10); }catch(e){} return (n>=MPR_H_MIN&&n<=MPR_H_MAX)?n:0; }
+function mprHSet(h){ if(!isFinite(h)) return; try{ localStorage.setItem('lw_mpr_h',String(Math.max(MPR_H_MIN,Math.min(MPR_H_MAX,Math.round(h))))); }catch(e){} }
+function mprHApply(){
+  var h=mprHGet()||240;
+  var box=document.getElementById('mp-box');
+  if(box){ box.style.setProperty('--mpr-h',h+'px'); box.style.setProperty('--mpr-top','52px'); }
+  setTimeout(mpRadioFit,60);
+}
+/* 电台页用固定视口宽缩放铺满框（同网页歌单 fit 思路），消除横向滚动条与「伸出」感 */
+function mpRadioFit(){
+  var host=document.querySelector('#mpr-wrap .mpr-frame'); if(!host) return;
+  var f=host.querySelector('iframe'); if(!f) return;
+  var w=host.clientWidth||0, h=host.clientHeight||0;
+  if(w<50||h<50) return;
+  var VW=1000, VH=Math.max(560,Math.round(VW*h/w));
+  var sc=Math.min(w/VW,h/VH);
+  if(!(sc>0.15)) return;
+  f.style.width=VW+'px'; f.style.height=VH+'px';
+  f.style.transform='scale('+sc+')';
+  f.style.left=Math.max(0,(w-VW*sc)/2)+'px';
+  f.style.top=Math.max(0,(h-VH*sc)/2)+'px';
+}
+function mprGripDown(e){
+  if(e){ if(e.preventDefault) e.preventDefault(); if(e.stopPropagation) e.stopPropagation(); }
+  var box=document.getElementById('mp-box'); if(!box) return;
+  var startY=e.clientY, startH=(mprHGet()||240), moved=false;
+  function mv(ev){ var h=Math.max(MPR_H_MIN,Math.min(MPR_H_MAX,startH+(ev.clientY-startY))); box.style.setProperty('--mpr-h',h+'px'); moved=true; mpRadioFit(); }
+  function up(){
+    document.removeEventListener('pointermove',mv); document.removeEventListener('pointerup',up); document.removeEventListener('pointercancel',up);
+    if(moved){ var cur=parseInt(box.style.getPropertyValue('--mpr-h'),10)||startH; mprHSet(cur); }
+  }
+  document.addEventListener('pointermove',mv); document.addEventListener('pointerup',up); document.addEventListener('pointercancel',up);
+}
 function mpRadioInlineOpen(url, extUrl){
   MP_RADIO_ON=true;
   var box=document.getElementById('mp-box');
   if(box){ box.classList.remove('collapsed'); box.classList.add('show-radio'); }
+  mprHApply();
   var f=document.getElementById('mpr-frame');
   if(f && f.getAttribute('src')!==(url||'')){ try{ f.src=url||''; }catch(e){} }
   var o=document.getElementById('mpr-out'); if(o) o.href=extUrl||url||'';
 }
 function mpRadioInlineClose(){
   MP_RADIO_ON=false;
-  var box=document.getElementById('mp-box'); if(box) box.classList.remove('show-radio');
+  var box=document.getElementById('mp-box'); if(box){ box.classList.remove('show-radio'); box.style.removeProperty('--mpr-h'); box.style.removeProperty('--mpr-top'); }
   var f=document.getElementById('mpr-frame');
   if(f){ try{ f.src='about:blank'; }catch(e){} }
 }
@@ -9581,11 +9635,16 @@ function mpRadioInlineHtml(){
       + '<a class="mpr-out" id="mpr-out" href="https://www.radio.cn/pc-portal/erji/radioStation.html" target="_blank" rel="noopener" title="在浏览器新窗口打开电台直播页">新窗口打开 ↗</a>'
       + '<button class="mpr-btn" type="button" onclick="event.stopPropagation();mpRadioInlineClose()" title="收起电台，回到歌单">✕ 收起</button>'
     + '</div>'
-    + '<div class="mpr-frame"><iframe id="mpr-frame" src="about:blank" title="云听电台" referrerpolicy="no-referrer" allow="autoplay; fullscreen"></iframe></div>'
+    + '<div class="mpr-frame"><iframe id="mpr-frame" src="about:blank" title="云听电台" referrerpolicy="no-referrer" allow="autoplay; fullscreen" onload="if(typeof mpRadioFit===\'function\')mpRadioFit()"></iframe></div>'
+    + '<div class="mpr-grip" title="按住往下拖，可以拉高电台框（宽度不变）" onpointerdown="mprGripDown(event)">'
+      + '<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M11 1.6 L1.7 10.9 M11 6.5 L6.5 11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>'
+    + '</div>'
   + '</div>';
 }
 function mpSwitchSrc(k) {
   if (!k) return;
+  /* R99②：从顶部来源栏切走时自动收起云听舞台，不用先点「✕ 收起」 */
+  if (typeof MP_RADIO_ON !== 'undefined' && MP_RADIO_ON && typeof mpRadioInlineClose === 'function') mpRadioInlineClose();
   /* R57：网页歌单与本地歌单互斥——切来源时把另一边的声音停掉，避免两个一起响 */
   if (k === '网页歌单') {
     mpPauseLocal();
@@ -10228,7 +10287,7 @@ function mpWebFitLater() {
   [80, 220, 400, 650, 1000].forEach(function (d) { setTimeout(mpWebPlFit, d); });
 }
 function mpWebPlBig() { toast('播放框现在就在卡片里，需要大屏点「在浏览器打开 ↗」'); }
-window.addEventListener('resize', function () { mpWebPlFit(); if (typeof mpCatZone === 'function') mpCatZone(); });
+window.addEventListener('resize', function () { mpWebPlFit(); if (typeof mpRadioFit === 'function') mpRadioFit(); if (typeof mpCatZone === 'function') mpCatZone(); });
 
 function mpWebPlStart() {
   var pl = mpWebPlById(MPW.queue[MPW.idx]);

@@ -2909,9 +2909,9 @@ setTimeout(()=>{
       && /siBind\(host\)/.test(html) && html.indexOf("host.addEventListener('paste'")>=0
       && html.indexOf("host.addEventListener('drop'")>=0;
   });
-  T('R92-3 导入弹窗有「上传日程图片」入口 + 月历面板挂了图片条',()=>{
+  T('R92-3 导入弹窗有「上传日程图片」入口 + 图片条容器存在（R99 移到便利贴顶部）',()=>{
     return html.indexOf('🖼 上传日程图片')>=0 && html.indexOf('siPickFromImport()')>=0
-      && html.indexOf('<div class="sched-imgbar" id="sched-imgbar"></div>')>=0
+      && html.indexOf('id="sched-imgbar"')>=0
       && html.indexOf('try{ siRender(); }catch(e){ console.error(\'日程图片渲染失败\',e); }')>=0;
   });
   T('R92-4 天气图标映射：晴/多云/雨/雪/雾/雷 各自 emoji + 动画 class',()=>{
@@ -4148,6 +4148,34 @@ console.log('--- 回归 ---');
   T('R98-4 顶栏年份条 CSS 去面板边框 + 窄屏收起标签',()=>{
     return html.indexOf('.top-yearbar .s-yearbar{margin:0;padding:0;border:0;background:none')>=0
       && html.indexOf('.top-yearbar .s-yearbar .syb-l{display:none}')>=0;
+  });
+  /* ===== R99：日程图片栏移进便利贴顶部 + 云听框降高/缩放fit/来源栏可用/高度可调 ===== */
+  T('R99-1 图片栏挂进 sticky-bar，月历面板不再拼 sched-imgbar',()=>{
+    return html.indexOf('id="sched-imgbar"')>=0
+      && html.indexOf("'<div class=\"sticky-bar\"><span class=\"sched-imgbar\" id=\"sched-imgbar\"></span>")>=0
+      && html.indexOf("mini+='</div>'+'</div>';")>=0;
+  });
+  T('R99-2 便利贴顶部图片栏 CSS：去虚线框 + 缩略图缩小',()=>{
+    return html.indexOf('.sticky-note .sticky-bar .sched-imgbar{')>=0
+      && html.indexOf('.sib-item{width:24px;height:24px')>=0
+      && html.indexOf('.sticky-note .sticky-bar{display:flex;align-items:center;justify-content:space-between')>=0;
+  });
+  T('R99-3 云听默认高度降到 240px 变量 + 高度手柄存在',()=>{
+    return html.indexOf('min-height:var(--mpr-h,240px)')>=0
+      && html.indexOf('function mprGripDown(e)')>=0
+      && html.indexOf("localStorage.getItem('lw_mpr_h')")>=0
+      && html.indexOf('box.style.setProperty(\'--mpr-h\'')>=0;
+  });
+  T('R99-4 云听 iframe 缩放 fit（消除滚动条/伸出）',()=>{
+    return html.indexOf('function mpRadioFit()')>=0
+      && html.indexOf('f.style.transform=\'scale(\'+sc+\')\'')>=0
+      && html.indexOf('mpRadioFit()')>=0
+      && html.indexOf('transform-origin:top left')>=0;
+  });
+  T('R99-5 云听态顶部来源栏可点 + 切来源自动关云听',()=>{
+    return html.indexOf('.mp.show-radio .mp-row1{position:relative;z-index:44}')>=0
+      && html.indexOf('.mp.show-radio .mpr-wrap{display:flex;pointer-events:auto;top:var(--mpr-top,52px)}')>=0
+      && html.indexOf('MP_RADIO_ON && typeof mpRadioInlineClose')>=0;
   });
   console.log('\n结果: '+pass+' 通过 / '+fail+' 失败');
 

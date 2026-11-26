@@ -2770,10 +2770,10 @@ setTimeout(()=>{
     return srcs.length===5 && !!yt && yt.ext==='https://www.radio.cn/pc-portal/erji/radioStation.html'
       && !yt.sub && yt.ext.indexOf('radioStation.html')>=0;
   });
-  T('R88-2 云听排在末尾且被 mpCanSrc 自动排除（外链不参与本地/网页歌单切换）',()=>{
+  T('R88-2(含R100更新) 云听默认排最前且被 mpCanSrc 自动排除（外链不参与本地/网页歌单切换）',()=>{
     var order=w.mpSrcOrder(null);
     var can=(w.MP_SRC||[]).filter(function(x){ return !x.ext; }).map(function(x){ return x.k; });
-    return order.length===5 && order[4]==='云听' && can.indexOf('云听')<0 && can.length===2 && can.indexOf('网页歌单')>=0;
+    return order.length===5 && order[0]==='云听' && can.indexOf('云听')<0 && can.length===2 && can.indexOf('网页歌单')>=0;
   });
   T('R88-3 图标＝内嵌红色云听 logo，方形圆角 6px（不套别家的 50% 圆形遮罩）',()=>{
     var ic=(w.MP_ICON||{})['云听']||'';
@@ -4176,6 +4176,29 @@ console.log('--- 回归 ---');
     return html.indexOf('.mp.show-radio .mp-row1{position:relative;z-index:44}')>=0
       && html.indexOf('.mp.show-radio .mpr-wrap{display:flex;pointer-events:auto;top:var(--mpr-top,52px)}')>=0
       && html.indexOf('MP_RADIO_ON && typeof mpRadioInlineClose')>=0;
+  });
+  /* ===== R100：图片X外移 / 云听网页铺满 / 云听默认前置 ===== */
+  T('R100-1 便利贴缩略图 X 移出图外（overflow可见 + 右上外移 + 白环，行高不变）',()=>{
+    return html.indexOf('.sib-thumbs .sib-item{width:24px;height:24px;border-color:#EADF8E;border-radius:5px;overflow:visible;margin-right:14px}')>=0
+      && html.indexOf('.sib-del{top:-5px;right:-16px;width:12px;height:12px')>=0
+      && html.indexOf('box-shadow:0 0 0 2px #fffdf0')>=0;
+  });
+  T('R100-2 云听 iframe 虚拟视口跟随容器宽高比（去掉560下限，scale由宽度决定铺满）',()=>{
+    return html.indexOf('var VW=800, VH=Math.max(120,Math.round(VW*h/w))')>=0
+      && html.indexOf('var sc=w/VW;')>=0
+      && html.indexOf("f.style.left='0px'; f.style.top='0px';")>=0
+      && html.indexOf('VH=Math.max(560')<0;
+  });
+  T('R100-3 云听默认前置 + 老浏览器一次性迁移（标志位只搬一次）',()=>{
+    return html.indexOf("all = ['云听'].concat(all.filter(function (k) { return k !== '云听'; }));")>=0
+      && html.indexOf("localStorage.getItem('lw_mp_src_r100') !== '1'")>=0
+      && html.indexOf("mpSrcOrder(['云听'].concat(ordR100))")>=0
+      && html.indexOf("localStorage.setItem('lw_mp_src_r100', '1')")>=0;
+  });
+  T('R100-4(功能) 来源排序保留用户自定义顺序（拖拽排序未被前置破坏）',()=>{
+    var custom=['网易云','本地','网页歌单','QQ导入','云听'];
+    var out=w.mpSrcOrder(custom);
+    return out.length===5 && out[0]==='网易云' && out[1]==='本地' && out[4]==='云听';
   });
   console.log('\n结果: '+pass+' 通过 / '+fail+' 失败');
 

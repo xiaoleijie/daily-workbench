@@ -2880,7 +2880,7 @@ setTimeout(()=>{
     if(!w.document.getElementById('mpr-wrap')){ var b=w.document.createElement('div'); b.id='mp-box'; b.innerHTML=w.mpRadioInlineHtml(); w.document.body.appendChild(b); }
     w.mpRadioInlineOpen('https://www.radio.cn/x','https://x/');
     var box=w.document.getElementById('mp-box');
-    var btn=w.document.querySelector('.mpr-btn');
+    var btn=w.document.querySelector('.mpr-btn:not(.mpr-adbtn)');  /* R102：新增挡广告按钮后要排除，避免抓错 */
     if(!box||!btn) return false;
     btn.click();
     return !box.classList.contains('show-radio') && (w.document.getElementById('mpr-frame').getAttribute('src')||'')==='about:blank';
@@ -4167,7 +4167,7 @@ console.log('--- 回归 ---');
       && html.indexOf('box.style.setProperty(\'--mpr-h\'')>=0;
   });
   T('R99-4 云听 iframe 缩放 fit（消除滚动条/伸出）',()=>{
-    return html.indexOf('function mpRadioFit()')>=0
+    return html.indexOf('function mpRadioFit(forceH)')>=0
       && html.indexOf('f.style.transform=\'scale(\'+sc+\')\'')>=0
       && html.indexOf('mpRadioFit()')>=0
       && html.indexOf('transform-origin:top left')>=0;
@@ -4227,6 +4227,40 @@ console.log('--- 回归 ---');
         && onAll.indexOf('mp-src-opt ext cur')>=0
         && offAll.indexOf('mp-src-opt ext cur')<0;
     } finally { w.MP.curSrc=oldCur; w.MP_RADIO_ON=oldOn; }
+  });
+  /* ===== R102：歌单栏文案 / 广告遮挡 / 拖动实时 fit ===== */
+  T('R102-1 云听态歌单栏显示电台文案（初始渲染 + 局部同步双保险）',()=>{
+    return html.indexOf("var radioOn = (typeof mpSrcCurIsYT === 'function' && mpSrcCurIsYT());")>=0
+      && html.indexOf("esc(radioOn ? '云听 · 电台直播' : (pl.name || '选择歌单'))")>=0
+      && html.indexOf('function mpPlLabelSync(){')>=0
+      && html.indexOf("lab.textContent='云听 · 电台直播'")>=0
+      && html.indexOf('mpPlLabelSync();  /* R102①：歌单栏恢复真实歌单名 */')>=0;
+  });
+  T('R102-2 云听页二维码广告遮挡板可开关、默认开启',()=>{
+    return html.indexOf('.mpr-adblock{position:absolute;right:8px;top:0;bottom:0;width:26%')>=0
+      && html.indexOf('.mpr-wrap.hide-ad .mpr-adblock{display:none}')>=0
+      && html.indexOf('function mpRadioAdToggle(){')>=0
+      && html.indexOf("hide=localStorage.getItem('lw_mpr_adhide')!=='0'")>=0
+      && html.indexOf('<div class="mpr-adblock" id="mpr-adblock"></div>')>=0;
+  });
+  T('R102-3 拖动用「框高−固定偏移」直算舞台高度 + 下一任务兜底（修 iframe 慢一拍）',()=>{
+    return html.indexOf('var fh=Math.max(120,h-diff-barH); mpRadioFit(fh);')>=0
+      && html.indexOf('var diff=(wrap0&&wrap0.offsetHeight)?(box.offsetHeight-wrap0.offsetHeight):57;')>=0
+      && html.indexOf('raf=setTimeout(function(){ mpRadioFit(fh); },0);')>=0
+      && html.indexOf("host.style.flex='none';")>=0
+      && html.indexOf('requestAnimationFrame(function(){ raf=0; mpRadioFit(); })')<0;
+  });
+  T('R102-4(功能) 歌单栏文案随云听展开/收起切换并原样还原',()=>{
+    var box=d.getElementById('mp-box'); if(!box) return false;
+    var lab=box.querySelector('.mp-pl-label'), tip=box.querySelector('.mp-playtip');
+    if(!lab||!tip) return false;
+    var oldOn=w.MP_RADIO_ON, ol=lab.textContent, ot=tip.textContent;
+    try{
+      w.MP_RADIO_ON=true; w.mpPlLabelSync();
+      var onOk = lab.textContent.indexOf('云听')>=0 && tip.textContent.indexOf('电台直播中')>=0;
+      w.MP_RADIO_ON=false; w.mpPlLabelSync();
+      return onOk && lab.textContent===ol && tip.textContent===ot;
+    } finally { w.MP_RADIO_ON=oldOn; }
   });
   console.log('\n结果: '+pass+' 通过 / '+fail+' 失败');
 

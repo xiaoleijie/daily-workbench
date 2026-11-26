@@ -582,21 +582,12 @@ body.mt-h-dragging .mt-grip{color:var(--accent-deep)}
 /* R99②：iframe 用 scale 居中铺满（同网页歌单 fit 思路），消除横向滚动条与伸出 */
 .mpr-frame{overflow:hidden}
 .mpr-frame iframe{transform-origin:top left}
-/* R99②：右下角竖向拖高手柄 */
-.mpr-grip{position:absolute;right:4px;bottom:3px;width:18px;height:16px;display:flex;align-items:flex-end;justify-content:flex-end;color:#b6ae9c;cursor:ns-resize;border-radius:5px;z-index:45;touch-action:none}
-.mpr-grip:hover{color:var(--accent);background:color-mix(in srgb,var(--accent) 9%,transparent)}
-.mpr-grip svg{width:12px;height:12px;display:block;pointer-events:none}
-.mpr-bar{flex:0 0 auto;display:flex;align-items:center;gap:9px;padding:5px 12px;background:#fff;border-bottom:1px solid #eee9db;font-size:11.5px;color:#6b6558}
-.mpr-bar .mpr-t{color:#b23b2e;font-weight:700;white-space:nowrap}
-.mpr-bar .mpr-out{color:#4d7a3b;text-decoration:none;font-weight:600;white-space:nowrap}
-.mpr-bar .mpr-out:hover{text-decoration:underline}
-.mpr-bar .mpr-btn{flex:0 0 auto;height:22px;padding:0 9px;font-size:11px;border:1px solid #e2ddcf;background:#fff;border-radius:6px;color:#5c6653;cursor:pointer;font-family:inherit;white-space:nowrap;line-height:1}
-.mpr-bar .mpr-btn:hover{background:#f5f3ea}
+/* R103：删掉 mpr-bar（用户划线那行，占 33px）+ 云听舞台内手柄（与外框手柄打架）+ 广告遮挡板（盖不住，撤掉）
+   网页直接贴来源栏下方，高度由外框 mt-grip 一手掌控；.mpr-frame 恢复 flex:1 自然跟随外框 */
 .mpr-frame{flex:1;min-height:0;position:relative;background:#fff}
 .mpr-frame iframe{position:absolute;left:0;top:0;width:100%;height:100%;border:0;background:#fff}
-/* R102②：云听页自带右侧「扫码下载APP」浮层（跨域改不了它的 DOM），叠一块可开关白板遮住；右侧留 8px 给原生滚动条 */
-.mpr-adblock{position:absolute;right:8px;top:0;bottom:0;width:26%;background:#fff;pointer-events:none;z-index:3;box-shadow:-6px 0 10px rgba(255,255,255,.85)}
-.mpr-wrap.hide-ad .mpr-adblock{display:none}
+.mp-radio-act{display:none}
+.mp.show-radio .mp-radio-act{display:inline-flex}
 @media(max-width:760px){ .mp.show-radio,.media-top .mt-col>.mp.show-radio{min-height:var(--mpr-h,240px)} }
 /* ===== R92②：日程图片（公司发的图片日历/通知截图）——上传后存本机，缩略图可点开放大 ===== */
 .sched-imgbar{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin:9px 0 2px;padding:7px 9px;border:1px dashed var(--line2);border-radius:10px;background:var(--surface)}
@@ -6193,13 +6184,15 @@ function mtGripDown(e,which){
   function mv(ev){
     var h=Math.max(MT_H_MIN,Math.min(MT_H_MAX,startH+(ev.clientY-startY)));
     card.style.height=h+'px'; moved=true;
+    /* R103：外框拉高时，云听网页同步重算（之前只认云听自己的手柄，外框拉了网页不动） */
+    if(typeof MP_RADIO_ON!=='undefined' && MP_RADIO_ON && typeof mpRadioFit==='function') mpRadioFit();
   }
   function up(){
     document.removeEventListener('pointermove',mv);
     document.removeEventListener('pointerup',up);
     document.removeEventListener('pointercancel',up);
     document.body.classList.remove('mt-h-dragging');
-    if(moved) mtHSet(which, card.getBoundingClientRect().height);
+    if(moved){ mtHSet(which, card.getBoundingClientRect().height); if(typeof MP_RADIO_ON!=='undefined' && MP_RADIO_ON && typeof mpRadioFit==='function') mpRadioFit(); }
   }
   document.addEventListener('pointermove',mv);
   document.addEventListener('pointerup',up);
@@ -9300,6 +9293,11 @@ function mpInner(pl) {
   var radioOn = (typeof mpSrcCurIsYT === 'function' && mpSrcCurIsYT());
   var nowTip = radioOn ? '电台直播中 · 点电台卡片选台' : (playing ? String(now.title || now.name || '') : '点击播放此歌单');
 
+  /* R103：云听态专属操作——原划线行删掉后，把「新窗口打开 / ✕ 收起」挪到顶部歌单栏右侧。
+     常驻 DOM + CSS 按 .show-radio 显隐，避免切来源时整页重绘重建 iframe 打断电台。 */
+  var radioActs = '<a class="btn sm mp-radio-out mp-radio-act" id="mp-radio-out" href="https://www.radio.cn/pc-portal/erji/radioStation.html" target="_blank" rel="noopener" title="在浏览器新窗口打开电台直播页">↗ 新窗口</a>'
+    + '<button class="btn sm mp-radio-act" type="button" onclick="mpRadioInlineClose()" title="收起电台，回到歌单">✕ 收起</button>';
+
   return ''
     /* R79：一行三件 —— 来源圆钮（悬停横排弹出） | 歌单目录 | 圆形播放 */
     + '<div class="mp-row1">'
@@ -9313,8 +9311,8 @@ function mpInner(pl) {
     + '    ' + mpPlayBtnHtml(playing, 'mpPlayAction()', playing ? '停止播放（关掉正在播的歌单）' : '播放整张歌单（共 ' + total + ' 首）')
     + '    <span class="mp-playtip" title="' + esc(nowTip) + '">' + esc(nowTip) + '</span>'
     + '  </div>'
-    + '  <div class="mp-acts">' + chip
-    + (pl.dissId ? '<button class="btn sm" onclick="mpWebPlayer(1)" title="内嵌 QQ 音乐官方播放页，扫码登录后整张播放，不用下载">网页播放</button>' : '')
+    + '  <div class="mp-acts">' + radioActs + chip
+    + (!radioOn && pl.dissId ? '<button class="btn sm" onclick="mpWebPlayer(1)" title="内嵌 QQ 音乐官方播放页，扫码登录后整张播放，不用下载">网页播放</button>' : '')
     + '  </div>'
     + '</div>'
     + '<div class="mp-grid">' + cells + '</div>'
@@ -9612,45 +9610,24 @@ function mprHApply(){
   if(box){ box.style.setProperty('--mpr-h',h+'px'); box.style.setProperty('--mpr-top','52px'); }
   setTimeout(mpRadioFit,60);
 }
-/* 电台页用固定视口宽缩放铺满框（同网页歌单 fit 思路），消除横向滚动条与「伸出」感 */
-function mpRadioFit(forceH){
+/* R103：网页高度随外框 mt-grip 实时联动——不再焊死 frame 高度，也不再有内手柄。
+   .mpr-frame 恢复 flex:1 自然填满 .mpr-wrap；wrap 是 absolute（top:52/bottom:0），外框拉高它立刻变高。 */
+function mpRadioFit(){
   var host=document.querySelector('#mpr-wrap .mpr-frame'); if(!host) return;
   var f=host.querySelector('iframe'); if(!f) return;
-  /* R102③：拖动中 flex:1 与布局读取都滞后一帧 → 拖动时由鼠标位移传 forceH，并把 frame 改固定高度，iframe 才能实时跟随 */
   var wrap=document.getElementById('mpr-wrap');
   var wh=wrap?wrap.clientHeight:0;
-  var bar=wrap?wrap.querySelector('.mpr-bar'):null;
-  var h=forceH;
-  if(!(h>0)) h = (wh>50) ? Math.max(120,wh-(bar?bar.offsetHeight:33)) : (host.clientHeight||0);
-  host.style.flex='none';
-  host.style.height=h+'px';
+  var h=wh>50 ? Math.max(120,wh) : (host.clientHeight||0);
+  host.style.flex=''; host.style.height='';   /* R103：撤销 R102 的焊死，交还给 flex 布局 */
   var w=host.clientWidth||0;
   if(w<50||h<50) return;
-  /* R100：虚拟视口宽高比跟随容器 → iframe 铺满整个内框；原 VH 下限 560 会把矮框的 scale 压到 0.3，两边留大白 */
+  /* 虚拟视口宽高比跟随容器 → iframe 铺满整个内框（VW=800 字更大） */
   var VW=800, VH=Math.max(120,Math.round(VW*h/w));
   var sc=w/VW;
   if(!(sc>0.15)) return;
   f.style.width=VW+'px'; f.style.height=VH+'px';
   f.style.transform='scale('+sc+')';
   f.style.left='0px'; f.style.top='0px';
-}
-function mprGripDown(e){
-  if(e){ if(e.preventDefault) e.preventDefault(); if(e.stopPropagation) e.stopPropagation(); }
-  var box=document.getElementById('mp-box'); if(!box) return;
-  var startY=e.clientY, startH=(mprHGet()||240), moved=false;
-  /* R102③：拖动中读布局永远慢一拍 → 只用「框高 − 起始时实测的固定偏移」直接算舞台高度，零滞后 */
-  var wrap0=document.getElementById('mpr-wrap');
-  var diff=(wrap0&&wrap0.offsetHeight)?(box.offsetHeight-wrap0.offsetHeight):57;
-  var bar0=wrap0?wrap0.querySelector('.mpr-bar'):null;
-  var barH=bar0?bar0.offsetHeight:33;
-  var raf=0;
-  function mv(ev){ var d=ev.clientY-startY; var h=Math.max(MPR_H_MIN,Math.min(MPR_H_MAX,startH+d)); box.style.setProperty('--mpr-h',h+'px'); moved=true; var fh=Math.max(120,h-diff-barH); mpRadioFit(fh); if(raf) clearTimeout(raf); raf=setTimeout(function(){ mpRadioFit(fh); },0); }
-  function up(){
-    document.removeEventListener('pointermove',mv); document.removeEventListener('pointerup',up); document.removeEventListener('pointercancel',up);
-    if(raf) clearTimeout(raf);
-    if(moved){ var cur=parseInt(box.style.getPropertyValue('--mpr-h'),10)||startH; mprHSet(cur); var fh=Math.max(120,cur-diff-barH); mpRadioFit(fh); setTimeout(function(){ mpRadioFit(fh); },0); }
-  }
-  document.addEventListener('pointermove',mv); document.addEventListener('pointerup',up); document.addEventListener('pointercancel',up);
 }
 function mpRadioInlineOpen(url, extUrl){
   MP_RADIO_ON=true;
@@ -9660,15 +9637,21 @@ function mpRadioInlineOpen(url, extUrl){
   var f=document.getElementById('mpr-frame');
   if(f && f.getAttribute('src')!==(url||'')){ try{ f.src=url||''; }catch(e){} }
   var o=document.getElementById('mpr-out'); if(o) o.href=extUrl||url||'';
+  var o2=document.getElementById('mp-radio-out'); if(o2) o2.href=extUrl||url||'';
+  /* R103：顶部按钮是 mpRender() 出来的，写入后要同步一次显示文案（不重建 iframe） */
+  mpPlLabelSync();
   mpSrcCurSync();   /* R101：圆钮与来源栏同步显示云听图标 */
   mpPlLabelSync();  /* R102①：歌单栏文案也跟随 */
-  mpRadioAdSync();  /* R102②：应用扫码广告遮挡开关 */
+  mpRadioFit();     /* R103：展开后按当前外框高度 fit */
 }
 function mpRadioInlineClose(){
   MP_RADIO_ON=false;
   var box=document.getElementById('mp-box'); if(box){ box.classList.remove('show-radio'); box.style.removeProperty('--mpr-h'); box.style.removeProperty('--mpr-top'); }
   var f=document.getElementById('mpr-frame');
   if(f){ try{ f.src='about:blank'; }catch(e){} }
+  /* R103：收起时撤掉焊死的 frame 高度，恢复 flex:1，避免再拉外框时留下旧高度 */
+  var fr=document.querySelector('#mpr-wrap .mpr-frame');
+  if(fr){ fr.style.flex=''; fr.style.height=''; }
   mpSrcCurSync();   /* R101：收起后图标回到真实来源 */
   mpPlLabelSync();  /* R102①：歌单栏恢复真实歌单名 */
 }
@@ -9697,32 +9680,12 @@ function mpPlLabelSync(){
     if(tip && tip.dataset.r102prev!==undefined){ tip.textContent=tip.dataset.r102prev; tip.title=tip.textContent; delete tip.dataset.r102prev; }
   }
 }
-/* R102②：云听页跨域广告浮层无法从代码里删，提供可开关遮挡板（默认开）；右侧留 8px 不挡滚动条 */
-function mpRadioAdSync(){
-  var wrap=document.getElementById('mpr-wrap'); if(!wrap) return;
-  var hide=true; try{ hide=localStorage.getItem('lw_mpr_adhide')!=='0'; }catch(e){}
-  if(hide) wrap.classList.remove('hide-ad'); else wrap.classList.add('hide-ad');
-  var b=document.getElementById('mpr-adbtn');
-  if(b) b.textContent = hide ? '🚫 挡广告' : '👁 显示广告';
-}
-function mpRadioAdToggle(){
-  var hide=true; try{ hide=localStorage.getItem('lw_mpr_adhide')!=='0'; }catch(e){}
-  try{ localStorage.setItem('lw_mpr_adhide', hide?'0':'1'); }catch(e){}
-  mpRadioAdSync();
-  toast(hide ? '已显示云听页右侧内容' : '已遮住扫码广告（点同一按钮可恢复）');
-}
+/* R103：用户要求删掉划线那行（原 mpr-bar）+ 撤掉盖不住的广告遮挡板 + 去掉与外框打架的内手柄。
+   保留「新窗口打开」链接（挂在 mpr-out，歌单栏里的按钮会写它的 href）；收起走顶部歌单栏的「✕ 收起」。 */
 function mpRadioInlineHtml(){
   return '<div class="mpr-wrap" id="mpr-wrap">'
-    + '<div class="mpr-bar"><span class="mpr-t">📻 云听 · 电台直播</span>'
-      + '<span style="flex:1"></span>'
-      + '<button class="mpr-btn mpr-adbtn" id="mpr-adbtn" type="button" onclick="event.stopPropagation();mpRadioAdToggle()" title="遮挡/显示云听页右侧的扫码下载广告">🚫 挡广告</button>'
-      + '<a class="mpr-out" id="mpr-out" href="https://www.radio.cn/pc-portal/erji/radioStation.html" target="_blank" rel="noopener" title="在浏览器新窗口打开电台直播页">新窗口打开 ↗</a>'
-      + '<button class="mpr-btn" type="button" onclick="event.stopPropagation();mpRadioInlineClose()" title="收起电台，回到歌单">✕ 收起</button>'
-    + '</div>'
-    + '<div class="mpr-frame"><iframe id="mpr-frame" src="about:blank" title="云听电台" referrerpolicy="no-referrer" allow="autoplay; fullscreen" onload="if(typeof mpRadioFit===\'function\')mpRadioFit()"></iframe><div class="mpr-adblock" id="mpr-adblock"></div></div>'
-    + '<div class="mpr-grip" title="按住往下拖，可以拉高电台框（宽度不变）" onpointerdown="mprGripDown(event)">'
-      + '<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M11 1.6 L1.7 10.9 M11 6.5 L6.5 11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>'
-    + '</div>'
+    + '<a class="mpr-out" id="mpr-out" href="https://www.radio.cn/pc-portal/erji/radioStation.html" target="_blank" rel="noopener" title="在浏览器新窗口打开电台直播页"></a>'
+    + '<div class="mpr-frame"><iframe id="mpr-frame" src="about:blank" title="云听电台" referrerpolicy="no-referrer" allow="autoplay; fullscreen" onload="if(typeof mpRadioFit===\'function\')mpRadioFit()"></iframe></div>'
   + '</div>';
 }
 function mpSwitchSrc(k) {

@@ -2863,11 +2863,11 @@ setTimeout(()=>{
     var qq=w.MP_SRC.filter(function(x){return x.k==='QQ导入';})[0];
     return !!(yt&&/radio\.cn/.test(yt.inlineUrl||'')&&yt.ext) && !(qq&&qq.inlineUrl);
   });
-  T('R91-2 卡内嵌舞台 mpRadioInlineHtml：标题 + iframe + 新窗口兜底 + 收起',()=>{
+  T('R91-2 卡内嵌舞台 mpRadioInlineHtml：iframe + 新窗口兜底（R103 划线行删掉，收起按钮移到顶部歌单栏）',()=>{
     var s=w.mpRadioInlineHtml();
-    return s.indexOf('id="mpr-wrap"')>=0 && s.indexOf('云听 · 电台直播')>=0
-      && s.indexOf('id="mpr-frame"')>=0 && /radio\.cn/.test(s)
-      && s.indexOf('mpRadioInlineClose()')>=0 && s.indexOf('新窗口打开')>=0;
+    return s.indexOf('id="mpr-wrap"')>=0 && s.indexOf('id="mpr-frame"')>=0
+      && /radio\.cn/.test(s) && s.indexOf('id="mpr-out"')>=0
+      && s.indexOf('mpr-bar')<0 && s.indexOf('mpr-adblock')<0 && s.indexOf('mpr-grip')<0;
   });
   T('R91-3 打开电台不重复建 DOM（舞台常驻 #mp-box），重复调用只刷新 src',()=>{
     if(!w.document.getElementById('mpr-wrap')){ var b=w.document.createElement('div'); b.id='mp-box'; b.innerHTML=w.mpRadioInlineHtml(); w.document.body.appendChild(b); }
@@ -2876,23 +2876,23 @@ setTimeout(()=>{
     w.mpRadioInlineOpen('https://www.radio.cn/x','https://x/');
     return w.document.querySelectorAll('#mpr-wrap').length===n && n===1;
   });
-  T('R91-4 收起按钮调 mpRadioInlineClose：去 show-radio 且 iframe 置 about:blank（停播）',()=>{
+  T('R91-4 收起电台调 mpRadioInlineClose：去 show-radio 且 iframe 置 about:blank（停播）',()=>{
     if(!w.document.getElementById('mpr-wrap')){ var b=w.document.createElement('div'); b.id='mp-box'; b.innerHTML=w.mpRadioInlineHtml(); w.document.body.appendChild(b); }
     w.mpRadioInlineOpen('https://www.radio.cn/x','https://x/');
     var box=w.document.getElementById('mp-box');
-    var btn=w.document.querySelector('.mpr-btn:not(.mpr-adbtn)');  /* R102：新增挡广告按钮后要排除，避免抓错 */
-    if(!box||!btn) return false;
-    btn.click();
+    w.mpRadioInlineClose();
     return !box.classList.contains('show-radio') && (w.document.getElementById('mpr-frame').getAttribute('src')||'')==='about:blank';
   });
   T('R91-5 不再存在独立小窗 DOM / 函数（已彻底改为卡内嵌）',()=>{
     return typeof w.openRadioDock==='undefined'
       && html.indexOf('id="radio-dock"')<0 && html.indexOf('function openRadioDock')<0;
   });
-  T('R91-6 CSS 齐备：卡内嵌舞台 + 电台栏 + 窄屏适配',()=>{
+  T('R91-6 CSS 齐备：卡内嵌舞台 + 顶部按钮 + 窄屏适配（R103 无电台栏）',()=>{
     return html.indexOf('.mpr-wrap{position:absolute')>=0
       && html.indexOf('.mp.show-radio .mpr-wrap{')>=0
-      && html.indexOf('.mpr-bar{')>=0 && html.indexOf('.mpr-frame iframe{')>=0
+      && html.indexOf('.mp-radio-act{display:none}')>=0
+      && html.indexOf('.mp.show-radio .mp-radio-act{display:inline-flex}')>=0
+      && html.indexOf('.mpr-frame iframe{')>=0
       && html.indexOf('@media(max-width:760px){ .mp.show-radio')>=0;
   });
 
@@ -4160,14 +4160,14 @@ console.log('--- 回归 ---');
       && html.indexOf('.sib-item{width:24px;height:24px')>=0
       && html.indexOf('.sticky-note .sticky-bar{display:flex;align-items:center;justify-content:space-between')>=0;
   });
-  T('R99-3 云听默认高度降到 240px 变量 + 高度手柄存在',()=>{
+  T('R99-3 云听默认高度降到 240px 变量（R103 内手柄删除，改由外框 mt-grip 统一控制）',()=>{
     return html.indexOf('min-height:var(--mpr-h,240px)')>=0
-      && html.indexOf('function mprGripDown(e)')>=0
+      && html.indexOf('function mprGripDown(e)')<0
       && html.indexOf("localStorage.getItem('lw_mpr_h')")>=0
       && html.indexOf('box.style.setProperty(\'--mpr-h\'')>=0;
   });
   T('R99-4 云听 iframe 缩放 fit（消除滚动条/伸出）',()=>{
-    return html.indexOf('function mpRadioFit(forceH)')>=0
+    return html.indexOf('function mpRadioFit()')>=0
       && html.indexOf('f.style.transform=\'scale(\'+sc+\')\'')>=0
       && html.indexOf('mpRadioFit()')>=0
       && html.indexOf('transform-origin:top left')>=0;
@@ -4236,19 +4236,16 @@ console.log('--- 回归 ---');
       && html.indexOf("lab.textContent='云听 · 电台直播'")>=0
       && html.indexOf('mpPlLabelSync();  /* R102①：歌单栏恢复真实歌单名 */')>=0;
   });
-  T('R102-2 云听页二维码广告遮挡板可开关、默认开启',()=>{
-    return html.indexOf('.mpr-adblock{position:absolute;right:8px;top:0;bottom:0;width:26%')>=0
-      && html.indexOf('.mpr-wrap.hide-ad .mpr-adblock{display:none}')>=0
-      && html.indexOf('function mpRadioAdToggle(){')>=0
-      && html.indexOf("hide=localStorage.getItem('lw_mpr_adhide')!=='0'")>=0
-      && html.indexOf('<div class="mpr-adblock" id="mpr-adblock"></div>')>=0;
+  T('R102-2 云听二维码遮挡板已撤销（R103：盖不住，按用户要求删除）',()=>{
+    return html.indexOf('.mpr-adblock{')<0
+      && html.indexOf('function mpRadioAdToggle(){')<0
+      && html.indexOf('lw_mpr_adhide')<0
+      && html.indexOf('mpr-adbtn')<0;
   });
-  T('R102-3 拖动用「框高−固定偏移」直算舞台高度 + 下一任务兜底（修 iframe 慢一拍）',()=>{
-    return html.indexOf('var fh=Math.max(120,h-diff-barH); mpRadioFit(fh);')>=0
-      && html.indexOf('var diff=(wrap0&&wrap0.offsetHeight)?(box.offsetHeight-wrap0.offsetHeight):57;')>=0
-      && html.indexOf('raf=setTimeout(function(){ mpRadioFit(fh); },0);')>=0
-      && html.indexOf("host.style.flex='none';")>=0
-      && html.indexOf('requestAnimationFrame(function(){ raf=0; mpRadioFit(); })')<0;
+  T('R102-3 舞台高度不再焊死，改随外框 flex 自然跟随（修 iframe 慢一拍）',()=>{
+    return html.indexOf("host.style.flex=''; host.style.height='';")>=0
+      && html.indexOf('var fh=Math.max(120,h-diff-barH); mpRadioFit(fh);')<0
+      && html.indexOf("host.style.flex='none';")<0;
   });
   T('R102-4(功能) 歌单栏文案随云听展开/收起切换并原样还原',()=>{
     var box=d.getElementById('mp-box'); if(!box) return false;
@@ -4261,6 +4258,27 @@ console.log('--- 回归 ---');
       w.MP_RADIO_ON=false; w.mpPlLabelSync();
       return onOk && lab.textContent===ol && tip.textContent===ot;
     } finally { w.MP_RADIO_ON=oldOn; }
+  });
+  /* ===== R103：删划线行 / 撤遮挡板 / 去内手柄 / 外框联动 ===== */
+  T('R103-1 划线行与遮挡板从 DOM 中移除',()=>{
+    var s=w.mpRadioInlineHtml();
+    return s.indexOf('mpr-bar')<0 && s.indexOf('mpr-adblock')<0
+      && html.indexOf('function mpRadioAdSync(){')<0
+      && html.indexOf('mpRadioAdToggle()')<0;
+  });
+  T('R103-2 云听内手柄删除，顶部「新窗口/收起」按钮常驻 + CSS 按 show-radio 显隐',()=>{
+    return html.indexOf('function mprGripDown(e)')<0
+      && html.indexOf('class=\"btn sm mp-radio-out mp-radio-act\"')>=0
+      && html.indexOf('class=\"btn sm mp-radio-act\"')>=0
+      && html.indexOf('.mp.show-radio .mp-radio-act{display:inline-flex}')>=0;
+  });
+  T('R103-3 外框 mt-grip 拖动时联动 mpRadioFit（外框拉高网页跟着变）',()=>{
+    return html.indexOf("if(typeof MP_RADIO_ON!=='undefined' && MP_RADIO_ON && typeof mpRadioFit==='function') mpRadioFit();")>=0
+      && html.indexOf("var h=wh>50 ? Math.max(120,wh) : (host.clientHeight||0);")>=0;
+  });
+  T('R103-4 展开/收起同步顶部按钮 href + 清除旧焊死高度',()=>{
+    return html.indexOf("var o2=document.getElementById('mp-radio-out'); if(o2) o2.href=extUrl||url||'';")>=0
+      && html.indexOf("if(fr){ fr.style.flex=''; fr.style.height=''; }")>=0;
   });
   console.log('\n结果: '+pass+' 通过 / '+fail+' 失败');
 

@@ -4200,6 +4200,34 @@ console.log('--- 回归 ---');
     var out=w.mpSrcOrder(custom);
     return out.length===5 && out[0]==='网易云' && out[1]==='本地' && out[4]==='云听';
   });
+  /* ===== R101：云听图标跟随（只换显示态，不动真实来源） ===== */
+  T('R101-1 显示来源改走 mpSrcCurKey（圆钮取云听图标，不写 MP.curSrc）',()=>{
+    return html.indexOf("function mpSrcCurKey() { return mpSrcCurIsYT() ? '云听' : MP.curSrc; }")>=0
+      && html.indexOf("(MP_ICON[ck] || MP_ICON['本地'])")>=0
+      && html.indexOf("var act = (pickMenu && !mpSrcCurIsYT())")>=0;
+  });
+  T('R101-2 打开/收起云听都同步图标（局部同步，不整页 mpRender 打断播放）',()=>{
+    return html.indexOf('mpSrcCurSync();   /* R101：圆钮与来源栏同步显示云听图标 */')>=0
+      && html.indexOf('mpSrcCurSync();   /* R101：收起后图标回到真实来源 */')>=0
+      && html.indexOf('function mpSrcCurSync(){')>=0
+      && html.indexOf('if(list) list.innerHTML=mpSrcOptsHtml();')>=0;
+  });
+  T('R101-3(功能) 云听展开=云听logo+高亮，收起=本地音符，MP.curSrc 全程不变',()=>{
+    var oldCur=w.MP.curSrc, oldOn=w.MP_RADIO_ON;
+    /* 只看圆钮片段：来源栏里本来就同时挂着本地/云听图标，整段 HTML 上找会误判 */
+    function curPart(s){ var i=s.indexOf('<div class="mp-src-list">'); return i>=0?s.substring(0,i):s; }
+    try{
+      w.MP.curSrc='本地'; w.MP_RADIO_ON=false;
+      var off=curPart(w.mpSrcBoxHtml()), offAll=w.mpSrcBoxHtml();
+      w.MP_RADIO_ON=true;
+      var on=curPart(w.mpSrcBoxHtml()), onAll=w.mpSrcBoxHtml();
+      return off.indexOf('mp-ico-emo')>=0 && off.indexOf('mp-ico-yt')<0
+        && on.indexOf('mp-ico-yt')>=0 && on.indexOf('mp-ico-emo')<0
+        && w.MP.curSrc==='本地'
+        && onAll.indexOf('mp-src-opt ext cur')>=0
+        && offAll.indexOf('mp-src-opt ext cur')<0;
+    } finally { w.MP.curSrc=oldCur; w.MP_RADIO_ON=oldOn; }
+  });
   console.log('\n结果: '+pass+' 通过 / '+fail+' 失败');
 
 

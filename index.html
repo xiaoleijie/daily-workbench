@@ -9522,30 +9522,34 @@ function mpSrcOptsHtml() {
     var lb = '<span class="mp-src-lb">' + esc(MP_SRC_SHORT[s.k] || s.label) + '</span>';
     if (s.sub) {
       /* 网页歌单：和本地歌单一样是个来源，点一下切进卡内歌单界面 */
-      return '<div class="mp-src-opt ext2' + (s.k === MP.curSrc ? ' cur' : '') + '" title="' + esc(s.label + ' · 点开就是歌单列表') + '" onclick="mpSwitchSrc(\'' + s.k + '\')"' + mpDragAttr(s.k) + '>' + MP_ICON[s.k] + lb + '</div>';
+      return '<div class="mp-src-opt ext2' + (s.k === MP.curSrc && !mpSrcCurIsYT() ? ' cur' : '') + '" title="' + esc(s.label + ' · 点开就是歌单列表') + '" onclick="mpSwitchSrc(\'' + s.k + '\')"' + mpDragAttr(s.k) + '>' + MP_ICON[s.k] + lb + '</div>';
     }
     if (s.ext) {
-      /* 外链入口：点了直接去官方的「我的歌单」网页 */
-      return '<div class="mp-src-opt ext" title="' + esc(s.extTitle || (s.label + ' · 打开我的歌单网页')) + '" onclick="mpOpenSrc(\'' + s.k + '\', event)"' + mpDragAttr(s.k) + '>' + MP_ICON[s.k] + lb + '</div>';
+      /* 外链入口：点了直接去官方的「我的歌单」网页；R101：云听电台展开时高亮云听本身 */
+      return '<div class="mp-src-opt ext' + (mpSrcCurIsYT() && s.k === '云听' ? ' cur' : '') + '" title="' + esc(s.extTitle || (s.label + ' · 打开我的歌单网页')) + '" onclick="mpOpenSrc(\'' + s.k + '\', event)"' + mpDragAttr(s.k) + '>' + MP_ICON[s.k] + lb + '</div>';
     }
-    return '<div class="mp-src-opt' + (s.k === MP.curSrc ? ' cur' : '') + '" title="' + esc(s.label) + '" onclick="mpSwitchSrc(\'' + s.k + '\')"' + mpDragAttr(s.k) + '>' + MP_ICON[s.k] + lb + '</div>';
+    return '<div class="mp-src-opt' + (s.k === MP.curSrc && !mpSrcCurIsYT() ? ' cur' : '') + '" title="' + esc(s.label) + '" onclick="mpSwitchSrc(\'' + s.k + '\')"' + mpDragAttr(s.k) + '>' + MP_ICON[s.k] + lb + '</div>';
   }).join('');
   return '<div class="mp-src-pill">' + inner + '</div>';
 }
 /* R79：来源入口 —— 平时只有一个圆钮（显示当前来源），鼠标悬停才横排弹出四个来源。
    进出场动画与原竖排时一模一样（opacity + translateY(-8px)→0，.2s ease）
    R81：pickMenu=true（网页歌单）时，点圆钮 = 打开「选择歌单」下拉列表；悬停仍然只弹来源切换 */
+/* R101：云听是外链型来源（点它只展开电台页，不改 MP.curSrc，否则会破坏本地/网页歌单切换）。
+   这里只做一个「显示来源」：电台展开时圆钮显示云听图标，收起后回到真实来源。 */
+function mpSrcCurIsYT() { return typeof MP_RADIO_ON !== 'undefined' && MP_RADIO_ON === true; }
+function mpSrcCurKey() { return mpSrcCurIsYT() ? '云听' : MP.curSrc; }
 function mpSrcBoxHtml(pickMenu) {
-  var cur = MP_SRC.filter(function (x) { return x.k === MP.curSrc; })[0] || MP_SRC[0];
+  var ck = mpSrcCurKey();
+  var cur = MP_SRC.filter(function (x) { return x.k === ck; })[0] || MP_SRC[0];
   var playing = MP.idx >= 0;
-  var act = pickMenu ? 'mpSrcOpenMenu(event)' : 'mpToggleSrc(event)';
-  var tip = pickMenu
-    ? '当前来源：' + (cur ? cur.label : '本地') + ' · 点一下打开歌单列表，悬停可换来源'
-    : '当前来源：' + (cur ? cur.label : '本地') + ' · 悬停可切换来源';
+  var act = (pickMenu && !mpSrcCurIsYT()) ? 'mpSrcOpenMenu(event)' : 'mpToggleSrc(event)';
+  var tip = '当前来源：' + (cur ? cur.label : '本地')
+    + (ck === '云听' ? ' · 电台直播中，悬停可换来源' : (pickMenu ? ' · 点一下打开歌单列表，悬停可换来源' : ' · 悬停可切换来源'));
   return '<div class="mp-src" id="mp-src" onmouseleave="mpSrcLeave()">'
     + '<div class="mp-src-cur' + (playing ? ' playing' : '') + '" onclick="' + act + '"'
     + ' title="' + esc(tip) + '">'
-    + (MP_ICON[MP.curSrc] || MP_ICON['本地']) + '</div>'
+    + (MP_ICON[ck] || MP_ICON['本地']) + '</div>'
     + '<div class="mp-src-list">' + mpSrcOptsHtml() + '</div>'
     + '</div>';
 }
@@ -9636,12 +9640,24 @@ function mpRadioInlineOpen(url, extUrl){
   var f=document.getElementById('mpr-frame');
   if(f && f.getAttribute('src')!==(url||'')){ try{ f.src=url||''; }catch(e){} }
   var o=document.getElementById('mpr-out'); if(o) o.href=extUrl||url||'';
+  mpSrcCurSync();   /* R101：圆钮与来源栏同步显示云听图标 */
 }
 function mpRadioInlineClose(){
   MP_RADIO_ON=false;
   var box=document.getElementById('mp-box'); if(box){ box.classList.remove('show-radio'); box.style.removeProperty('--mpr-h'); box.style.removeProperty('--mpr-top'); }
   var f=document.getElementById('mpr-frame');
   if(f){ try{ f.src='about:blank'; }catch(e){} }
+  mpSrcCurSync();   /* R101：收起后图标回到真实来源 */
+}
+/* R101：只同步显示态，不写 MP.curSrc；避免整页 mpRender() 打断电台播放 */
+function mpSrcCurSync(){
+  var el=document.querySelector('#mp-src .mp-src-cur'); if(!el) return;
+  var k=mpSrcCurKey();
+  var s=MP_SRC.filter(function(x){return x.k===k;})[0];
+  el.innerHTML=MP_ICON[k]||MP_ICON['本地'];
+  el.title='当前来源：'+(s?s.label:'本地')+(k==='云听'?' · 电台直播中，悬停可换来源':' · 悬停可切换来源');
+  var list=document.querySelector('#mp-src .mp-src-list');
+  if(list) list.innerHTML=mpSrcOptsHtml();
 }
 function mpRadioInlineHtml(){
   return '<div class="mpr-wrap" id="mpr-wrap">'

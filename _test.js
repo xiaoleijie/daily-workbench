@@ -4166,11 +4166,9 @@ console.log('--- 回归 ---');
       && html.indexOf("localStorage.getItem('lw_mpr_h')")>=0
       && html.indexOf('box.style.setProperty(\'--mpr-h\'')>=0;
   });
-  T('R99-4 云听 iframe 缩放 fit（消除滚动条/伸出）',()=>{
+  T('R99-4 云听 iframe fit 函数存在（R104 已改为原生100%铺满，不再是 scale）',()=>{
     return html.indexOf('function mpRadioFit()')>=0
-      && html.indexOf('f.style.transform=\'scale(\'+sc+\')\'')>=0
-      && html.indexOf('mpRadioFit()')>=0
-      && html.indexOf('transform-origin:top left')>=0;
+      && html.indexOf('mpRadioFit()')>=0;
   });
   T('R99-5 云听态顶部来源栏可点 + 切来源自动关云听',()=>{
     return html.indexOf('.mp.show-radio .mp-row1{position:relative;z-index:44}')>=0
@@ -4183,11 +4181,11 @@ console.log('--- 回归 ---');
       && html.indexOf('.sib-del{top:-5px;right:-16px;width:12px;height:12px')>=0
       && html.indexOf('box-shadow:0 0 0 2px #fffdf0')>=0;
   });
-  T('R100-2 云听 iframe 虚拟视口跟随容器宽高比（去掉560下限，scale由宽度决定铺满）',()=>{
-    return html.indexOf('var VW=800, VH=Math.max(120,Math.round(VW*h/w))')>=0
-      && html.indexOf('var sc=w/VW;')>=0
-      && html.indexOf("f.style.left='0px'; f.style.top='0px';")>=0
-      && html.indexOf('VH=Math.max(560')<0;
+  T('R100-2 云听 iframe 原生100%铺满（R104 弃用 scale/虚拟视口，网页按框宽响应式）',()=>{
+    return html.indexOf("f.style.width='100%'; f.style.height='100%';")>=0
+      && html.indexOf("f.style.transform='none'; f.style.left='0px'; f.style.top='0px';")>=0
+      && html.indexOf('var VW=800')<0
+      && html.indexOf('var sc=w/VW')<0;
   });
   T('R100-3 云听默认前置 + 老浏览器一次性迁移（标志位只搬一次）',()=>{
     return html.indexOf("all = ['云听'].concat(all.filter(function (k) { return k !== '云听'; }));")>=0
@@ -4273,12 +4271,31 @@ console.log('--- 回归 ---');
       && html.indexOf('.mp.show-radio .mp-radio-act{display:inline-flex}')>=0;
   });
   T('R103-3 外框 mt-grip 拖动时联动 mpRadioFit（外框拉高网页跟着变）',()=>{
-    return html.indexOf("if(typeof MP_RADIO_ON!=='undefined' && MP_RADIO_ON && typeof mpRadioFit==='function') mpRadioFit();")>=0
-      && html.indexOf("var h=wh>50 ? Math.max(120,wh) : (host.clientHeight||0);")>=0;
+    return html.indexOf("if(typeof MP_RADIO_ON!=='undefined' && MP_RADIO_ON && typeof mpRadioFit==='function') mpRadioFit();")>=0;
   });
   T('R103-4 展开/收起同步顶部按钮 href + 清除旧焊死高度',()=>{
     return html.indexOf("var o2=document.getElementById('mp-radio-out'); if(o2) o2.href=extUrl||url||'';")>=0
       && html.indexOf("if(fr){ fr.style.flex=''; fr.style.height=''; }")>=0;
+  });
+  /* ===== R104：云听 iframe 原生100%铺满，弃用 scale 缩放（修「网页伸出框外/不跟随」） ===== */
+  T('R104-1 mpRadioFit 改为原生100%铺满，彻底去掉 scale/虚拟视口（治本：网页按框宽响应式）',()=>{
+    return html.indexOf("f.style.width='100%'; f.style.height='100%';")>=0
+      && html.indexOf("f.style.transform='none'")>=0
+      && html.indexOf('var VW=')<0
+      && html.indexOf("f.style.transform='scale(")<0;
+  });
+  T('R104-2 CSS 保留 overflow:hidden 裁溢出 + iframe 原生宽高100%',()=>{
+    return html.indexOf('.mpr-frame{overflow:hidden}')>=0
+      && html.indexOf('.mpr-frame iframe{position:absolute;left:0;top:0;width:100%;height:100%;border:0;background:#fff}')>=0;
+  });
+  T('R104-3(功能) mpRadioFit 实调后 iframe 无 transform 缩放、宽高还原成100%',()=>{
+    if(!w.document.getElementById('mpr-wrap')){ var b=w.document.createElement('div'); b.id='mp-box'; b.innerHTML=w.mpRadioInlineHtml(); w.document.body.appendChild(b); }
+    var f=w.document.getElementById('mpr-frame');
+    if(!f) return false;
+    f.style.transform='scale(0.45)'; f.style.width='800px'; f.style.height='405px';
+    w.mpRadioFit();
+    return (f.style.transform==='none' || f.style.transform==='')
+      && f.style.width==='100%' && f.style.height==='100%';
   });
   console.log('\n结果: '+pass+' 通过 / '+fail+' 失败');
 

@@ -579,7 +579,7 @@ body.mt-h-dragging .mt-grip{color:var(--accent-deep)}
 .media-top .mt-col.mt-h-set>.mp.show-radio{height:auto;min-height:var(--mpr-h,240px)}
 /* R99②：云听态顶部来源栏浮在舞台之上，仍可点圆钮切换其它来源（不必先"收起"） */
 .mp.show-radio .mp-row1{position:relative;z-index:44}
-/* R99②：iframe 用 scale 居中铺满（同网页歌单 fit 思路），消除横向滚动条与伸出 */
+/* R104：iframe 原生 100% 铺满内框（overflow:hidden 裁掉溢出），网页按框宽响应式布局、拉框浏览器原生跟随；不再用 scale 缩放 */
 .mpr-frame{overflow:hidden}
 .mpr-frame iframe{transform-origin:top left}
 /* R103：删掉 mpr-bar（用户划线那行，占 33px）+ 云听舞台内手柄（与外框手柄打架）+ 广告遮挡板（盖不住，撤掉）
@@ -9610,24 +9610,16 @@ function mprHApply(){
   if(box){ box.style.setProperty('--mpr-h',h+'px'); box.style.setProperty('--mpr-top','52px'); }
   setTimeout(mpRadioFit,60);
 }
-/* R103：网页高度随外框 mt-grip 实时联动——不再焊死 frame 高度，也不再有内手柄。
-   .mpr-frame 恢复 flex:1 自然填满 .mpr-wrap；wrap 是 absolute（top:52/bottom:0），外框拉高它立刻变高。 */
+/* R104：彻底放弃「固定 800px 虚拟视口 + scale 缩放」方案——那个方案把网页按桌面宽度渲染再整体缩小贴进框，
+   导致：radio.cn 自带浮层/横向滚动条看起来「伸在框外」、拉高外框时网页内容字号布局纹丝不动只多一块留白、
+   用户感觉网页「没做进内框」。改为 iframe 原生 100% 铺满：网页按框的实际宽度响应式布局，拉外框浏览器原生跟随，
+   字更大更清晰，overflow:hidden 保证内容不溢出框外。函数保留供 onload / 展开 / 外框拖动时复位。 */
 function mpRadioFit(){
   var host=document.querySelector('#mpr-wrap .mpr-frame'); if(!host) return;
   var f=host.querySelector('iframe'); if(!f) return;
-  var wrap=document.getElementById('mpr-wrap');
-  var wh=wrap?wrap.clientHeight:0;
-  var h=wh>50 ? Math.max(120,wh) : (host.clientHeight||0);
-  host.style.flex=''; host.style.height='';   /* R103：撤销 R102 的焊死，交还给 flex 布局 */
-  var w=host.clientWidth||0;
-  if(w<50||h<50) return;
-  /* 虚拟视口宽高比跟随容器 → iframe 铺满整个内框（VW=800 字更大） */
-  var VW=800, VH=Math.max(120,Math.round(VW*h/w));
-  var sc=w/VW;
-  if(!(sc>0.15)) return;
-  f.style.width=VW+'px'; f.style.height=VH+'px';
-  f.style.transform='scale('+sc+')';
-  f.style.left='0px'; f.style.top='0px';
+  host.style.flex=''; host.style.height='';   /* 撤销 R102 遗留焊死，交还 flex 布局 */
+  f.style.width='100%'; f.style.height='100%';
+  f.style.transform='none'; f.style.left='0px'; f.style.top='0px';
 }
 function mpRadioInlineOpen(url, extUrl){
   MP_RADIO_ON=true;
